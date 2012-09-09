@@ -39,6 +39,8 @@ HEADERS  += kcmain.h \
 RESOURCES += \
     icons/icons.qrc \
 
+TRANSLATIONS += kapcompta_fr.ts
+
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 OTHER_FILES += \

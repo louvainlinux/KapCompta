@@ -21,12 +21,20 @@
 
 #include <QApplication>
 #include "kcmain.h"
+#include <QTranslator>
+#include <QLocale>
 
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(icons);
 
     QApplication a(argc, argv);
+
+    QString locale = QLocale::system().name();
+    QTranslator translator;
+    translator.load(QString("kapcompta_") + locale);
+    a.installTranslator(&translator);
+
     KCMain w;
     w.start();
     
