@@ -100,6 +100,21 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
 
+    list = new QListView();
+    list->setAlternatingRowColors(true);
+    list->setSelectionMode(QAbstractItemView::SingleSelection);
+    list->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    list->setModel(model);
+    list->setModelColumn(model->fieldIndex("name"));
+
+    mapper = new QDataWidgetMapper(this);
+    mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
+    mapper->setModel(model);
+    mapper->addMapping(name, model->fieldIndex("name"));
+    mapper->addMapping(iban, model->fieldIndex("iban"));
+    mapper->addMapping(misc, model->fieldIndex("misc"));
+    mapper->setCurrentIndex(-1);
+
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     QHBoxLayout *hLayout = new QHBoxLayout();
     QFormLayout *layout = new QFormLayout();
@@ -115,21 +130,6 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     hLayout->addLayout(leftLayout);
     hLayout->addLayout(layout,1);
     this->setLayout(hLayout);
-
-    list = new QListView();
-    list->setAlternatingRowColors(true);
-    list->setSelectionMode(QAbstractItemView::SingleSelection);
-    list->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    list->setModel(model);
-    list->setModelColumn(model->fieldIndex("name"));
-
-    mapper = new QDataWidgetMapper(this);
-    mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
-    mapper->setModel(model);
-    mapper->addMapping(name, model->fieldIndex("name"));
-    mapper->addMapping(iban, model->fieldIndex("iban"));
-    mapper->addMapping(misc, model->fieldIndex("misc"));
-    mapper->setCurrentIndex(-1);
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             list, SLOT(dataChanged(QModelIndex,QModelIndex)));
