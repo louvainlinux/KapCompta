@@ -62,7 +62,7 @@ void KCMain::openProject(QString p)
     KCSettings::setProperty(QString("lastOpenedFile"), QVariant(*projectPath));
     fileManager = new KCFileManager(*projectPath,this);
     fileManager->open();
-    QString accountName = QString(fileManager->value("general/accountName").toString());
+    QString accountName = QString(fileManager->value("General/accountName").toString());
     this->setWindowTitle("KapCompta - " + accountName);
     buildGUI();
     delete welcomeScreen;

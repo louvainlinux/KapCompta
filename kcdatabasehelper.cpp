@@ -39,6 +39,9 @@ void KCDataBaseHelper::initDB(const QString &path)
     query.exec("CREATE TABLE person (id INTEGER PRIMARY KEY, "
                "name TEXT, iban VARCHAR(27), misc TEXT)");
     query.exec("INSERT INTO person(name, iban, misc) VALUES('test', 'compte','nada')");
+    query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY, "
+               "name TEX, description TEXT, date TEXT)");
+    query.exec("INSERT INTO expenses(name, description, date) VALUES ('test','descr','nada')");
 }
 
 void KCDataBaseHelper::createConnection(const QString &path)
@@ -56,5 +59,4 @@ void KCDataBaseHelper::close(const QString& path)
 {
     QSqlDatabase::database(path).commit();
     QSqlDatabase::database(path).close();
-    QSqlDatabase::removeDatabase(path);
 }

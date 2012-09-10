@@ -50,7 +50,7 @@ public slots:
     void setCurrentModelIndex();
 
 private:
-    QListView *list;
+    QListView *listView;
     QSqlTableModel *model;
     QDataWidgetMapper *mapper;
     QString connectionName;

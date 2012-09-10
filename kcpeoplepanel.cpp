@@ -39,7 +39,7 @@ KCPeoplePanel::KCPeoplePanel(QWidget *parent) :
 
 void KCPeoplePanel::setCurrentModelIndex()
 {
-    mapper->setCurrentModelIndex(list->currentIndex());
+    mapper->setCurrentModelIndex(listView->currentIndex());
 }
 
 QWidget* KCPeoplePanel::panel()
@@ -70,7 +70,7 @@ void KCPeoplePanel::addEntry()
 
 void KCPeoplePanel::removeEntry()
 {
-    model->removeRow(list->currentIndex().row());
+    model->removeRow(listView->currentIndex().row());
     model->submitAll();
 }
 
@@ -100,12 +100,12 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
 
-    list = new QListView();
-    list->setAlternatingRowColors(true);
-    list->setSelectionMode(QAbstractItemView::SingleSelection);
-    list->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    list->setModel(model);
-    list->setModelColumn(model->fieldIndex("name"));
+    listView = new QListView();
+    listView->setAlternatingRowColors(true);
+    listView->setSelectionMode(QAbstractItemView::SingleSelection);
+    listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    listView->setModel(model);
+    listView->setModelColumn(model->fieldIndex("name"));
 
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -125,17 +125,16 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();
-    leftLayout->addWidget(list);
+    leftLayout->addWidget(listView);
     leftLayout->addLayout(buttonLayout);
     hLayout->addLayout(leftLayout);
     hLayout->addLayout(layout,1);
     this->setLayout(hLayout);
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-            list, SLOT(dataChanged(QModelIndex,QModelIndex)));
-    connect(list->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            listView, SLOT(dataChanged(QModelIndex,QModelIndex)));
+    connect(listView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             this,SLOT(setCurrentModelIndex()));
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeEntry()));
-
 }

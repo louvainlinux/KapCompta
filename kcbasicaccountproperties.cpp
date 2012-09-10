@@ -26,9 +26,9 @@
 #include <QFormLayout>
 #include <QLineEdit>
 
-#define NAMEKEY "general/accountName"
-#define IBANKEY "general/accountIBAN"
-#define BALANCEKEY "general/accountBalance"
+#define NAMEKEY "accountName"
+#define IBANKEY "accountIBAN"
+#define BALANCEKEY "accountBalance"
 
 KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QObject(parent),

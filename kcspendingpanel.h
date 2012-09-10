@@ -25,6 +25,12 @@
 #include <QWidget>
 #include "interfaces.h"
 
+QT_BEGIN_NAMESPACE
+class QListView;
+class QSqlTableModel;
+class QDataWidgetMapper;
+QT_END_NAMESPACE
+
 class KCSpendingPanel : public QWidget, public KCPanel
 {
     Q_OBJECT
@@ -39,6 +45,15 @@ public:
 signals:
     
 public slots:
+    void addEntry();
+    void removeEntry();
+    void setCurrentModelIndex();
+
+private:
+    QListView *listView;
+    QSqlTableModel *model;
+    QDataWidgetMapper *mapper;
+    QString connectionName;
     
 };
 

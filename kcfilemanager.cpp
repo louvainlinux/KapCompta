@@ -64,7 +64,7 @@ KCFileManager::~KCFileManager()
 bool KCFileManager::createNewAccount()
 {
     KCDataBaseHelper::initDB(db->fileName());
-    setValue(QVariant(QString("test account")),QString("general/accountName"));
+    setValue(QVariant(QString("test account")),QString("General/accountName"));
     return save();
 }
 
