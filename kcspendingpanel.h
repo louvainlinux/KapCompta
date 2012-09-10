@@ -42,19 +42,20 @@ public:
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
+
 signals:
     
 public slots:
     void addEntry();
     void removeEntry();
     void setCurrentModelIndex();
+    void hideRows();
 
 private:
     QListView *listView;
     QSqlTableModel *model;
     QDataWidgetMapper *mapper;
     QString connectionName;
-    
 };
 
 #endif // KCSPENDINGPANEL_H

@@ -25,6 +25,13 @@
 #include <QWidget>
 #include "interfaces.h"
 
+QT_BEGIN_NAMESPACE
+class QListView;
+class QSqlRelationalTableModel;
+class QSqlTableModel;
+class QDataWidgetMapper;
+QT_END_NAMESPACE
+
 class KCTicketPanel : public QWidget, public KCPanel
 {
     Q_OBJECT
@@ -37,9 +44,23 @@ public:
     const QString& iconPath();
     void buildGUI(const QString &connection);
 signals:
-    
+
 public slots:
-    
+    void addEntry();
+    void removeEntry();
+    void setCurrentModelIndex();
+    void filterChanged(QString s);
+    void selectPanel();
+
+private:
+    QListView *listView;
+    QSqlRelationalTableModel *model;
+    QSqlTableModel *personRel;
+    QSqlTableModel *expenseRel;
+    QDataWidgetMapper *mapper;
+    QString connectionName;
+    int personid;
+    int expenseid;
 };
 
 #endif // KCTICKETPANEL_H

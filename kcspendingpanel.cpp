@@ -59,7 +59,7 @@ void KCSpendingPanel::buildGUI(const QString &connection)
     connectionName = QString(connection);
 
     model = new QSqlTableModel(this,QSqlDatabase::database(connectionName));
-    model->setEditStrategy(QSqlTableModel::OnRowChange);
+    model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->setTable("expenses");
     model->select();
 
@@ -86,6 +86,7 @@ void KCSpendingPanel::buildGUI(const QString &connection)
     listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     listView->setModel(model);
     listView->setModelColumn(model->fieldIndex("name"));
+    hideRows();
 
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -113,6 +114,7 @@ void KCSpendingPanel::buildGUI(const QString &connection)
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             listView, SLOT(dataChanged(QModelIndex,QModelIndex)));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(hideRows()));
     connect(listView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             this,SLOT(setCurrentModelIndex()));
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
@@ -125,16 +127,23 @@ void KCSpendingPanel::addEntry()
     record.setValue(model->fieldIndex("name"),QVariant(tr("New Expense Name")));
     record.setValue(model->fieldIndex("date"),QVariant("i.e. 27th of September 2012"));
     record.setValue(model->fieldIndex("description"),QVariant(tr("Description of the expenses items")));
-    model->insertRecord(1,record);
+    model->insertRecord(-1,record);
+    hideRows();
 }
 
 void KCSpendingPanel::removeEntry()
 {
     model->removeRow(listView->currentIndex().row());
     model->submitAll();
+    hideRows();
 }
 
 void KCSpendingPanel::setCurrentModelIndex()
 {
     mapper->setCurrentModelIndex(listView->currentIndex());
+}
+
+void KCSpendingPanel::hideRows()
+{
+    listView->setRowHidden(0,true);
 }

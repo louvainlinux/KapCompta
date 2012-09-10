@@ -25,6 +25,7 @@
 #include <QVariant>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QDoubleValidator>
 
 #define NAMEKEY "accountName"
 #define IBANKEY "accountIBAN"
@@ -33,10 +34,13 @@
 KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QObject(parent),
     panel(new QWidget()),
-    iban(new QLineEdit(QString("000-0000000-00"), panel)),
+    iban(new QLineEdit(QString("BEXX XXXX XXXX XXXX"), panel)),
     name(new QLineEdit(tr("Unnamed account"), panel)),
     balance(new QLineEdit(QString("0"), panel))
 {
+    QDoubleValidator *balanceValidator = new QDoubleValidator(this);
+    balance->setValidator(balanceValidator);
+
     QFormLayout *layout = new QFormLayout();
     layout->addRow(tr("Account name:"), name);
     layout->addRow(tr("Account bank number (i.e. IBAN):"), iban);

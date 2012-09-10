@@ -51,6 +51,11 @@ public:
      * Returns the path to the icon displayed on the button selecting the panel
      **/
     virtual const QString& iconPath() = 0;
+public slots:
+    /*
+     * Called when the panel is selected
+     **/
+    virtual void selectPanel() {}
 };
 
 class KCSummaryView {

@@ -72,8 +72,8 @@ void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (!current)
         current = previous;
-
     sidePanel->setCurrentIndex(wList->row(current));
+    qobject_cast<KCPanel*>(sidePanel->currentWidget())->selectPanel();
 }
 
 void KCMain::buildGUI()

@@ -65,13 +65,15 @@ void KCPeoplePanel::addEntry()
     record.setValue(model->fieldIndex("name"),QVariant(tr("New Name")));
     record.setValue(model->fieldIndex("iban"),QVariant("BEXX XXXX XXXX XXXX"));
     record.setValue(model->fieldIndex("misc"),QVariant(tr("Misc.")));
-    model->insertRecord(1,record);
+    model->insertRecord(-1,record);
+    hideRows();
 }
 
 void KCPeoplePanel::removeEntry()
 {
     model->removeRow(listView->currentIndex().row());
     model->submitAll();
+    hideRows();
 }
 
 void KCPeoplePanel::buildGUI(const QString &connection)
@@ -79,7 +81,7 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     connectionName = QString(connection);
 
     model = new QSqlTableModel(this,QSqlDatabase::database(connectionName));
-    model->setEditStrategy(QSqlTableModel::OnRowChange);
+    model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->setTable("person");
     model->select();
 
@@ -106,6 +108,7 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     listView->setModel(model);
     listView->setModelColumn(model->fieldIndex("name"));
+    hideRows();
 
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -133,8 +136,14 @@ void KCPeoplePanel::buildGUI(const QString &connection)
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             listView, SLOT(dataChanged(QModelIndex,QModelIndex)));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(hideRows()));
     connect(listView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             this,SLOT(setCurrentModelIndex()));
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeEntry()));
+}
+
+void KCPeoplePanel::hideRows()
+{
+    listView->setRowHidden(0,true);
 }

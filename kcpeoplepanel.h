@@ -48,6 +48,7 @@ public slots:
     void addEntry();
     void removeEntry();
     void setCurrentModelIndex();
+    void hideRows();
 
 private:
     QListView *listView;

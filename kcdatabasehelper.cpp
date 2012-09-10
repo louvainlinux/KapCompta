@@ -38,10 +38,18 @@ void KCDataBaseHelper::initDB(const QString &path)
     QSqlQuery query(QSqlDatabase::database(path));
     query.exec("CREATE TABLE person (id INTEGER PRIMARY KEY, "
                "name TEXT, iban VARCHAR(27), misc TEXT)");
-    query.exec("INSERT INTO person(name, iban, misc) VALUES('test', 'compte','nada')");
+    query.exec("INSERT INTO person(id, name, iban, misc) VALUES(1,'"+tr("Nobody")+"', 'compte','nada')");
     query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY, "
-               "name TEX, description TEXT, date TEXT)");
-    query.exec("INSERT INTO expenses(name, description, date) VALUES ('test','descr','nada')");
+               "name TEXT, description TEXT, date TEXT)");
+    query.exec("INSERT INTO expenses(id, name, description, date) VALUES (1,'"+tr("No item")+"','descr','nada')");
+    query.exec("CREATE TABLE tickets (id INTEGER PRIMARY KEY, "
+               "date TEXT, amount REAL DEFAULT 0, notes TEXT, "
+               "personid INTEGER DEFAULT 1 REFERENCES person(id) "
+               "ON UPDATE CASCADE ON DELETE SET NULL, "
+               "expenseid INTEGER DEFAULT 1 REFERENCES expenses(id) "
+               "ON UPDATE CASCADE ON DELETE SET NULL"
+               ")");
+    query.exec("INSERT INTO tickets(date, amount, notes) VALUES('date',7.38,'misc notes')");
 }
 
 void KCDataBaseHelper::createConnection(const QString &path)
