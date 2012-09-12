@@ -58,7 +58,7 @@ void KCNewAccount::setSaveLocation()
 {
     QString result = QFileDialog::getSaveFileName(
                 this,
-                tr("Where do you want to save the accounting folder ?"),
+                tr("Where do you want to save the accounting file ?"),
                 QApplication::applicationDirPath(),
                 QString("Account file (*.account)"),
                 0,
