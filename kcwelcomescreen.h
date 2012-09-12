@@ -39,7 +39,7 @@ public:
 signals:
     void knowProject(QString);
     void accountCreated(QString);
-public slots:
+private slots:
     void newAccount();
     void openAccount();
     void openLast();

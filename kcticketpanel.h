@@ -48,7 +48,7 @@ public:
 
 signals:
 
-public slots:
+private slots:
     void addEntry();
     void removeEntry();
     void setCurrentModelIndex();

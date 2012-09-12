@@ -47,7 +47,7 @@ public:
     void callback();
     void initDB(const QString& connection);
 
-public slots:
+private slots:
     void saveSettings();
     void reloadSettings();
     void settingsAltered();

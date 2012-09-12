@@ -88,7 +88,7 @@ void KCMain::buildGUI()
     wList->setSpacing(12);
     sidePanel = new QStackedWidget();
     QList<KCPanel*> panels;
-    panels << new KCSummaryPanel(this) << new KCPropertiesPanel(fileManager, this)
+    panels << new KCSummaryPanel(fileManager,this) << new KCPropertiesPanel(fileManager, this)
            << new KCPeoplePanel(this) << new KCSpendingPanel(this)
            << new KCTicketPanel(this);
     QList<KCPanel*>::const_iterator iterator;

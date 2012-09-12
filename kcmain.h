@@ -22,7 +22,7 @@ public:
     ~KCMain();
     void start();
 
-public slots:
+private slots:
     void openProject(QString p);
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 

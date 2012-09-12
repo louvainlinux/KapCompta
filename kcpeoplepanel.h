@@ -45,7 +45,7 @@ public:
     void initDB(const QString& connection);
 signals:
     
-public slots:
+private slots:
     void addEntry();
     void removeEntry();
     void setCurrentModelIndex();

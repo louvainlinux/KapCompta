@@ -34,7 +34,7 @@ public:
 signals:
     void accountSet(QString path);
     void cancel();
-public slots:
+private slots:
     void setSaveLocation();
 private:
     void createAt(const QString&path);

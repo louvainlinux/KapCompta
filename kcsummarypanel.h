@@ -24,6 +24,9 @@
 
 #include <QWidget>
 #include "interfaces.h"
+#include <QList>
+
+class KCFileManager;
 
 class KCSummaryPanel : public QWidget, public KCPanel
 {
@@ -31,12 +34,22 @@ class KCSummaryPanel : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
-    explicit KCSummaryPanel(QWidget *parent = 0);
+    explicit KCSummaryPanel(KCFileManager *fm, QWidget *parent = 0);
     QWidget* panel();
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
+    void selectPanel();
+
+private slots:
+    void printSummaryView();
+    void exportView();
+
+private:
+    KCFileManager *fm;
+    QList<KCSummaryView*> views;
+    int balance;
 };
 
 #endif // KCSUMMARYPANEL_H

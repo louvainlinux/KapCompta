@@ -23,17 +23,34 @@
 #define KCBASICSUMMARYVIEW_H
 
 #include <QWidget>
+#include "interfaces.h"
 
-class KCBasicSummaryView : public QWidget
+class KCBasicSummaryView : public QWidget, public KCSummaryView
 {
     Q_OBJECT
+    Q_INTERFACES(KCSummaryView)
+
 public:
     explicit KCBasicSummaryView(QWidget *parent = 0);
-    
+    QWidget* summaryView();
+    const QString& summaryName();
+    QWidget* displayOptions();
+    void setConnectionName(const QString& c);
+    void setInitialBalance(int i);
+    bool optionsUnder();
+
 signals:
     
 public slots:
     
+protected:
+    void paintEvent(QPaintEvent *event);
+
+private:
+    void paint(QPainter *painter, QPaintEvent *event);
+
+    int initialBalance;
+    QString connection;
 };
 
 #endif // KCBASICSUMMARYVIEW_H

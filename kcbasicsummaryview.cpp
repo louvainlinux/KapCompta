@@ -20,8 +20,66 @@
  **/
 
 #include "kcbasicsummaryview.h"
+#include <QPainter>
 
 KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
 {
+    connection = QString("");
+}
+
+QWidget* KCBasicSummaryView::summaryView()
+{
+    return this;
+}
+
+void KCBasicSummaryView::setInitialBalance(int i)
+{
+    initialBalance = i;
+    this->update();
+}
+
+const QString& KCBasicSummaryView::summaryName()
+{
+    static QString s = tr("Default Summary view");
+    return s;
+}
+
+QWidget* KCBasicSummaryView::displayOptions(){
+    return new QWidget();
+}
+
+bool KCBasicSummaryView::optionsUnder()
+{
+    return false;
+}
+
+void KCBasicSummaryView::setConnectionName(const QString& c)
+{
+    connection = QString(c);
+    this->update();
+}
+
+void KCBasicSummaryView::paintEvent(QPaintEvent *event)
+{
+    QPainter painter;
+    painter.begin(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::TextAntialiasing);
+    this->paint(&painter, event);
+    painter.end();
+}
+
+void KCBasicSummaryView::paint(QPainter *painter, QPaintEvent *event)
+{
+    Q_UNUSED(event);
+
+    QString test;
+    if (connection.compare(QString(""))) {
+        test = "pas de connection";
+    } else {
+        test = connection;
+    }
+
+    painter->drawText(0,0,test);
 }

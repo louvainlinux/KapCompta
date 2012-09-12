@@ -86,6 +86,10 @@ public:
      **/
     virtual QWidget* summaryView() = 0;
     /*
+     * Sets the database connection name
+     **/
+    virtual void setConnectionName(const QString& c) = 0;
+    /*
      * Returns the view name
      **/
     virtual const QString& summaryName() = 0;
@@ -94,6 +98,15 @@ public:
      * Pointer will be owned by the caller!
      **/
     virtual QWidget* displayOptions() = 0;
+    /*
+     * Returns true if the option panel should be displayed under the summary view,
+     * usefull for i.e. width views
+     **/
+    virtual bool optionsUnder() = 0;
+    /*
+     * Sets the account initial balance
+     **/
+    virtual void setInitialBalance(int i) = 0;
 };
 
 class KCAccountSetting {
