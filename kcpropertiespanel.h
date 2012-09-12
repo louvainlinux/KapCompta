@@ -24,18 +24,41 @@
 
 #include <QWidget>
 #include "interfaces.h"
+#include <QList>
 
-class KCPropertiesPanel : public QWidget, public KCPanel
+QT_BEGIN_NAMESPACE
+class QPushButton;
+QT_END_NAMESPACE
+
+class KCFileManager;
+
+class KCPropertiesPanel : public QWidget, public KCPanel, public KCObserver
 {
     Q_OBJECT
-    Q_INTERFACES(KCPanel)
+    Q_INTERFACES(KCPanel KCObserver)
 
 public:
-    explicit KCPropertiesPanel(QWidget *parent = 0);
+    explicit KCPropertiesPanel(KCFileManager *fm, QWidget *parent = 0);
     QWidget* panel();
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
+    void unselectPanel();
+    void callback();
+
+public slots:
+    void saveSettings();
+    void reloadSettings();
+    void settingsAltered();
+
+private:
+    KCFileManager *fm;
+    QList<KCAccountSetting*> settingsList;
+    QPushButton *saveBtn;
+    QPushButton *reloadBtn;
+    bool autosave;
+
+    void reload();
 };
 
 #endif // KCPROPERTIESPANEL_H

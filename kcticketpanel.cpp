@@ -36,6 +36,7 @@
 #include <QCompleter>
 #include <QComboBox>
 #include <QStringListModel>
+#include <QDoubleValidator>
 
 KCTicketPanel::KCTicketPanel(QWidget *parent) :
     QWidget(parent)
@@ -77,6 +78,7 @@ void KCTicketPanel::buildGUI(const QString &connection)
     expenseRel = model->relationModel(expenseid);
 
     QLineEdit *amount = new QLineEdit(this);
+    amount->setValidator(new QDoubleValidator(this));
     QLineEdit *date = new QLineEdit(this);
     QCompleter *dateCompleter = new QCompleter(this);
     dateCompleter->setModel(model);
@@ -94,12 +96,17 @@ void KCTicketPanel::buildGUI(const QString &connection)
                                /*<< tr("Person") << tr("Expense Item")*/);
     filter->setModel(filterModel);
     model->sort(model->fieldIndex("date"),Qt::AscendingOrder);
+
     QComboBox *person = new QComboBox(this);
     person->setModel(personRel);
     person->setModelColumn(personRel->fieldIndex("name"));
+    //person->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    person->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     QComboBox *expense = new QComboBox(this);
     expense->setModel(expenseRel);
     expense->setModelColumn(expenseRel->fieldIndex("name"));
+    //expense->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    expense->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     filter->setEditable(false);
     person->setEditable(false);
     expense->setEditable(false);
@@ -171,7 +178,7 @@ void KCTicketPanel::addEntry()
 {
     QSqlRecord record = model->record();
     record.setValue(model->fieldIndex("date"),QVariant(tr("i.e. 27th of September 2012")));
-    record.setValue(model->fieldIndex("amount"),QVariant(0));
+    record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount")));
     record.setValue(model->fieldIndex("notes"),QVariant(tr("Misc.")));
     record.setValue(personid,QVariant(1));
     record.setValue(expenseid,QVariant(1));

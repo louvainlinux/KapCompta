@@ -37,7 +37,7 @@
 #include <QApplication>
 #include "kcfilemanager.h"
 #include "kcdatabasehelper.h"
-
+#include <QGroupBox>
 
 KCMain::KCMain(QWidget *parent)
     : QWidget(parent)
@@ -63,7 +63,7 @@ void KCMain::openProject(QString p)
     fileManager = new KCFileManager(*projectPath,this);
     fileManager->open();
     QString accountName = QString(fileManager->value("General/accountName").toString());
-    this->setWindowTitle("KapCompta - " + accountName);
+    this->setWindowTitle("KapCompta - " + accountName + " - " + *projectPath);
     buildGUI();
     delete welcomeScreen;
 }
@@ -72,8 +72,10 @@ void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (!current)
         current = previous;
+    qobject_cast<KCPanel*>(sidePanel->currentWidget())->unselectPanel();
     sidePanel->setCurrentIndex(wList->row(current));
     qobject_cast<KCPanel*>(sidePanel->currentWidget())->selectPanel();
+    box->setTitle(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title());
 }
 
 void KCMain::buildGUI()
@@ -86,7 +88,7 @@ void KCMain::buildGUI()
     wList->setSpacing(12);
     sidePanel = new QStackedWidget();
     QList<KCPanel*> panels;
-    panels << new KCSummaryPanel(this) << new KCPropertiesPanel(this)
+    panels << new KCSummaryPanel(this) << new KCPropertiesPanel(fileManager, this)
            << new KCPeoplePanel(this) << new KCSpendingPanel(this)
            << new KCTicketPanel(this);
     QList<KCPanel*>::const_iterator iterator;
@@ -104,10 +106,18 @@ void KCMain::buildGUI()
     connect(wList,
             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
-    layout->addWidget(wList);
+    QGroupBox *leftBox = new QGroupBox(this);
+    QVBoxLayout *l = new QVBoxLayout();
+    l->addWidget(wList);
+    leftBox->setLayout(l);
+    layout->addWidget(leftBox);
     wList->setMaximumWidth(175);
-    layout->addWidget(sidePanel,1);
     const QRect screen = QApplication::desktop()->screenGeometry();
+    box = new QGroupBox(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title(),this);
+    QVBoxLayout *vBox = new QVBoxLayout();
+    vBox->addWidget(sidePanel);
+    box->setLayout(vBox);
+    layout->addWidget(box,1);
     this->setLayout(layout);
     this->move(screen.center() - this->rect().center());
     this->showMaximized();

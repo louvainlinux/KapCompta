@@ -28,23 +28,17 @@
 #include <QApplication>
 #include "kcfilemanager.h"
 #include <QVariant>
+#include <QHash>
 
 KCNewAccount::KCNewAccount(QWidget *parent) :
     QWidget(parent)
 {
     QPushButton *create = new QPushButton(tr("Create"), this);
     QPushButton *cancelButton = new QPushButton(tr("Cancel"), this);
-    KCAccountSetting *accountProperties = new KCBasicAccountProperties(this);
+    accountProperties = new KCBasicAccountProperties(this);
     accountProperties->setEditable(true);
     QVBoxLayout *layout = new QVBoxLayout();
-
-    QList<KCAccountSetting*> settingsList;
-    settingsList << accountProperties;
-    QList<KCAccountSetting*>::const_iterator iterator;
-    for(iterator = settingsList.begin(); iterator != settingsList.end(); ++iterator) {
-        layout->addWidget((*iterator)->settingPanel());
-    }
-
+    layout->addWidget(accountProperties->settingPanel());
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget(cancelButton);
     buttonLayout->addWidget(create);
@@ -79,7 +73,10 @@ void KCNewAccount::createAt(const QString &path)
 {
     KCFileManager fm(path);
     fm.createNewAccount();
-    fm.setValue(QVariant("test"),"general/accountName");
+    QHash<QString, QVariant>* values = accountProperties->settings();
+    fm.setValues(*values, accountProperties->category());
+    fm.save();
+    delete values;
     this->hide();
     emit accountSet(path);
 }

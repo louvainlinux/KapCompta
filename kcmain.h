@@ -8,6 +8,7 @@ QT_BEGIN_NAMESPACE
 class QListWidget;
 class QListWidgetItem;
 class QStackedWidget;
+class QGroupBox;
 QT_END_NAMESPACE
 
 class KCFileManager;
@@ -33,6 +34,7 @@ private:
     QListWidget *wList;
     QStackedWidget *sidePanel;
     KCFileManager *fileManager;
+    QGroupBox *box;
 };
 
 #endif // KCMAIN_H

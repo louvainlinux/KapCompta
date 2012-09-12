@@ -31,6 +31,15 @@ class QString;
 class QVariant;
 QT_END_NAMESPACE
 
+/*
+ * Interface to make callbacks: cannot use the signal/slot system on QPlugins
+ * ~ Java Listeners
+ **/
+class KCObserver {
+public:
+    virtual void callback() = 0;
+};
+
 class KCPanel {
 public:
     virtual ~KCPanel() {}
@@ -41,6 +50,7 @@ public:
     virtual void buildGUI(const QString& connection) = 0;
     /*
      * Returns the widget to be displayed on the side panel
+     * Pointer will be owned by the caller!
      **/
     virtual QWidget* panel() = 0;
     /*
@@ -51,11 +61,14 @@ public:
      * Returns the path to the icon displayed on the button selecting the panel
      **/
     virtual const QString& iconPath() = 0;
-public slots:
     /*
      * Called when the panel is selected
      **/
     virtual void selectPanel() {}
+    /*
+     * Called when the panel is about to be unselected
+     **/
+    virtual void unselectPanel() {}
 };
 
 class KCSummaryView {
@@ -64,6 +77,7 @@ public:
 
     /*
      * Returns the widget representing the summary view
+     * Pointer will be owned by the caller!
      **/
     virtual QWidget* summaryView() = 0;
     /*
@@ -72,11 +86,13 @@ public:
     virtual const QString& summaryName() = 0;
     /*
      * Returns the widget containing the view display options
+     * Pointer will be owned by the caller!
      **/
     virtual QWidget* displayOptions() = 0;
 };
 
 class KCAccountSetting {
+
 public:
     virtual ~KCAccountSetting() {}
 
@@ -90,6 +106,7 @@ public:
     virtual void setEditable(bool editable) = 0;
     /*
      * Returns a hash map of key/value representing the settings
+     * Pointer will be owned by the caller!
      **/
     virtual QHash<QString, QVariant>* settings() = 0;
     /*
@@ -100,9 +117,18 @@ public:
      * Returns the setting category name
      **/
     virtual const QString& category() = 0;
+    /*
+     * Returns the settings key
+     **/
+    virtual const QStringList& keys() = 0;
+    /*
+     * Register o as an observer to be notified when a setting changes
+     **/
+    virtual void addObserver(KCObserver *o) = 0;
 };
 
 QT_BEGIN_NAMESPACE
+Q_DECLARE_INTERFACE(KCObserver, "org.kapcompta.kcobserver/1.0")
 Q_DECLARE_INTERFACE(KCPanel, "org.kapcompta.kcpanel/1.0")
 Q_DECLARE_INTERFACE(KCSummaryView, "org.kapcompta.kcsummaryview/1.0")
 Q_DECLARE_INTERFACE(KCAccountSetting, "org.kapcompta.kcaccountsetting/1.0")

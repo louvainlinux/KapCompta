@@ -27,9 +27,9 @@
 #include <QLineEdit>
 #include <QDoubleValidator>
 
-#define NAMEKEY "accountName"
-#define IBANKEY "accountIBAN"
-#define BALANCEKEY "accountBalance"
+#define NAMEKEY    ( QString("accountName")    )
+#define IBANKEY    ( QString("accountIBAN")    )
+#define BALANCEKEY ( QString("accountBalance") )
 
 KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QObject(parent),
@@ -41,11 +41,17 @@ KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QDoubleValidator *balanceValidator = new QDoubleValidator(this);
     balance->setValidator(balanceValidator);
 
+    connect(iban,SIGNAL(editingFinished()),this,SLOT(altered()));
+    connect(name,SIGNAL(editingFinished()),this,SLOT(altered()));
+    connect(balance,SIGNAL(editingFinished()),this,SLOT(altered()));
+
     QFormLayout *layout = new QFormLayout();
     layout->addRow(tr("Account name:"), name);
     layout->addRow(tr("Account bank number (i.e. IBAN):"), iban);
-    layout->addRow(tr("Balance:"), balance);
+    layout->addRow(tr("Initial Balance:"), balance);
     panel->setLayout(layout);
+
+    observer = NULL;
 }
 
 KCBasicAccountProperties::~KCBasicAccountProperties()
@@ -68,19 +74,19 @@ void KCBasicAccountProperties::setEditable(bool editable)
 QHash<QString, QVariant>* KCBasicAccountProperties::settings()
 {
     QHash<QString, QVariant> *hash = new QHash<QString, QVariant>();
-    hash->insert(QString(NAMEKEY), QVariant(name->text()));
-    hash->insert(QString(IBANKEY), QVariant(iban->text()));
-    hash->insert(QString(BALANCEKEY), QVariant(balance->text()));
+    hash->insert(NAMEKEY, QVariant(name->text()));
+    hash->insert(IBANKEY, QVariant(iban->text()));
+    hash->insert(BALANCEKEY, QVariant(balance->text()));
     return hash;
 }
 
 void KCBasicAccountProperties::setSetting(const QString& key, const QVariant& value)
 {
-    if (!key.compare(QString(NAMEKEY))) {
+    if (!key.compare(NAMEKEY)) {
         name->setText(value.toString());
-    } else if (!key.compare(QString(IBANKEY))) {
+    } else if (!key.compare(IBANKEY)) {
         iban->setText(value.toString());
-    } else if (!key.compare(QString(BALANCEKEY))) {
+    } else if (!key.compare(BALANCEKEY)) {
         balance->setText(value.toString());
     }
 }
@@ -89,4 +95,19 @@ const QString& KCBasicAccountProperties::category()
 {
     static QString a = QString("General");
     return a;
+}
+
+const QStringList &KCBasicAccountProperties::keys(){
+    static QStringList l = QStringList() << NAMEKEY << IBANKEY << BALANCEKEY;
+    return l;
+}
+
+void KCBasicAccountProperties::addObserver(KCObserver *o)
+{
+    observer = o;
+}
+
+void KCBasicAccountProperties::altered()
+{
+    if (observer != NULL) observer->callback();
 }

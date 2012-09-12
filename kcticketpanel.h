@@ -43,6 +43,7 @@ public:
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
+    void selectPanel();
 signals:
 
 public slots:
@@ -50,7 +51,6 @@ public slots:
     void removeEntry();
     void setCurrentModelIndex();
     void filterChanged(QString s);
-    void selectPanel();
 
 private:
     QListView *listView;

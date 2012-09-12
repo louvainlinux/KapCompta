@@ -24,6 +24,8 @@
 
 #include <QWidget>
 
+class KCAccountSetting;
+
 class KCNewAccount : public QWidget
 {
     Q_OBJECT
@@ -36,6 +38,7 @@ public slots:
     void setSaveLocation();
 private:
     void createAt(const QString&path);
+    KCAccountSetting *accountProperties;
 };
 
 #endif // KCNEWACCOUNT_H

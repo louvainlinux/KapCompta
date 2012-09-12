@@ -42,16 +42,18 @@ public:
     QHash<QString, QVariant> *settings();
     void setSetting(const QString& key, const QVariant& value);
     const QString &category();
-    
-signals:
-    
+    const QStringList& keys();
+    void addObserver(KCObserver *o);
+
 public slots:
-    
+    void altered();
+
 private:
     QWidget *panel;
     QLineEdit *iban;
     QLineEdit *name;
     QLineEdit *balance;
+    KCObserver *observer;
 };
 
 #endif // KCACCOUNTPROPERTY_H

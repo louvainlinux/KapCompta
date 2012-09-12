@@ -29,14 +29,6 @@
 
 #define KC_CURRENT_FILE_VERSION ( (qint32)0xAAAAAAA0 )
 
-/*
- * fichier contenant des qfile concat compresse par qcompress,
- *a l'ouverture on extrait dans des qtemporaryfiles qu'on monitore, a chaque changement,
- * on sauve la version mise à jour du fichier.
- * idee: plutot que de sauver a chaque modif, proposer de sauver tous les x ou seulement quand
- * user le veut.
- **/
-
 KCFileManager::KCFileManager(const QString& filePath, QObject *parent) :
     QObject(parent),
     fileName(QString(filePath))
@@ -64,15 +56,28 @@ KCFileManager::~KCFileManager()
 bool KCFileManager::createNewAccount()
 {
     KCDataBaseHelper::initDB(db->fileName());
-    setValue(QVariant(QString("test account")),QString("General/accountName"));
     return save();
 }
 
-void KCFileManager::setValue(const QVariant& value, const QString& key)
+void KCFileManager::setValue(const QString& key, const QVariant& value)
 {
     QSettings settings(properties->fileName(),
                         QSettings::IniFormat);
     settings.setValue(key,value);
+    settings.sync();
+}
+
+void KCFileManager::setValues(const QHash<QString, QVariant>& values, const QString& category)
+{
+    QSettings settings(properties->fileName(),
+                        QSettings::IniFormat);
+    settings.beginGroup(category);
+    QHash<QString, QVariant>::const_iterator iterator = values.constBegin();
+    while (iterator != values.constEnd()) {
+        settings.setValue(iterator.key(),iterator.value());
+        iterator++;
+    }
+    settings.endGroup();
     settings.sync();
 }
 

@@ -23,6 +23,7 @@
 #define KCFILEMANAGER_H
 
 #include <QObject>
+#include <QHash>
 
 QT_BEGIN_NAMESPACE
 class QVariant;
@@ -36,7 +37,8 @@ public:
     explicit KCFileManager(const QString& filePath, QObject *parent = 0);
     ~KCFileManager();
     bool createNewAccount();
-    void setValue(const QVariant& value, const QString& key);
+    void setValue(const QString& key, const QVariant& value);
+    void setValues(const QHash<QString, QVariant>& values, const QString &category);
     QVariant value(const QString& key);
     QString dbPath();
     bool open();
