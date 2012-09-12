@@ -104,11 +104,10 @@ void KCSpendingPanel::buildGUI(const QString &connection)
     layout->addRow(tr("Date:"), date);
     layout->addRow(tr("Description:"), description);
     buttonLayout->addWidget(add);
-    buttonLayout->addStretch(1);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();
-    leftLayout->addWidget(listView);
     leftLayout->addLayout(buttonLayout);
+    leftLayout->addWidget(listView);
     hLayout->addLayout(leftLayout);
     hLayout->addLayout(layout,1);
     this->setLayout(hLayout);

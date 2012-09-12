@@ -140,14 +140,13 @@ void KCTicketPanel::buildGUI(const QString &connection)
     layout->addRow(tr("Expense Item:"), expense);
     layout->addRow(tr("Notes:"), notes);
     buttonLayout->addWidget(add);
-    buttonLayout->addStretch(1);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QFormLayout *choserLayout = new QFormLayout();
     choserLayout->addRow(tr("List by:"),filter);
     leftLayout->addLayout(choserLayout);
-    leftLayout->addWidget(listView);
     leftLayout->addLayout(buttonLayout);
+    leftLayout->addWidget(listView);
     hLayout->addLayout(leftLayout);
     hLayout->addLayout(layout,1);
     this->setLayout(hLayout);
@@ -166,11 +165,7 @@ void KCTicketPanel::filterChanged(QString s)
     int idx = model->fieldIndex("date");
     if (!s.compare(tr("Amount"))) {
         idx = model->fieldIndex("amount");
-    } /*else if (!s.compare(tr("Person"))) {
-
-    } else if (!s.compare(tr("Expense Item"))) {
-
-    }*/
+    }
     listView->setModelColumn(idx);
     model->sort(idx,Qt::AscendingOrder);
 }
