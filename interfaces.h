@@ -29,6 +29,7 @@ QT_BEGIN_NAMESPACE
 class QWidget;
 class QString;
 class QVariant;
+class QPrinter;
 QT_END_NAMESPACE
 
 /*
@@ -37,6 +38,12 @@ QT_END_NAMESPACE
  **/
 class KCObserver {
 public:
+    ~KCObserver() {}
+
+    /*
+     * The callback function,
+     * in the future: should handle args and/or allow to have an array of functions
+     **/
     virtual void callback() = 0;
 };
 
@@ -107,6 +114,10 @@ public:
      * Sets the account initial balance
      **/
     virtual void setInitialBalance(int i) = 0;
+    /*
+     * print to the specified QPrinter
+     **/
+    virtual void printSummary(QPrinter *printer) = 0;
 };
 
 class KCAccountSetting {
@@ -145,11 +156,30 @@ public:
     virtual void addObserver(KCObserver *o) = 0;
 };
 
+class KCFileFormat {
+
+public:
+    virtual ~KCFileFormat() {}
+
+    /*
+     * Returns the format name, following the QFileDialog standards:
+     * Full name (*.extension)
+     **/
+    virtual const QString& formatName() = 0;
+    /*
+     * Write the database data to fileName in the desired format, could start modal panels to
+     * provide additional parameters (i.e. like png compression rate)
+     **/
+    virtual void exportToFile(const QString& fileName, const QString& connectionName,
+                              KCSummaryView *view) = 0;
+};
+
 QT_BEGIN_NAMESPACE
 Q_DECLARE_INTERFACE(KCObserver, "org.kapcompta.kcobserver/1.0")
 Q_DECLARE_INTERFACE(KCPanel, "org.kapcompta.kcpanel/1.0")
 Q_DECLARE_INTERFACE(KCSummaryView, "org.kapcompta.kcsummaryview/1.0")
 Q_DECLARE_INTERFACE(KCAccountSetting, "org.kapcompta.kcaccountsetting/1.0")
+Q_DECLARE_INTERFACE(KCFileFormat, "org.kapcompta.kcfileformat/1.0")
 QT_END_NAMESPACE
 
 #endif // INTERFACES_H

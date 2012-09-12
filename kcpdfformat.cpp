@@ -19,45 +19,27 @@
  *
  **/
 
-#ifndef KCSUMMARYPANEL_H
-#define KCSUMMARYPANEL_H
+#include "kcpdfformat.h"
+#include <QPrinter>
 
-#include <QWidget>
-#include "interfaces.h"
-#include <QList>
-
-QT_BEGIN_NAMESPACE
-class QComboBox;
-QT_END_NAMESPACE
-
-class KCFileManager;
-
-class KCSummaryPanel : public QWidget, public KCPanel
+KCPdfFormat::KCPdfFormat(QObject *parent) :
+    QObject(parent)
 {
-    Q_OBJECT
-    Q_INTERFACES(KCPanel)
+}
 
-public:
-    explicit KCSummaryPanel(KCFileManager *fm, QWidget *parent = 0);
-    QWidget* panel();
-    const QString& title();
-    const QString& iconPath();
-    void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
-    void selectPanel();
+const QString& KCPdfFormat::formatName()
+{
+    static QString s = QString("Portable Document Format (*.pdf)");
+    return s;
+}
 
-private slots:
-    void printSummaryView();
-    void exportView();
+void KCPdfFormat::exportToFile(const QString& fileName, const QString& connectionName,
+                            KCSummaryView *view)
+{
+    Q_UNUSED(connectionName)
 
-private:
-    KCFileManager *fm;
-    QList<KCSummaryView*> views;
-    QList<KCFileFormat*> formats;
-    QComboBox *selectView;
-    QString connectionName;
-
-    int balance;
-};
-
-#endif // KCSUMMARYPANEL_H
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(fileName);
+    view->printSummary(&printer);
+}

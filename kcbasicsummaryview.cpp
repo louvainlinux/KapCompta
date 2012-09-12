@@ -21,6 +21,7 @@
 
 #include "kcbasicsummaryview.h"
 #include <QPainter>
+#include <QPrinter>
 
 KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
@@ -82,4 +83,9 @@ void KCBasicSummaryView::paint(QPainter *painter, QPaintEvent *event)
     }
 
     painter->drawText(0,0,test);
+}
+
+void KCBasicSummaryView::printSummary(QPrinter *printer)
+{
+
 }

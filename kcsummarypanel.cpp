@@ -31,12 +31,18 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QStringListModel>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QFileDialog>
+#include "kcsettings.h"
+#include "kcpdfformat.h"
 
 KCSummaryPanel::KCSummaryPanel(KCFileManager *fm, QWidget *parent) :
     QWidget(parent)
 {
     this->fm = fm;
     views << new KCBasicSummaryView(this);
+    formats << new KCPdfFormat(this);
 }
 
 void KCSummaryPanel::selectPanel()
@@ -75,6 +81,7 @@ const QString& KCSummaryPanel::iconPath()
 
 void KCSummaryPanel::buildGUI(const QString &connection)
 {
+    connectionName = QString(connection);
     balance = fm->value("General/accountBalance").toInt();
     QStackedWidget *stack = new QStackedWidget(this);
     QStringList names;
@@ -119,7 +126,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
         stack->addWidget(page);
     }
 
-    QComboBox *selectView = new QComboBox(this);
+    selectView = new QComboBox(this);
     QStringListModel *selectModel = new QStringListModel(this);
     QHBoxLayout *selectL = new QHBoxLayout();
     QFormLayout *selectF = new QFormLayout();
@@ -132,7 +139,6 @@ void KCSummaryPanel::buildGUI(const QString &connection)
     QPushButton *exportBtn = new QPushButton(tr("Export"),this);
     QPushButton *printBtn = new QPushButton(tr("Print"),this);
     btnLayout->addWidget(exportBtn);
-    //btnLayout->addStretch(1);
     btnLayout->addWidget(printBtn);
 
     QVBoxLayout *vBox = new QVBoxLayout();
@@ -150,10 +156,43 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 
 void KCSummaryPanel::printSummaryView()
 {
+    QPrinter printer;
 
+    QPrintDialog *dialog = new QPrintDialog(&printer, this);
+    dialog->setWindowTitle(tr("Print Account Summary"));
+    if (dialog->exec() == QDialog::Accepted)
+    {
+        views.at(selectView->currentIndex())->printSummary(&printer);
+    }
 }
 
 void KCSummaryPanel::exportView()
 {
+    QString filter(formats.first()->formatName());
 
+    QList<KCFileFormat*>::const_iterator iterator = formats.constBegin() + 1;
+    while (iterator != formats.constEnd()) {
+        filter += ";;" + (*iterator)->formatName();
+        ++iterator;
+    }
+    QString selected;
+    QString result = QFileDialog::getSaveFileName
+            (this,
+             tr("Export Account"),
+             KCSettings::valueOf("lastExportedFile").toString(),
+             filter,
+             &selected);
+    if (result != NULL) {
+        QList<KCFileFormat*>::const_iterator iterator = formats.constBegin();
+        while (iterator != formats.constEnd() && selected.compare((*iterator)->formatName())) {
+            ++iterator;
+        }
+        if (iterator == formats.constEnd()) {
+            return;
+        }
+        (*iterator)->exportToFile(result,
+                                  connectionName,
+                                  views.at(selectView->currentIndex()));
+        KCSettings::setProperty("lastExportedFile",QVariant(result));
+    }
 }

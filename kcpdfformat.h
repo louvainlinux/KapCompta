@@ -19,45 +19,26 @@
  *
  **/
 
-#ifndef KCSUMMARYPANEL_H
-#define KCSUMMARYPANEL_H
+#ifndef KCPDFFORMAT_H
+#define KCPDFFORMAT_H
 
-#include <QWidget>
+#include <QObject>
 #include "interfaces.h"
-#include <QList>
 
-QT_BEGIN_NAMESPACE
-class QComboBox;
-QT_END_NAMESPACE
-
-class KCFileManager;
-
-class KCSummaryPanel : public QWidget, public KCPanel
+class KCPdfFormat : public QObject, public KCFileFormat
 {
     Q_OBJECT
-    Q_INTERFACES(KCPanel)
+    Q_INTERFACES(KCFileFormat)
 
 public:
-    explicit KCSummaryPanel(KCFileManager *fm, QWidget *parent = 0);
-    QWidget* panel();
-    const QString& title();
-    const QString& iconPath();
-    void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
-    void selectPanel();
-
-private slots:
-    void printSummaryView();
-    void exportView();
-
-private:
-    KCFileManager *fm;
-    QList<KCSummaryView*> views;
-    QList<KCFileFormat*> formats;
-    QComboBox *selectView;
-    QString connectionName;
-
-    int balance;
+    explicit KCPdfFormat(QObject *parent = 0);
+    const QString& formatName();
+    void exportToFile(const QString& fileName, const QString& connectionName,
+                      KCSummaryView *view);
+signals:
+    
+public slots:
+    
 };
 
-#endif // KCSUMMARYPANEL_H
+#endif // KCPDFFORMAT_H

@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     kcsummarypanel.cpp \
     kcbasicsummaryview.cpp \
     kcdatabasehelper.cpp \
-    kcfilemanager.cpp
+    kcfilemanager.cpp \
+    kcpdfformat.cpp
 
 HEADERS  += kcmain.h \
     kcwelcomescreen.h \
@@ -34,7 +35,8 @@ HEADERS  += kcmain.h \
     kcsummarypanel.h \
     kcbasicsummaryview.h \
     kcdatabasehelper.h \
-    kcfilemanager.h
+    kcfilemanager.h \
+    kcpdfformat.h
 
 RESOURCES += \
     icons/icons.qrc \

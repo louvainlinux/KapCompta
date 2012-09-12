@@ -38,7 +38,7 @@ public:
     void setConnectionName(const QString& c);
     void setInitialBalance(int i);
     bool optionsUnder();
-
+    void printSummary(QPrinter *printer);
 signals:
     
 public slots:
