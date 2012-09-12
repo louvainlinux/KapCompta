@@ -31,6 +31,7 @@
 #include <QDataWidgetMapper>
 #include <QSqlRecord>
 #include <QCompleter>
+#include <QSqlQuery>
 
 KCPeoplePanel::KCPeoplePanel(QWidget *parent) :
     QWidget(parent)
@@ -146,4 +147,12 @@ void KCPeoplePanel::buildGUI(const QString &connection)
 void KCPeoplePanel::hideRows()
 {
     listView->setRowHidden(0,true);
+}
+
+void KCPeoplePanel::initDB(const QString& connection)
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("CREATE TABLE person (id INTEGER PRIMARY KEY, "
+               "name TEXT, iban VARCHAR(27), misc TEXT)");
+    query.exec("INSERT INTO person(id, name) VALUES(1,'"+tr("Nobody")+"')");
 }

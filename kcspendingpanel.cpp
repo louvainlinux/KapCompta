@@ -31,6 +31,7 @@
 #include <QDataWidgetMapper>
 #include <QSqlRecord>
 #include <QCompleter>
+#include <QSqlQuery>
 
 KCSpendingPanel::KCSpendingPanel(QWidget *parent) :
     QWidget(parent)
@@ -146,4 +147,12 @@ void KCSpendingPanel::setCurrentModelIndex()
 void KCSpendingPanel::hideRows()
 {
     listView->setRowHidden(0,true);
+}
+
+void KCSpendingPanel::initDB(const QString& connection)
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY, "
+               "name TEXT, description TEXT, date TEXT)");
+    query.exec("INSERT INTO expenses(id, name) VALUES (1,'"+tr("No item")+"')");
 }

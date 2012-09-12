@@ -49,6 +49,11 @@ public:
      **/
     virtual void buildGUI(const QString& connection) = 0;
     /*
+     * Performs required operation on the database named connection
+     * to allow its use as datasource by the panel
+     **/
+    virtual void initDB(const QString& connection) = 0;
+    /*
      * Returns the widget to be displayed on the side panel
      * Pointer will be owned by the caller!
      **/

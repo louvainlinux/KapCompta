@@ -44,6 +44,8 @@ public:
     const QString& iconPath();
     void buildGUI(const QString &connection);
     void selectPanel();
+    void initDB(const QString& connection);
+
 signals:
 
 public slots:

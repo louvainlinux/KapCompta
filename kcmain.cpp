@@ -92,8 +92,11 @@ void KCMain::buildGUI()
            << new KCPeoplePanel(this) << new KCSpendingPanel(this)
            << new KCTicketPanel(this);
     QList<KCPanel*>::const_iterator iterator;
+    bool initDB = fileManager->value("dbFileHasBeenInitialized").toBool();
     for(iterator = panels.begin(); iterator != panels.end(); ++iterator) {
-
+        if (!initDB) {
+            (*iterator)->initDB(fileManager->dbPath());
+        }
         (*iterator)->buildGUI(fileManager->dbPath());
         sidePanel->addWidget((*iterator)->panel());
         QListWidgetItem *button = new QListWidgetItem(wList);
@@ -101,6 +104,9 @@ void KCMain::buildGUI()
         button->setText((*iterator)->title());
         button->setTextAlignment(Qt::AlignHCenter);
         button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    }
+    if (!initDB) {
+        fileManager->setValue("dbFileHasBeenInitialized",QVariant(true));
     }
     wList->setCurrentRow(0);
     connect(wList,

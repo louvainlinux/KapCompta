@@ -56,6 +56,7 @@ KCFileManager::~KCFileManager()
 bool KCFileManager::createNewAccount()
 {
     KCDataBaseHelper::initDB(db->fileName());
+    setValue("dbFileHasBeenInitialized",QVariant(false));
     return save();
 }
 

@@ -36,6 +36,7 @@ public:
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
+    void initDB(const QString& connection);
 };
 
 #endif // KCSUMMARYPANEL_H

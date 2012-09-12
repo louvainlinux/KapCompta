@@ -45,6 +45,7 @@ public:
     void buildGUI(const QString &connection);
     void unselectPanel();
     void callback();
+    void initDB(const QString& connection);
 
 public slots:
     void saveSettings();

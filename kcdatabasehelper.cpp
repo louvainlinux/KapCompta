@@ -35,20 +35,6 @@ KCDataBaseHelper::KCDataBaseHelper(QObject *parent) :
 void KCDataBaseHelper::initDB(const QString &path)
 {
     createConnection(path);
-    QSqlQuery query(QSqlDatabase::database(path));
-    query.exec("CREATE TABLE person (id INTEGER PRIMARY KEY, "
-               "name TEXT, iban VARCHAR(27), misc TEXT)");
-    query.exec("INSERT INTO person(id, name) VALUES(1,'"+tr("Nobody")+"')");
-    query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY, "
-               "name TEXT, description TEXT, date TEXT)");
-    query.exec("INSERT INTO expenses(id, name) VALUES (1,'"+tr("No item")+"')");
-    query.exec("CREATE TABLE tickets (id INTEGER PRIMARY KEY, "
-               "date TEXT, amount REAL DEFAULT 0, notes TEXT, "
-               "personid INTEGER DEFAULT 1 REFERENCES person(id) "
-               "ON UPDATE CASCADE ON DELETE SET NULL, "
-               "expenseid INTEGER DEFAULT 1 REFERENCES expenses(id) "
-               "ON UPDATE CASCADE ON DELETE SET NULL"
-               ")");
 }
 
 void KCDataBaseHelper::createConnection(const QString &path)

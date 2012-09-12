@@ -47,3 +47,8 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 {
 
 }
+
+void KCSummaryPanel::initDB(const QString& connection)
+{
+
+}

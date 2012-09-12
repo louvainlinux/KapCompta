@@ -140,3 +140,8 @@ void KCPropertiesPanel::callback()
 {
     this->settingsAltered();
 }
+
+void KCPropertiesPanel::initDB(const QString& connection)
+{
+    Q_UNUSED(connection)
+}
