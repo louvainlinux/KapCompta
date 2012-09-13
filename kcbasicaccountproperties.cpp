@@ -52,6 +52,9 @@ KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     panel->setLayout(layout);
 
     observer = NULL;
+
+    panel->setTabOrder(name,iban);
+    panel->setTabOrder(iban,balance);
 }
 
 KCBasicAccountProperties::~KCBasicAccountProperties()

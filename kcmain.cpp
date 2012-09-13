@@ -117,7 +117,8 @@ void KCMain::buildGUI()
     l->addWidget(wList);
     leftBox->setLayout(l);
     layout->addWidget(leftBox);
-    wList->setMaximumWidth(175);
+    wList->setMaximumWidth(200);
+    wList->adjustSize();
     const QRect screen = QApplication::desktop()->screenGeometry();
     box = new QGroupBox(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title(),this);
     QVBoxLayout *vBox = new QVBoxLayout();
@@ -125,6 +126,8 @@ void KCMain::buildGUI()
     box->setLayout(vBox);
     layout->addWidget(box,1);
     this->setLayout(layout);
+    this->adjustSize();
     this->move(screen.center() - this->rect().center());
-    this->showMaximized();
+    this->show();
+    //this->showMaximized();
 }

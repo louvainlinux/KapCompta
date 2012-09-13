@@ -84,6 +84,9 @@ KCWelcomeScreen::KCWelcomeScreen(QWidget *parent) :
     this->setLayout(layout);
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());
+
+    this->setTabOrder(create,open);
+    this->setTabOrder(open,lastOpenButton);
 }
 
 KCWelcomeScreen::~KCWelcomeScreen()

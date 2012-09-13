@@ -119,6 +119,12 @@ void KCSpendingPanel::buildGUI(const QString &connection)
             this,SLOT(setCurrentModelIndex()));
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeEntry()));
+
+    this->setTabOrder(add,remove);
+    this->setTabOrder(remove,listView);
+    this->setTabOrder(listView,name);
+    this->setTabOrder(name,date);
+    this->setTabOrder(date,description);
 }
 
 void KCSpendingPanel::addEntry()

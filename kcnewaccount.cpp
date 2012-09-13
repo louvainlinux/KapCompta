@@ -50,8 +50,10 @@ KCNewAccount::KCNewAccount(QWidget *parent) :
 
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(hide()));
     connect(cancelButton, SIGNAL(clicked()), this, SIGNAL(cancel()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(deleteLater()));
     connect(create, SIGNAL(clicked()), this, SLOT(setSaveLocation()));
+
+    this->setTabOrder(accountProperties->settingPanel(),create);
+    this->setTabOrder(create,cancelButton);
 }
 
 void KCNewAccount::setSaveLocation()

@@ -158,6 +158,15 @@ void KCTicketPanel::buildGUI(const QString &connection)
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeEntry()));
     connect(filter, SIGNAL(currentIndexChanged(QString)), this,SLOT(filterChanged(QString)));
+
+    this->setTabOrder(filter,add);
+    this->setTabOrder(add,remove);
+    this->setTabOrder(remove,listView);
+    this->setTabOrder(listView,amount);
+    this->setTabOrder(amount,date);
+    this->setTabOrder(date,person);
+    this->setTabOrder(person,expense);
+    this->setTabOrder(expense,notes);
 }
 
 void KCTicketPanel::filterChanged(QString s)
