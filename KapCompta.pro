@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = KapCompta
 TEMPLATE = app
-ICON = :/icons/logo.png
+ICON = icons/logo.png
 
 SOURCES += main.cpp\
         kcmain.cpp \
