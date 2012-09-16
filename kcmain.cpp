@@ -41,12 +41,12 @@
 
 KCMain::KCMain(QWidget *parent)
     : QWidget(parent)
-{    
+{
 }
 
 KCMain::~KCMain()
 {
-    
+
 }
 
 void KCMain::start()
@@ -61,8 +61,8 @@ void KCMain::openProject(QString p)
     projectPath = new QString(p);
     KCSettings::setProperty(QString("lastOpenedFile"), QVariant(*projectPath));
     fileManager = new KCFileManager(*projectPath,this);
-    bool open = fileManager->open();
-    if (open) {
+
+    if (fileManager->open()) {
         QString accountName = QString(fileManager->value("General/accountName").toString());
         this->setWindowTitle("KapCompta - " + accountName + " - " + *projectPath);
         buildGUI();
@@ -74,6 +74,7 @@ void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 {
     if (!current)
         current = previous;
+
     qobject_cast<KCPanel*>(sidePanel->currentWidget())->unselectPanel();
     sidePanel->setCurrentIndex(wList->row(current));
     qobject_cast<KCPanel*>(sidePanel->currentWidget())->selectPanel();
@@ -83,16 +84,20 @@ void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)
 void KCMain::buildGUI()
 {
     QHBoxLayout *layout = new QHBoxLayout();
+
     wList = new QListWidget();
     wList->setViewMode(QListView::IconMode);
     wList->setIconSize(QSize(48, 48));
     wList->setMovement(QListView::Static);
     wList->setSpacing(12);
-    sidePanel = new QStackedWidget();
+
     QList<KCPanel*> panels;
     panels << new KCSummaryPanel(fileManager,this) << new KCPropertiesPanel(fileManager, this)
            << new KCPeoplePanel(this) << new KCSpendingPanel(this)
            << new KCTicketPanel(this);
+
+    sidePanel = new QStackedWidget();
+
     QList<KCPanel*>::const_iterator iterator;
     bool initDB = fileManager->value("dbFileHasBeenInitialized").toBool();
     for(iterator = panels.begin(); iterator != panels.end(); ++iterator) {
@@ -107,13 +112,17 @@ void KCMain::buildGUI()
         button->setTextAlignment(Qt::AlignHCenter);
         button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     }
+
     if (!initDB) {
         fileManager->setValue("dbFileHasBeenInitialized",QVariant(true));
     }
+
     wList->setCurrentRow(0);
+
     connect(wList,
             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
+
     QGroupBox *leftBox = new QGroupBox(this);
     QVBoxLayout *l = new QVBoxLayout();
     l->addWidget(wList);
@@ -121,15 +130,16 @@ void KCMain::buildGUI()
     layout->addWidget(leftBox);
     wList->setMaximumWidth(200);
     wList->adjustSize();
-    const QRect screen = QApplication::desktop()->screenGeometry();
+
     box = new QGroupBox(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title(),this);
     QVBoxLayout *vBox = new QVBoxLayout();
     vBox->addWidget(sidePanel);
     box->setLayout(vBox);
     layout->addWidget(box,1);
     this->setLayout(layout);
+
     this->adjustSize();
+    const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());
     this->show();
-    //this->showMaximized();
 }

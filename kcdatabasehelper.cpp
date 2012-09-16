@@ -26,6 +26,7 @@
 #include <QMessageBox>
 #include <QVariant>
 #include <QSqlDatabase>
+#include <QApplication>
 
 KCDataBaseHelper::KCDataBaseHelper(QObject *parent) :
     QObject(parent)
@@ -45,6 +46,7 @@ void KCDataBaseHelper::createConnection(const QString &path)
         QMessageBox::critical(0, tr("Cannot open database"),
             tr("Unable to establish a database connection."
                ), QMessageBox::Cancel);
+        QApplication::exit();
     }
 }
 

@@ -26,6 +26,8 @@
 #include <QFileSystemWatcher>
 #include <QDataStream>
 #include "kcdatabasehelper.h"
+#include <QMessageBox>
+#include <QApplication>
 
 #define KC_CURRENT_FILE_VERSION ( (qint32)0xAAAAAAA0 )
 
@@ -35,12 +37,18 @@ KCFileManager::KCFileManager(const QString& filePath, QObject *parent) :
 {
     db = new QTemporaryFile(this);
     if (!db->open()) {
-        qDebug("can't create temp db file!");
+        QMessageBox::critical(0, tr("Cannot create temporary file !"),
+            tr("Unable to open the temporary database file."
+               ), QMessageBox::Cancel);
+        QApplication::exit();
     }
     db->close();
     properties = new QTemporaryFile(this);
     if (!properties->open()) {
-        qDebug("can't create temp properties file!");
+        QMessageBox::critical(0, tr("Cannot create temporary file !"),
+            tr("Unable to open the temporary account properties file."
+               ), QMessageBox::Cancel);
+        QApplication::exit();
     }
     properties->close();
 }
@@ -79,6 +87,7 @@ void KCFileManager::setValues(const QHash<QString, QVariant>& values, const QStr
         iterator++;
     }
     settings.endGroup();
+    // Commit changes only at the end to refrain IO usage
     settings.sync();
 }
 
@@ -96,13 +105,15 @@ QString KCFileManager::dbPath()
 
 bool KCFileManager::open()
 {
-    QFile file(fileName);
-    file.open(QIODevice::ReadOnly);
-    QDataStream stream(&file);
     qint32 version;
     QByteArray dbContent;
     QByteArray propertiesContent;
+
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    QDataStream stream(&file);
     stream >> version;
+    //magic number check ...
     if (version == KC_CURRENT_FILE_VERSION) {
         stream.setVersion(QDataStream::Qt_4_8);
         stream >> propertiesContent  >> dbContent;
@@ -116,7 +127,9 @@ bool KCFileManager::open()
         KCDataBaseHelper::createConnection(db->fileName());
         return true;
     } else {
-        qDebug("unsupported file version");
+        QMessageBox::critical(0, tr("Unsupported file!"),
+            tr("Unable to open the specified account file.\nVersion mismatch."
+               ), QMessageBox::Cancel);
         file.close();
         return false;
     }
@@ -128,6 +141,7 @@ bool KCFileManager::save()
     file.open(QIODevice::WriteOnly);
     QDataStream stream(&file);
     stream.setVersion(QDataStream::Qt_4_8);
+    // save file version tracking
     stream << KC_CURRENT_FILE_VERSION;
     db->open();
     properties->open();
