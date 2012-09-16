@@ -125,6 +125,8 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     layout->addRow(tr("Name:"), name);
     layout->addRow(tr("Bank account:"), iban);
     layout->addRow(tr("Misc.:"), misc);
+    layout->setSizeConstraint(QLayout::SetNoConstraint);
+    layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     buttonLayout->addWidget(add);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();

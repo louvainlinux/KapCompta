@@ -20,13 +20,27 @@
  **/
 
 #include "kcbasicsummaryview.h"
-#include <QPainter>
 #include <QPrinter>
+#include <QPainter>
+#include <QTableView>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QFormLayout>
+#include <QLabel>
+#include <QCheckBox>
+#include <QSqlDatabase>
+#include <QSqlRelationalTableModel>
+#include <QSqlTableModel>
+#include "kcdatabasehelper.h"
+#include <QColor>
+#include <QRect>
 
 KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
 {
     connection = QString("");
+    optionsPanel = new QWidget();
+    balanceField = new QLabel();
 }
 
 QWidget* KCBasicSummaryView::summaryView()
@@ -36,8 +50,7 @@ QWidget* KCBasicSummaryView::summaryView()
 
 void KCBasicSummaryView::setInitialBalance(int i)
 {
-    initialBalance = i;
-    this->update();
+    balanceField->setText(QString::number(i));
 }
 
 const QString& KCBasicSummaryView::summaryName()
@@ -46,8 +59,9 @@ const QString& KCBasicSummaryView::summaryName()
     return s;
 }
 
-QWidget* KCBasicSummaryView::displayOptions(){
-    return new QWidget();
+QWidget* KCBasicSummaryView::displayOptions()
+{
+    return optionsPanel;
 }
 
 bool KCBasicSummaryView::optionsUnder()
@@ -58,34 +72,38 @@ bool KCBasicSummaryView::optionsUnder()
 void KCBasicSummaryView::setConnectionName(const QString& c)
 {
     connection = QString(c);
-    this->update();
-}
-
-void KCBasicSummaryView::paintEvent(QPaintEvent *event)
-{
-    QPainter painter;
-    painter.begin(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::TextAntialiasing);
-    this->paint(&painter, event);
-    painter.end();
-}
-
-void KCBasicSummaryView::paint(QPainter *painter, QPaintEvent *event)
-{
-    Q_UNUSED(event);
-
-    QString test;
-    if (connection.compare(QString(""))) {
-        test = "pas de connection";
-    } else {
-        test = connection;
-    }
-
-    painter->drawText(0,0,test);
 }
 
 void KCBasicSummaryView::printSummary(QPrinter *printer)
 {
+    QPainter painter;
+    painter.begin(printer);
+    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    QRect pageRect = printer->pageRect();
+    pageRect.moveTo(0,0);
+    // BUGFIX: by default Qt adds twice the margin to pageRect resulting
+    // in undrawed areas on the borders ...
+    // see: http://stackoverflow.com/questions/915775/qt-printing-pagerect-and-paperrect-issues
 
+    QList<QWidget*>::iterator i = pages.begin();
+    while (i != pages.end())
+    {
+        QWidget *currentPrintView = qobject_cast<QWidget*>(*i);
+
+        double xscale = printer->pageRect().width()/double(currentPrintView->width());
+        double yscale = printer->pageRect().height()/double(currentPrintView->height());
+        double scale = qMin(xscale, yscale);
+        painter.translate(printer->paperRect().x() + printer->pageRect().width()/2,
+                          printer->paperRect().y() + printer->pageRect().height()/2);
+        painter.scale(scale, scale);
+        painter.translate(- currentPrintView->width()/2, - currentPrintView->height()/2);
+
+        currentPrintView->render(&painter);
+        if (currentPrintView != *(pages.end())) {
+            printer->newPage();
+        }
+        ++i;
+    }
+
+    painter.end();
 }

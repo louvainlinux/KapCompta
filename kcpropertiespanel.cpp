@@ -80,14 +80,12 @@ void KCPropertiesPanel::buildGUI(const QString &connection)
 
     QHBoxLayout *btns = new QHBoxLayout();
     btns->addWidget(reloadBtn);
-    btns->addStretch(1);
+   // btns->addStretch(1);
     btns->addWidget(saveBtn);
+    btns->addStretch(1);
     layout->addLayout(btns);
     layout->addStretch(1);
-    QHBoxLayout *hlayout = new QHBoxLayout();
-    hlayout->addLayout(layout);
-    hlayout->addStretch(1);
-    this->setLayout(hlayout);
+    this->setLayout(layout);
 
     this->reload();
 }

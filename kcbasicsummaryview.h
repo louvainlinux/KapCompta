@@ -24,6 +24,11 @@
 
 #include <QWidget>
 #include "interfaces.h"
+#include <QList>
+
+QT_BEGIN_NAMESPACE
+class QLabel;
+QT_END_NAMESPACE
 
 class KCBasicSummaryView : public QWidget, public KCSummaryView
 {
@@ -44,13 +49,13 @@ signals:
 public slots:
     
 protected:
-    void paintEvent(QPaintEvent *event);
 
 private:
-    void paint(QPainter *painter, QPaintEvent *event);
-
-    int initialBalance;
+    QList<QWidget*> pages;
+    QWidget *optionsPanel;
     QString connection;
+    QLabel *balanceField;
+
 };
 
 #endif // KCBASICSUMMARYVIEW_H

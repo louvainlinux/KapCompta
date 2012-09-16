@@ -61,11 +61,13 @@ void KCMain::openProject(QString p)
     projectPath = new QString(p);
     KCSettings::setProperty(QString("lastOpenedFile"), QVariant(*projectPath));
     fileManager = new KCFileManager(*projectPath,this);
-    fileManager->open();
-    QString accountName = QString(fileManager->value("General/accountName").toString());
-    this->setWindowTitle("KapCompta - " + accountName + " - " + *projectPath);
-    buildGUI();
-    delete welcomeScreen;
+    bool open = fileManager->open();
+    if (open) {
+        QString accountName = QString(fileManager->value("General/accountName").toString());
+        this->setWindowTitle("KapCompta - " + accountName + " - " + *projectPath);
+        buildGUI();
+        delete welcomeScreen;
+    }
 }
 
 void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)

@@ -103,6 +103,8 @@ void KCSpendingPanel::buildGUI(const QString &connection)
     layout->addRow(tr("Name:"), name);
     layout->addRow(tr("Date:"), date);
     layout->addRow(tr("Description:"), description);
+    layout->setSizeConstraint(QLayout::SetNoConstraint);
+    layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     buttonLayout->addWidget(add);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();

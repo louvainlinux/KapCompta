@@ -93,20 +93,17 @@ void KCTicketPanel::buildGUI(const QString &connection)
 
     QComboBox *filter = new QComboBox(this);
     QStringListModel *filterModel = new QStringListModel(this);
-    filterModel->setStringList(QStringList() << tr("Date") << tr("Amount")
-                               /*<< tr("Person") << tr("Expense Item")*/);
+    filterModel->setStringList(QStringList() << tr("Date") << tr("Amount"));
     filter->setModel(filterModel);
     model->sort(model->fieldIndex("date"),Qt::AscendingOrder);
 
     QComboBox *person = new QComboBox(this);
     person->setModel(personRel);
     person->setModelColumn(personRel->fieldIndex("name"));
-    //person->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
     person->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     QComboBox *expense = new QComboBox(this);
     expense->setModel(expenseRel);
     expense->setModelColumn(expenseRel->fieldIndex("name"));
-    //expense->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
     expense->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     filter->setEditable(false);
     person->setEditable(false);
@@ -134,16 +131,19 @@ void KCTicketPanel::buildGUI(const QString &connection)
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     QHBoxLayout *hLayout = new QHBoxLayout();
     QFormLayout *layout = new QFormLayout();
-    layout->addRow(tr("Amount:"), amount);
     layout->addRow(tr("Date:"), date);
+    layout->addRow(tr("Amount:"), amount);
     layout->addRow(tr("Person:"), person);
     layout->addRow(tr("Expense Item:"), expense);
     layout->addRow(tr("Notes:"), notes);
+    layout->setSizeConstraint(QLayout::SetNoConstraint);
+    layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     buttonLayout->addWidget(add);
     buttonLayout->addWidget(remove);
     QVBoxLayout *leftLayout = new QVBoxLayout();
     QFormLayout *choserLayout = new QFormLayout();
     choserLayout->addRow(tr("List by:"),filter);
+    choserLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     leftLayout->addLayout(choserLayout);
     leftLayout->addLayout(buttonLayout);
     leftLayout->addWidget(listView);
@@ -171,9 +171,11 @@ void KCTicketPanel::buildGUI(const QString &connection)
 
 void KCTicketPanel::filterChanged(QString s)
 {
-    int idx = model->fieldIndex("date");
+    int idx = 0;
     if (!s.compare(tr("Amount"))) {
         idx = model->fieldIndex("amount");
+    } else if (!s.compare(tr("Date"))) {
+        idx = model->fieldIndex("date");
     }
     listView->setModelColumn(idx);
     model->sort(idx,Qt::AscendingOrder);

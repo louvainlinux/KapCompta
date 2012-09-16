@@ -31,6 +31,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QVariant>
+#include <QGroupBox>
 
 KCWelcomeScreen::KCWelcomeScreen(QWidget *parent) :
     QWidget(parent),
@@ -76,7 +77,10 @@ KCWelcomeScreen::KCWelcomeScreen(QWidget *parent) :
     right->addStretch(1);
     right->addWidget(welcomeText);
     right->addWidget(lastOpenedText);
-    right->addWidget(lastOpenButton);
+    QGroupBox *box = new QGroupBox(this);
+    box->setLayout(new QVBoxLayout());
+    box->layout()->addWidget(lastOpenButton);
+    right->addWidget(box);
     right->addStretch(1);
     layout->addLayout(left);
     layout->addLayout(right);

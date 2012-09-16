@@ -49,6 +49,8 @@ KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     layout->addRow(tr("Account name:"), name);
     layout->addRow(tr("Account bank number (i.e. IBAN):"), iban);
     layout->addRow(tr("Initial Balance:"), balance);
+    layout->setSizeConstraint(QLayout::SetNoConstraint);
+    layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
     panel->setLayout(layout);
 
     observer = NULL;
