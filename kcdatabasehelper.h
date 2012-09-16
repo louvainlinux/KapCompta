@@ -37,10 +37,11 @@ public:
     static void initDB(const QString &path);
     static void createConnection(const QString &path);
     static void close(const QString &path);
+    static double sumExpenses(const QString& connection, const int expense_id);
 signals:
-    
+
 public slots:
-    
+
 };
 
 #endif // KCDATABASEHELPER_H

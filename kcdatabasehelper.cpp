@@ -27,6 +27,7 @@
 #include <QVariant>
 #include <QSqlDatabase>
 #include <QApplication>
+#include <QSqlRecord>
 
 KCDataBaseHelper::KCDataBaseHelper(QObject *parent) :
     QObject(parent)
@@ -38,14 +39,24 @@ void KCDataBaseHelper::initDB(const QString &path)
     createConnection(path);
 }
 
+double KCDataBaseHelper::sumExpenses(const QString& connection, const int expense_id)
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec("SELECT SUM(amount) FROM expenses WHERE id = " + expense_id)) {
+        return query.record().value(0).toDouble();
+    } else {
+        return -1;
+    }
+}
+
 void KCDataBaseHelper::createConnection(const QString &path)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",path);
     db.setDatabaseName(path);
     if (!db.open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
-            tr("Unable to establish a database connection."
-               ), QMessageBox::Cancel);
+                              tr("Unable to establish a database connection."
+                                 ), QMessageBox::Cancel);
         QApplication::exit();
     }
 }
