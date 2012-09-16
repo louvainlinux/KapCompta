@@ -39,8 +39,8 @@ KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
 {
     connection = QString("");
-    optionsPanel = new QWidget();
-    balanceField = new QLabel();
+    optionsPanel = new QWidget(this);
+    balanceField = new QLabel(this);
 }
 
 QWidget* KCBasicSummaryView::summaryView()
