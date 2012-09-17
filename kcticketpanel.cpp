@@ -214,7 +214,7 @@ void KCTicketPanel::initDB(const QString& connection)
 {
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec("CREATE TABLE tickets (id INTEGER PRIMARY KEY, "
-               "date TEXT, amount REAL DEFAULT 0, notes TEXT, "
+               "date TEXT, amount REAL, notes TEXT, "
                "personid INTEGER DEFAULT 1 REFERENCES person(id) "
                "ON UPDATE CASCADE ON DELETE SET NULL, "
                "expenseid INTEGER DEFAULT 1 REFERENCES expenses(id) "

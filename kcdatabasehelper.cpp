@@ -38,11 +38,50 @@ void KCDataBaseHelper::initDB(const QString &path)
 {
     createConnection(path);
 }
+#include <QDebug>
+double KCDataBaseHelper::sumAllExpenses(const QString& connection)
+{
+    qDebug("all expenses");
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec("SELECT SUM(amount) FROM tickets")) {
+        query.first();
+        return query.record().value(0).toDouble();
+    } else {
+        return -1;
+    }
+}
+
 
 double KCDataBaseHelper::sumExpenses(const QString& connection, const int expense_id)
 {
+    qDebug("sum expenses");
     QSqlQuery query(QSqlDatabase::database(connection));
-    if (query.exec("SELECT SUM(amount) FROM expenses WHERE id = " + expense_id)) {
+    if (query.exec("SELECT SUM(amount) FROM tickets WHERE id = " + expense_id)) {
+        query.first();
+        return query.record().value(0).toDouble();
+    } else {
+        return -1;
+    }
+}
+
+double KCDataBaseHelper::sumNegativeExpenses(const QString& connection, const int expense_id)
+{
+    qDebug("sum neg expenses");
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec("SELECT SUM(amount) FROM tickets WHERE amount < 0 AND id = " + expense_id)) {
+        query.first();
+        return query.record().value(0).toDouble();
+    } else {
+        return -1;
+    }
+}
+
+double KCDataBaseHelper::sumPositiveExpenses(const QString& connection, const int expense_id)
+{
+    qDebug("sum pos expenses");
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec("SELECT SUM(amount) FROM expenses WHERE amount > 0 AND id = " + expense_id)) {
+        query.first();
         return query.record().value(0).toDouble();
     } else {
         return -1;

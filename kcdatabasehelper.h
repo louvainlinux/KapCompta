@@ -37,7 +37,11 @@ public:
     static void initDB(const QString &path);
     static void createConnection(const QString &path);
     static void close(const QString &path);
+    static double sumAllExpenses(const QString& connection);
     static double sumExpenses(const QString& connection, const int expense_id);
+    static double sumNegativeExpenses(const QString& connection, const int expense_id);
+    static double sumPositiveExpenses(const QString& connection, const int expense_id);
+
 signals:
 
 public slots:

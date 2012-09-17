@@ -48,13 +48,8 @@ KCSummaryPanel::KCSummaryPanel(KCFileManager *fm, QWidget *parent) :
 void KCSummaryPanel::selectPanel()
 {
     int b = fm->value("General/accountBalance").toInt();
-    if (b != balance) {
-        QList<KCSummaryView*>::iterator i;
-        for (i = views.begin(); i != views.end(); ++i) {
-            (*i)->setInitialBalance(b);
-        }
-        balance = b;
-    }
+    views.at(selectView->currentIndex())->setInitialBalance(b);
+    balance = b;
 }
 
 void KCSummaryPanel::initDB(const QString& connection)
@@ -83,15 +78,15 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
     balance = fm->value("General/accountBalance").toInt();
-    QStackedWidget *stack = new QStackedWidget(this);
+    stackView = new QStackedWidget(this);
     QStringList names;
 
     QList<KCSummaryView*>::iterator i;
     for (i = views.begin(); i != views.end(); ++i) {
-        (*i)->setInitialBalance(balance);
         (*i)->setConnectionName(connection);
+        (*i)->setInitialBalance(balance);
 
-        QWidget *page = new QWidget(stack);
+        QWidget *page = new QWidget(stackView);
 
         names << (*i)->summaryName();
         QGroupBox *options = new QGroupBox(tr("Options"),page);
@@ -99,7 +94,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
         optLayout->addWidget((*i)->displayOptions());
         options->setLayout(optLayout);
 
-        QScrollArea *scroll = new QScrollArea(stack);
+        QScrollArea *scroll = new QScrollArea(stackView);
         scroll->setWidget((*i)->summaryView());
         scroll->setWidgetResizable(false);
 
@@ -123,7 +118,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
             hLayout->addWidget(scroll,1);
             page->setLayout(hLayout);
         }
-        stack->addWidget(page);
+        stackView->addWidget(page);
     }
 
     selectView = new QComboBox(this);
@@ -143,15 +138,21 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 
     QVBoxLayout *vBox = new QVBoxLayout();
     vBox->addLayout(selectL);
-    vBox->addWidget(stack);
+    vBox->addWidget(stackView);
     vBox->addLayout(btnLayout);
     this->setLayout(vBox);
 
-    stack->setCurrentIndex(0);
+    stackView->setCurrentIndex(0);
 
-    connect(selectView, SIGNAL(currentIndexChanged(int)), stack, SLOT(setCurrentIndex(int)));
+    connect(selectView, SIGNAL(currentIndexChanged(int)), this, SLOT(refreshStackView(int)));
     connect(exportBtn, SIGNAL(clicked()), this, SLOT(exportView()));
     connect(printBtn, SIGNAL(clicked()), this, SLOT(printSummaryView()));
+}
+
+void KCSummaryPanel::refreshStackView(int idx)
+{
+    stackView->setCurrentIndex(idx);
+    selectPanel();
 }
 
 void KCSummaryPanel::printSummaryView()

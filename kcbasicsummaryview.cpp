@@ -34,13 +34,14 @@
 #include "kcdatabasehelper.h"
 #include <QColor>
 #include <QRect>
+#include <QSqlQuery>
 
 KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
 {
-    connection = QString("");
+    this->setLayout(new QVBoxLayout());
     optionsPanel = new QWidget(this);
-    balanceField = new QLabel(this);
+    optionsPanel->setLayout(new QVBoxLayout());
 }
 
 QWidget* KCBasicSummaryView::summaryView()
@@ -50,7 +51,8 @@ QWidget* KCBasicSummaryView::summaryView()
 
 void KCBasicSummaryView::setInitialBalance(int i)
 {
-    balanceField->setText(QString::number(i));
+    balance = i;
+    refresh();
 }
 
 const QString& KCBasicSummaryView::summaryName()
@@ -106,4 +108,48 @@ void KCBasicSummaryView::printSummary(QPrinter *printer)
     }
 
     painter.end();
+}
+
+void KCBasicSummaryView::clear(QLayout* layout, bool deleteWidgets)
+{
+    while (QLayoutItem* item = layout->takeAt(0))
+    {
+        if (deleteWidgets)
+        {
+            if (QWidget* widget = item->widget())
+                delete widget;
+        }
+        else if (QLayout* childLayout = item->layout())
+            clear(childLayout, deleteWidgets);
+        delete item;
+    }
+}
+
+void KCBasicSummaryView::refresh()
+{
+    qDebug("refresh");
+    this->clear(optionsPanel->layout(),true);
+    this->clear(this->layout(),true);
+    delete this->layout();
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    this->setLayout(mainLayout);
+
+    qDebug(connection.toAscii());
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec("SELECT id, name FROM expenses ORDER BY name ASC")) {
+        while (query.next()) {
+
+
+        }
+
+        mainLayout->addWidget(new QLabel(tr("Initial balance: ") + QString::number(balance)));
+        mainLayout->addWidget(new QLabel(tr("Current balance: ")
+                                         + QString::number(
+                                             KCDataBaseHelper::sumAllExpenses(connection))));
+        mainLayout->addStretch(1);
+
+    } else {
+        QLabel *nothing = new QLabel(tr("Nothing to display!"), this);
+        mainLayout->addWidget(nothing);
+    }
 }

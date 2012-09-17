@@ -27,7 +27,7 @@
 #include <QList>
 
 QT_BEGIN_NAMESPACE
-class QLabel;
+class QLayout;
 QT_END_NAMESPACE
 
 class KCBasicSummaryView : public QWidget, public KCSummaryView
@@ -45,17 +45,19 @@ public:
     bool optionsUnder();
     void printSummary(QPrinter *printer);
 signals:
-    
+
 public slots:
-    
+
 protected:
 
 private:
+    void refresh();
+    void clear(QLayout *layout, bool deleteWidgets);
+
     QList<QWidget*> pages;
     QWidget *optionsPanel;
     QString connection;
-    QLabel *balanceField;
-
+    int balance;
 };
 
 #endif // KCBASICSUMMARYVIEW_H
