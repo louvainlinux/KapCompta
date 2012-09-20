@@ -23,6 +23,7 @@
 #define KCDATABASEHELPER_H
 
 #include <QObject>
+#include <QVariant>
 
 QT_BEGIN_NAMESPACE
 class QStringList;
@@ -46,6 +47,8 @@ signals:
 
 public slots:
 
+private:
+    QVariant firstEntryOf(const QString& connection, const QString& query);
 };
 
 #endif // KCDATABASEHELPER_H

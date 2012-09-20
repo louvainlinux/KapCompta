@@ -127,14 +127,12 @@ void KCBasicSummaryView::clear(QLayout* layout, bool deleteWidgets)
 
 void KCBasicSummaryView::refresh()
 {
-    qDebug("refresh");
     this->clear(optionsPanel->layout(),true);
     this->clear(this->layout(),true);
     delete this->layout();
     QVBoxLayout *mainLayout = new QVBoxLayout();
     this->setLayout(mainLayout);
 
-    qDebug(connection.toAscii());
     QSqlQuery query(QSqlDatabase::database(connection));
     if (query.exec("SELECT id, name FROM expenses ORDER BY name ASC")) {
         while (query.next()) {
