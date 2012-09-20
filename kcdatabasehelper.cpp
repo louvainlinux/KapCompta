@@ -38,10 +38,10 @@ void KCDataBaseHelper::initDB(const QString &path)
     createConnection(path);
 }
 
-QVariant KCDataBaseHelper::firstEntryOf(const QString& connection, const QString& query)
+QVariant KCDataBaseHelper::firstEntryOf(const QString& connection, const QString& q)
 {
     QSqlQuery query(QSqlDatabase::database(connection));
-    if (query.exec(query)) {
+    if (query.exec(q)) {
         query.first();
         return query.record().value(0);
     } else {

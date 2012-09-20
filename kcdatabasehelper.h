@@ -48,7 +48,7 @@ signals:
 public slots:
 
 private:
-    QVariant firstEntryOf(const QString& connection, const QString& query);
+    static QVariant firstEntryOf(const QString& connection, const QString& q);
 };
 
 #endif // KCDATABASEHELPER_H
