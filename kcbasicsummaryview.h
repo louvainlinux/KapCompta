@@ -28,6 +28,7 @@
 
 QT_BEGIN_NAMESPACE
 class QLayout;
+class QTabWidget;
 QT_END_NAMESPACE
 
 class KCBasicSummaryView : public QWidget, public KCSummaryView
@@ -53,11 +54,15 @@ protected:
 private:
     void refresh();
     void clear(QLayout *layout, bool deleteWidgets);
+    void renderPage(QWidget *page, QPainter* painter, QPrinter *printer);
+    QWidget* makeExpensePage(int expense_id, const QString &name);
 
     QList<QWidget*> pages;
     QWidget *optionsPanel;
     QString connection;
     int balance;
+    QWidget *mainLayout;
+    QTabWidget *pagesTab;
 };
 
 #endif // KCBASICSUMMARYVIEW_H

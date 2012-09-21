@@ -22,7 +22,6 @@
 #include "kcbasicsummaryview.h"
 #include <QPrinter>
 #include <QPainter>
-#include <QTableView>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -32,16 +31,21 @@
 #include <QSqlRelationalTableModel>
 #include <QSqlTableModel>
 #include "kcdatabasehelper.h"
-#include <QColor>
 #include <QRect>
 #include <QSqlQuery>
+#include <QTabWidget>
 
 KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
     QWidget(parent)
 {
-    this->setLayout(new QVBoxLayout());
     optionsPanel = new QWidget(this);
     optionsPanel->setLayout(new QVBoxLayout());
+    pagesTab = new QTabWidget(this);
+    mainLayout = new QWidget(this);
+    mainLayout->setLayout(new QVBoxLayout());
+    pagesTab->addTab(mainLayout,tr("General"));
+    this->setLayout(new QVBoxLayout());
+    this->layout()->addWidget(pagesTab);
 }
 
 QWidget* KCBasicSummaryView::summaryView()
@@ -81,26 +85,17 @@ void KCBasicSummaryView::printSummary(QPrinter *printer)
     QPainter painter;
     painter.begin(printer);
     painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    QRect pageRect = printer->pageRect();
-    pageRect.moveTo(0,0);
-    // BUGFIX: by default Qt adds twice the margin to pageRect resulting
-    // in undrawed areas on the borders ...
-    // see: http://stackoverflow.com/questions/915775/qt-printing-pagerect-and-paperrect-issues
+
+    renderPage(mainLayout, &painter, printer);
+    if (pages.count()) {
+        printer->newPage();
+    }
 
     QList<QWidget*>::iterator i = pages.begin();
     while (i != pages.end())
     {
         QWidget *currentPrintView = qobject_cast<QWidget*>(*i);
-
-        double xscale = printer->pageRect().width()/double(currentPrintView->width());
-        double yscale = printer->pageRect().height()/double(currentPrintView->height());
-        double scale = qMin(xscale, yscale);
-        painter.translate(printer->paperRect().x() + printer->pageRect().width()/2,
-                          printer->paperRect().y() + printer->pageRect().height()/2);
-        painter.scale(scale, scale);
-        painter.translate(- currentPrintView->width()/2, - currentPrintView->height()/2);
-
-        currentPrintView->render(&painter);
+        renderPage(currentPrintView, &painter, printer);
         if (currentPrintView != *(pages.end())) {
             printer->newPage();
         }
@@ -108,6 +103,25 @@ void KCBasicSummaryView::printSummary(QPrinter *printer)
     }
 
     painter.end();
+}
+
+void KCBasicSummaryView::renderPage(QWidget *page, QPainter* painter, QPrinter *printer)
+{
+    QRect pageRect = printer->pageRect();
+    pageRect.moveTo(0,0);
+    // BUGFIX: by default Qt adds twice the margin to pageRect resulting
+    // in undrawed areas on the borders ...
+    // see: http://stackoverflow.com/questions/915775/qt-printing-pagerect-and-paperrect-issues
+
+    double xscale = printer->pageRect().width()/double(page->width());
+    double yscale = printer->pageRect().height()/double(page->height());
+    double scale = qMin(xscale, yscale);
+    painter->translate(printer->paperRect().x() + printer->pageRect().width()/2,
+                       printer->paperRect().y() + printer->pageRect().height()/2);
+    painter->scale(scale, scale);
+    painter->translate(- page->width()/2, - page->height()/2);
+
+    page->render(painter);
 }
 
 void KCBasicSummaryView::clear(QLayout* layout, bool deleteWidgets)
@@ -128,26 +142,48 @@ void KCBasicSummaryView::clear(QLayout* layout, bool deleteWidgets)
 void KCBasicSummaryView::refresh()
 {
     this->clear(optionsPanel->layout(),true);
-    this->clear(this->layout(),true);
-    delete this->layout();
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    this->setLayout(mainLayout);
+    this->clear(mainLayout->layout(),true);
+    //pagesTab->clear();
+    pages.clear();
+    // memory leak here !
 
     QSqlQuery query(QSqlDatabase::database(connection));
     if (query.exec("SELECT id, name FROM expenses ORDER BY name ASC")) {
+        QFormLayout *fl = new QFormLayout();
+        fl->addRow(tr("<b>Income</b>"), new QLabel(tr("<b>Expense</b>"),this));
+        qobject_cast<QVBoxLayout*>(mainLayout->layout())->addLayout(fl);
         while (query.next()) {
-
-
+            QWidget *p = makeExpensePage(query.value(0).toInt(), query.value(1).toString());
+            pages.append(p);
+            pagesTab->addTab(p,query.value(1).toString());
+            mainLayout->layout()->addWidget(new QLabel("<b><center>"+query.value(1).toString()+" : "+
+                                                       QString::number(
+                                                           KCDataBaseHelper::sumExpenses(connection, query.value(0).toInt()))
+                                                       +"</center></b>",this));
+            QFormLayout *f = new QFormLayout();
+            f->addRow(QString::number(
+                          KCDataBaseHelper::sumPositiveExpenses(connection, query.value(0).toInt())),
+                      new QLabel(QString::number(
+                                     KCDataBaseHelper::sumNegativeExpenses(connection, query.value(0).toInt())), this));
+            qobject_cast<QVBoxLayout*>(mainLayout->layout())->addLayout(f);
         }
 
-        mainLayout->addWidget(new QLabel(tr("Initial balance: ") + QString::number(balance)));
-        mainLayout->addWidget(new QLabel(tr("Current balance: ")
-                                         + QString::number(
-                                             KCDataBaseHelper::sumAllExpenses(connection))));
-        mainLayout->addStretch(1);
-
+        mainLayout->layout()->addWidget(new QLabel(tr("Initial balance: ") + QString::number(balance)));
+        mainLayout->layout()->addWidget(new QLabel(tr("Current balance: ")
+                                                   + QString::number(
+                                                       KCDataBaseHelper::sumAllExpenses(connection))));
+        qobject_cast<QVBoxLayout*>(mainLayout->layout())->addStretch(1);
+        pagesTab->adjustSize();
     } else {
         QLabel *nothing = new QLabel(tr("Nothing to display!"), this);
-        mainLayout->addWidget(nothing);
+        mainLayout->layout()->addWidget(nothing);
     }
+}
+
+QWidget* KCBasicSummaryView::makeExpensePage(int expense_id, const QString& name)
+{
+    QWidget *w = new QWidget(this);
+    QSqlQuery query(QSqlDatabase::database(connection));
+
+    return w;
 }
