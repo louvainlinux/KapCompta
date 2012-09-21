@@ -59,21 +59,21 @@ double KCDataBaseHelper::sumExpenses(const QString& connection, const int expens
 
     return firstEntryOf(connection,
                         "SELECT SUM(amount) FROM tickets "
-                        "WHERE expense_id = " + QString::number(expense_id)).toDouble();
+                        "WHERE expenseid = " + QString::number(expense_id)).toDouble();
 }
 
 double KCDataBaseHelper::sumNegativeExpenses(const QString& connection, const int expense_id)
 {
     return firstEntryOf(connection,
                         "SELECT SUM(amount) FROM tickets "
-                        "WHERE amount < 0 AND expense_id = " + QString::number(expense_id)).toDouble();
+                        "WHERE amount < 0 AND expenseid = " + QString::number(expense_id)).toDouble();
 }
 
 double KCDataBaseHelper::sumPositiveExpenses(const QString& connection, const int expense_id)
 {
     return firstEntryOf(connection,
-                        "SELECT SUM(amount) FROM expenses "
-                        "WHERE amount > 0 AND expense_id = " + QString::number(expense_id)).toDouble();
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE amount > 0 AND expenseid = " + QString::number(expense_id)).toDouble();
 }
 
 void KCDataBaseHelper::createConnection(const QString &path)
