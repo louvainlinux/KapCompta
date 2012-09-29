@@ -126,7 +126,7 @@ void KCBasicSummaryView::makeExpensePage(QSqlRecord *r)
     description.replace("\n","<br />");
     view->insertHtml("<center><h1><b>" + name + "</b></h1></center>"
                      "<p><i>" + description + "</i></p>"
-                     "<table width=\"100%\"><tr><td><hr /></td></tr></table>");
+                     "<table width='100%'><tr><td><hr /></td></tr></table>");
     // <hr /> tag bugs !
 
     QString str = "<table width='100%'><tr><td><b><h3>" + tr("Amount") + "</h3></b></td>"
@@ -159,8 +159,40 @@ void KCBasicSummaryView::makeExpensePage(QSqlRecord *r)
 
 void KCBasicSummaryView::makeGeneralPage()
 {
-    QSqlQuery query(QSqlDatabase::database(connection));
+    view->insertHtml("<h1><b><center>" + tr("General Summary") + "</center></b></h1>");
+    view->append("<table width='100%'><tr><td><hr /></td></tr></table>");
 
+    QString str = "<table width ='100%'><tr><td><b><h4>"
+            + tr("Item of expenses name") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Income") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Expense") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Balance") + "</h4></b></td></tr>";
+
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("SELECT name, id FROM expenses");
+    while (query.next()) {
+        QSqlRecord entry = query.record();
+        int id = entry.value("id").toInt();
+        QString name = entry.value("name").toString();
+
+        str += "<tr>"
+                "<td>" + name + "</td>"
+                "<td><i>" + QString::number(KCDataBaseHelper::sumPositiveExpenses(connection, id))
+                + " " + tr("eur.") + "</i></td>"
+                "<td><i>" + QString::number(KCDataBaseHelper::sumNegativeExpenses(connection, id))
+                + " " + tr("eur.") + "</i></td>"
+                "<td><b>" + QString::number(KCDataBaseHelper::sumExpenses(connection, id))
+                + " " + tr("eur.") + "</b></td>"
+                "</tr>";
+    }
+
+    str += "</table>"
+            "<table width=\"100%\"><tr><td><hr /></td></tr></table>"
+            "<p>" + tr("Initial Account Balance: ") + QString::number(balance) + " " + tr("eur.")
+            + "<br /><b>" + tr("Current Account Balance: ")
+            + QString::number(KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
+            "</b></p>";
+    view->append(str);
 }
 
 void KCBasicSummaryView::refreshView()

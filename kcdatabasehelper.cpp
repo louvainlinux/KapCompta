@@ -66,14 +66,22 @@ double KCDataBaseHelper::sumNegativeExpenses(const QString& connection, const in
 {
     return firstEntryOf(connection,
                         "SELECT SUM(amount) FROM tickets "
-                        "WHERE amount < 0 AND expenseid = " + QString::number(expense_id)).toDouble();
+                        "WHERE (CAST(amount AS REAL) < 0) AND expenseid = "
+                        + QString::number(expense_id)).toDouble();
+    // Cast used because SQLITE doesn't really understand that the string
+    // "-3" represents a real ... Dynamic typing is a pain in the ass sometimes ...
+    // But its a wonderful feature most of the time :)
 }
 
 double KCDataBaseHelper::sumPositiveExpenses(const QString& connection, const int expense_id)
 {
     return firstEntryOf(connection,
                         "SELECT SUM(amount) FROM tickets "
-                        "WHERE amount > 0 AND expenseid = " + QString::number(expense_id)).toDouble();
+                        "WHERE (CAST(amount AS REAL) > 0) AND expenseid = "
+                        + QString::number(expense_id)).toDouble();
+    // Cast used because SQLITE doesn't really understand that the string
+    // "-3" represents a real ... Dynamic typing is a pain in the ass sometimes ...
+    // But its a wonderful feature most of the time :)
 }
 
 void KCDataBaseHelper::createConnection(const QString &path)
