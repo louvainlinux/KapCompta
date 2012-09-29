@@ -24,7 +24,7 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QListView>
 #include <QPushButton>
 #include <QSqlTableModel>
@@ -98,8 +98,7 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     ibanCompleter->setCompletionColumn(model->fieldIndex("iban"));
     ibanCompleter->setCompletionMode(QCompleter::InlineCompletion);
     iban->setCompleter(ibanCompleter);
-    QTextEdit *misc = new QTextEdit(this);
-    misc->setAcceptRichText(false);
+    QPlainTextEdit *misc = new QPlainTextEdit(this);
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
 

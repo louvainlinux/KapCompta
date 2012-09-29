@@ -24,9 +24,9 @@
 #include <QFile>
 #include <QSqlQuery>
 #include <QMessageBox>
-#include <QVariant>
 #include <QSqlDatabase>
 #include <QApplication>
+#include <QSqlRecord>
 
 KCDataBaseHelper::KCDataBaseHelper(QObject *parent) :
     QObject(parent)
@@ -38,14 +38,60 @@ void KCDataBaseHelper::initDB(const QString &path)
     createConnection(path);
 }
 
+QVariant KCDataBaseHelper::firstEntryOf(const QString& connection, const QString& q)
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    if (query.exec(q)) {
+        query.first();
+        return query.record().value(0);
+    } else {
+        return QVariant();
+    }
+}
+
+double KCDataBaseHelper::sumAllExpenses(const QString& connection)
+{
+    return firstEntryOf(connection, "SELECT SUM(amount) FROM tickets").toDouble();
+}
+
+double KCDataBaseHelper::sumExpenses(const QString& connection, const int expense_id)
+{
+
+    return firstEntryOf(connection,
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE expenseid = " + QString::number(expense_id)).toDouble();
+}
+
+double KCDataBaseHelper::sumNegativeExpenses(const QString& connection, const int expense_id)
+{
+    return firstEntryOf(connection,
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE (CAST(amount AS REAL) < 0) AND expenseid = "
+                        + QString::number(expense_id)).toDouble();
+    // Cast used because SQLITE doesn't really understand that the string
+    // "-3" represents a real ... Dynamic typing is a pain in the ass sometimes ...
+    // But its a wonderful feature most of the time :)
+}
+
+double KCDataBaseHelper::sumPositiveExpenses(const QString& connection, const int expense_id)
+{
+    return firstEntryOf(connection,
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE (CAST(amount AS REAL) > 0) AND expenseid = "
+                        + QString::number(expense_id)).toDouble();
+    // Cast used because SQLITE doesn't really understand that the string
+    // "-3" represents a real ... Dynamic typing is a pain in the ass sometimes ...
+    // But its a wonderful feature most of the time :)
+}
+
 void KCDataBaseHelper::createConnection(const QString &path)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",path);
     db.setDatabaseName(path);
     if (!db.open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
-            tr("Unable to establish a database connection."
-               ), QMessageBox::Cancel);
+                              tr("Unable to establish a database connection."
+                                 ), QMessageBox::Cancel);
         QApplication::exit();
     }
 }

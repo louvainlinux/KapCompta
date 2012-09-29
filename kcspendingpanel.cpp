@@ -24,7 +24,6 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include <QTextEdit>
 #include <QListView>
 #include <QPushButton>
 #include <QSqlTableModel>
@@ -32,6 +31,7 @@
 #include <QSqlRecord>
 #include <QCompleter>
 #include <QSqlQuery>
+#include <QPlainTextEdit>
 
 KCSpendingPanel::KCSpendingPanel(QWidget *parent) :
     QWidget(parent)
@@ -76,8 +76,7 @@ void KCSpendingPanel::buildGUI(const QString &connection)
     dateCompleter->setCompletionColumn(model->fieldIndex("date"));
     dateCompleter->setCompletionMode(QCompleter::InlineCompletion);
     date->setCompleter(dateCompleter);
-    QTextEdit *description = new QTextEdit(this);
-    description->setAcceptRichText(false);
+    QPlainTextEdit *description = new QPlainTextEdit(this);
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
 
@@ -161,5 +160,5 @@ void KCSpendingPanel::initDB(const QString& connection)
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec("CREATE TABLE expenses (id INTEGER PRIMARY KEY, "
                "name TEXT, description TEXT, date TEXT)");
-    query.exec("INSERT INTO expenses(id, name) VALUES (1,'"+tr("No item")+"')");
+    query.exec("INSERT INTO expenses(id, name) VALUES (1,'"+tr("No item of expenses")+"')");
 }
