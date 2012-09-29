@@ -92,7 +92,7 @@ void KCMain::buildGUI()
     wList->setSpacing(12);
 
     QList<KCPanel*> panels;
-    panels << new KCSummaryPanel(fileManager,this) << new KCPropertiesPanel(fileManager, this)
+    panels << new KCPropertiesPanel(fileManager, this) << new KCSummaryPanel(fileManager,this)
            << new KCPeoplePanel(this) << new KCSpendingPanel(this)
            << new KCTicketPanel(this);
 
@@ -129,6 +129,7 @@ void KCMain::buildGUI()
     leftBox->setLayout(l);
     layout->addWidget(leftBox);
     wList->setMaximumWidth(200);
+    wList->setMinimumWidth(175);
     wList->adjustSize();
 
     box = new QGroupBox(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title(),this);
@@ -138,6 +139,11 @@ void KCMain::buildGUI()
     layout->addWidget(box,1);
     this->setLayout(layout);
 
+    /*
+     * Base resolution for comfortable usage: WSVGA
+     * http://en.wikipedia.org/wiki/Display_resolution#Computer_monitors
+     **/
+    //this->resize(1024,600);
     this->adjustSize();
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());

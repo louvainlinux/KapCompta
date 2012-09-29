@@ -25,7 +25,6 @@
 #include <QStackedWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QScrollArea>
 #include <QPushButton>
 #include <QComboBox>
 #include <QFormLayout>
@@ -94,10 +93,6 @@ void KCSummaryPanel::buildGUI(const QString &connection)
         optLayout->addWidget((*i)->displayOptions());
         options->setLayout(optLayout);
 
-        QScrollArea *scroll = new QScrollArea(stackView);
-        scroll->setWidget((*i)->summaryView());
-        scroll->setWidgetResizable(false);
-
         if ((*i)->optionsUnder()) {
             QHBoxLayout *optionsL = new QHBoxLayout();
             optionsL->addStretch(1);
@@ -105,7 +100,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
             optionsL->addStretch(1);
 
             QHBoxLayout *summaryL = new QHBoxLayout();
-            summaryL->addWidget(scroll);
+            summaryL->addWidget((*i)->summaryView());
 
             QVBoxLayout *vLayout = new QVBoxLayout();
             vLayout->addLayout(summaryL,1);
@@ -115,7 +110,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
         } else {
             QHBoxLayout *hLayout = new QHBoxLayout();
             hLayout->addWidget(options);
-            hLayout->addWidget(scroll,1);
+            hLayout->addWidget((*i)->summaryView(),1);
             page->setLayout(hLayout);
         }
         stackView->addWidget(page);
@@ -165,6 +160,7 @@ void KCSummaryPanel::printSummaryView()
     {
         views.at(selectView->currentIndex())->printSummary(&printer);
     }
+    this->activateWindow();
 }
 
 void KCSummaryPanel::exportView()
@@ -196,4 +192,5 @@ void KCSummaryPanel::exportView()
                                   views.at(selectView->currentIndex()));
         KCSettings::setProperty("lastExportedFile",QVariant(result));
     }
+    this->activateWindow();
 }

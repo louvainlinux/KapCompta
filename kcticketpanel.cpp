@@ -24,7 +24,7 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QLineEdit>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QListView>
 #include <QPushButton>
 #include <QSqlRelationalTableModel>
@@ -38,6 +38,7 @@
 #include <QStringListModel>
 #include <QDoubleValidator>
 #include <QSqlQuery>
+#include <QDate>
 
 KCTicketPanel::KCTicketPanel(QWidget *parent) :
     QWidget(parent)
@@ -60,7 +61,7 @@ const QString& KCTicketPanel::iconPath()
     static QString s = QString(":/icons/ticket");
     return s;
 }
-#include <QDebug>
+
 void KCTicketPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
@@ -86,8 +87,7 @@ void KCTicketPanel::buildGUI(const QString &connection)
     dateCompleter->setCompletionColumn(model->fieldIndex("date"));
     dateCompleter->setCompletionMode(QCompleter::InlineCompletion);
     date->setCompleter(dateCompleter);
-    QTextEdit *notes = new QTextEdit(this);
-    notes->setAcceptRichText(false);
+    QPlainTextEdit *notes = new QPlainTextEdit(this);
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
 
@@ -184,7 +184,7 @@ void KCTicketPanel::filterChanged(QString s)
 void KCTicketPanel::addEntry()
 {
     QSqlRecord record = model->record();
-    record.setValue(model->fieldIndex("date"),QVariant(tr("i.e. 27th of September 2012")));
+    record.setValue(model->fieldIndex("date"),QVariant(QDate::currentDate().toString("d/MM/yyyy") + tr(" *new")));
     record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount")));
     record.setValue(model->fieldIndex("notes"),QVariant(tr("Misc.")));
     record.setValue(personid,QVariant(1));

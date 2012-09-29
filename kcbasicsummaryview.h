@@ -22,22 +22,27 @@
 #ifndef KCBASICSUMMARYVIEW_H
 #define KCBASICSUMMARYVIEW_H
 
-#include <QWidget>
 #include "interfaces.h"
-#include <QList>
+#include <QModelIndex>
+#include <QObject>
 
 QT_BEGIN_NAMESPACE
-class QLayout;
-class QTabWidget;
+class QPainter;
+class QListView;
+class QPushButton;
+class QSqlTableModel;
+class QSqlRecord;
+class QTextEdit;
+class QWidget;
 QT_END_NAMESPACE
 
-class KCBasicSummaryView : public QWidget, public KCSummaryView
+class KCBasicSummaryView : public QObject, public KCSummaryView
 {
     Q_OBJECT
     Q_INTERFACES(KCSummaryView)
 
 public:
-    explicit KCBasicSummaryView(QWidget *parent = 0);
+    explicit KCBasicSummaryView(QObject *parent = 0);
     QWidget* summaryView();
     const QString& summaryName();
     QWidget* displayOptions();
@@ -45,24 +50,31 @@ public:
     void setInitialBalance(int i);
     bool optionsUnder();
     void printSummary(QPrinter *printer);
+
 signals:
 
 public slots:
+    void backToGeneralView();
+    void selectPage(QModelIndex idx);
+    void refreshView();
 
 protected:
 
 private:
-    void refresh();
-    void clear(QLayout *layout, bool deleteWidgets);
-    void renderPage(QWidget *page, QPainter* painter, QPrinter *printer);
-    QWidget* makeExpensePage(int expense_id, const QString &name);
+    void makeExpensePage(QSqlRecord *r);
+    void makeGeneralPage();
 
-    QList<QWidget*> pages;
     QWidget *optionsPanel;
+    QPushButton *generalBtn;
+    QListView *expenseList;
+    QSqlTableModel *expenseModel;
+    QTextEdit *view;
+
     QString connection;
     int balance;
-    QWidget *mainLayout;
-    QTabWidget *pagesTab;
+    int minHeight;
+    int minWidth;
+    int selectedView;
 };
 
 #endif // KCBASICSUMMARYVIEW_H
