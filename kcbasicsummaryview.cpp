@@ -33,6 +33,8 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QWidget>
+#include <QComboBox>
+#include <QStringList>
 
 #define _MARGIN 10
 
@@ -45,8 +47,12 @@ KCBasicSummaryView::KCBasicSummaryView(QObject *parent) :
     minWidth = 175;
     expenseList = new QListView(optionsPanel);
     generalBtn = new QPushButton(tr("General summary view"), optionsPanel);
+    orderBy = new QComboBox(optionsPanel);
+    orderBy->addItems(QStringList() << tr("Date") << tr("Amount"));
+    order = "date";
     optionsPanel->layout()->addWidget(generalBtn);
     optionsPanel->layout()->addWidget(expenseList);
+    optionsPanel->layout()->addWidget(orderBy);
     generalBtn->setEnabled(false);
     expenseList->setAlternatingRowColors(true);
     expenseList->setEditTriggers(QListView::NoEditTriggers);
@@ -56,6 +62,13 @@ KCBasicSummaryView::KCBasicSummaryView(QObject *parent) :
     view->setMinimumSize(500,350);
 
     connect(generalBtn, SIGNAL(clicked()), this, SLOT(backToGeneralView()));
+    connect(orderBy, SIGNAL(currentIndexChanged(QString)), this, SLOT(orderChanged(QString)));
+}
+
+void KCBasicSummaryView::orderChanged(QString s)
+{
+    order = s.toLower();
+    this->refreshView();
 }
 
 QWidget* KCBasicSummaryView::summaryView()
@@ -135,7 +148,7 @@ void KCBasicSummaryView::makeExpensePage(QSqlRecord *r)
     int id = r->value("id").toInt();
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec("SELECT amount, notes, date FROM tickets WHERE expenseid = " + QString::number(id)
-               + " ORDER BY date ASC");
+               + " ORDER BY " + order +" ASC");
     while (query.next()) {
         QSqlRecord entry = query.record();
         QString notes = entry.value("notes").toString();
@@ -169,7 +182,7 @@ void KCBasicSummaryView::makeGeneralPage()
             "<td><b><h4>" + tr("Balance") + "</h4></b></td></tr>";
 
     QSqlQuery query(QSqlDatabase::database(connection));
-    query.exec("SELECT name, id FROM expenses");
+    query.exec("SELECT name, id FROM expenses ORDER BY name ASC");
     while (query.next()) {
         QSqlRecord entry = query.record();
         int id = entry.value("id").toInt();

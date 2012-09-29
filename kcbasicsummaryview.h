@@ -34,6 +34,7 @@ class QSqlTableModel;
 class QSqlRecord;
 class QTextEdit;
 class QWidget;
+class QComboBox;
 QT_END_NAMESPACE
 
 class KCBasicSummaryView : public QObject, public KCSummaryView
@@ -57,6 +58,7 @@ public slots:
     void backToGeneralView();
     void selectPage(QModelIndex idx);
     void refreshView();
+    void orderChanged(QString s);
 
 protected:
 
@@ -69,6 +71,8 @@ private:
     QListView *expenseList;
     QSqlTableModel *expenseModel;
     QTextEdit *view;
+    QComboBox *orderBy;
+    QString order;
 
     QString connection;
     int balance;
