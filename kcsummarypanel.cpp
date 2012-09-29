@@ -122,6 +122,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
     QFormLayout *selectF = new QFormLayout();
     selectF->addRow(tr("View type:"), selectView);
     selectL->addLayout(selectF);
+    selectL->addStretch(1);
     selectModel->setStringList(names);
     selectView->setModel(selectModel);
 
