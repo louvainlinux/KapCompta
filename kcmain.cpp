@@ -38,15 +38,38 @@
 #include "kcfilemanager.h"
 #include "kcdatabasehelper.h"
 #include <QGroupBox>
+#include <QDir>
+#include <QPluginLoader>
 
 KCMain::KCMain(QWidget *parent)
     : QWidget(parent)
 {
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+
+#if defined(Q_OS_WIN)
+    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+        pluginsDir.cdUp();
+#elif defined(Q_OS_MAC)
+    if (pluginsDir.dirName() == "MacOS") {
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+    }
+#endif
+    pluginsDir.cd("plugins");
+
+    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+        QObject *plugin = loader.instance();
+        if (plugin) {
+            KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
+            if (p) plugins << p;
+        }
+    }
 }
 
 KCMain::~KCMain()
 {
-
 }
 
 void KCMain::start()
@@ -81,8 +104,36 @@ void KCMain::changePage(QListWidgetItem *current, QListWidgetItem *previous)
     box->setTitle(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title());
 }
 
+void KCMain::extractPluginList()
+{
+    QList<KCPanel*> pluginPanels;
+    QList<KCSummaryView*> pluginSummaryViews;
+    QList<KCAccountSetting*> pluginAccountSettings;
+    QList<KCFileFormat*> pluginFileFormats;
+
+    QList<KCPlugin*>::const_iterator i;
+    for (i = plugins.begin(); i != plugins.end(); ++i) {
+        pluginPanels.append((*i)->panels());
+        pluginSummaryViews.append((*i)->summaryView());
+        pluginAccountSettings.append((*i)->accountSettings());
+        pluginFileFormats.append((*i)->fileFormats());
+    }
+
+    KCPropertiesPanel *properties = new KCPropertiesPanel(fileManager, this);
+    properties->setSettingList(pluginAccountSettings);
+    KCSummaryPanel *summary = new KCSummaryPanel(fileManager,this);
+    summary->setSummaryViews(pluginSummaryViews);
+    summary->setFileFormats(pluginFileFormats);
+    KCPeoplePanel *people = new KCPeoplePanel(this);
+    KCSpendingPanel *expenses = new KCSpendingPanel(this);
+    KCTicketPanel *tickets = new KCTicketPanel(this);
+    panels << properties << summary << people << expenses << tickets;
+    panels.append(pluginPanels);
+}
+
 void KCMain::buildGUI()
 {
+    extractPluginList();
     QHBoxLayout *layout = new QHBoxLayout();
 
     wList = new QListWidget();
@@ -90,11 +141,6 @@ void KCMain::buildGUI()
     wList->setIconSize(QSize(48, 48));
     wList->setMovement(QListView::Static);
     wList->setSpacing(12);
-
-    QList<KCPanel*> panels;
-    panels << new KCPropertiesPanel(fileManager, this) << new KCSummaryPanel(fileManager,this)
-           << new KCPeoplePanel(this) << new KCSpendingPanel(this)
-           << new KCTicketPanel(this);
 
     sidePanel = new QStackedWidget();
 
@@ -139,11 +185,6 @@ void KCMain::buildGUI()
     layout->addWidget(box,1);
     this->setLayout(layout);
 
-    /*
-     * Base resolution for comfortable usage: WSVGA
-     * http://en.wikipedia.org/wiki/Display_resolution#Computer_monitors
-     **/
-    //this->resize(1024,600);
     this->adjustSize();
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());

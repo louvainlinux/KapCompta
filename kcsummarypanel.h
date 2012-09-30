@@ -46,6 +46,8 @@ public:
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
     void selectPanel();
+    void setSummaryViews(QList<KCSummaryView*> l);
+    void setFileFormats(QList<KCFileFormat*> l);
 
 private slots:
     void printSummaryView();

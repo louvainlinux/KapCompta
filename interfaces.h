@@ -24,6 +24,7 @@
 
 #include <QtPlugin>
 #include <QHash>
+#include <QList>
 
 QT_BEGIN_NAMESPACE
 class QWidget;
@@ -174,12 +175,36 @@ public:
                               KCSummaryView *view) = 0;
 };
 
+/*
+ * To enable plugins to provide several features with several instances of interface.
+ **/
+class KCPlugin {
+public:
+    /*
+     * Returns the list of KCPanels in the plugin
+     **/
+    virtual QList<KCPanel *> panels() { return QList<KCPanel*>(); }
+    /*
+     * Returns the list of KCSummaryViews in the plugin
+     **/
+    virtual QList<KCSummaryView *> summaryView() { return QList<KCSummaryView*>(); }
+    /*
+     * Returns the list of KCAccountSettings in the plugin
+     **/
+    virtual QList<KCAccountSetting *> accountSettings() { return QList<KCAccountSetting*>(); }
+    /*
+     * Returns the list of KCFileFormats in the plugin
+     **/
+    virtual QList<KCFileFormat *> fileFormats() { return QList<KCFileFormat*>(); }
+};
+
 QT_BEGIN_NAMESPACE
 Q_DECLARE_INTERFACE(KCObserver, "org.kapcompta.kcobserver/1.0")
 Q_DECLARE_INTERFACE(KCPanel, "org.kapcompta.kcpanel/1.0")
 Q_DECLARE_INTERFACE(KCSummaryView, "org.kapcompta.kcsummaryview/1.0")
 Q_DECLARE_INTERFACE(KCAccountSetting, "org.kapcompta.kcaccountsetting/1.0")
 Q_DECLARE_INTERFACE(KCFileFormat, "org.kapcompta.kcfileformat/1.0")
+Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin/1.0")
 QT_END_NAMESPACE
 
 #endif // INTERFACES_H
