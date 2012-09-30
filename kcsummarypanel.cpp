@@ -40,8 +40,18 @@ KCSummaryPanel::KCSummaryPanel(KCFileManager *fm, QWidget *parent) :
     QWidget(parent)
 {
     this->fm = fm;
-    views << new KCBasicSummaryView(this);
-    formats << new KCPdfFormat(this);
+}
+
+void KCSummaryPanel::setSummaryViews(QList<KCSummaryView*> l)
+{
+    views = QList<KCSummaryView*>(l);
+    views.prepend(new KCBasicSummaryView(this));
+}
+
+void KCSummaryPanel::setFileFormats(QList<KCFileFormat*> l)
+{
+    formats = QList<KCFileFormat*>(l);
+    formats.prepend(new KCPdfFormat(this));
 }
 
 void KCSummaryPanel::selectPanel()

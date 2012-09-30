@@ -34,8 +34,13 @@ KCPropertiesPanel::KCPropertiesPanel(KCFileManager *fm, QWidget *parent) :
     QWidget(parent)
 {
     this->fm = fm;
-    settingsList << new KCBasicAccountProperties(this);
     autosave = false || KCSettings::valueOf("autoSaveProjectProperties").toBool();
+}
+
+void KCPropertiesPanel::setSettingList(QList<KCAccountSetting*> l)
+{
+    settingsList = QList<KCAccountSetting*>(l);
+    settingsList.prepend(new KCBasicAccountProperties(this));
 }
 
 QWidget* KCPropertiesPanel::panel()
