@@ -28,6 +28,7 @@
 
 QT_BEGIN_NAMESPACE
 class QComboBox;
+class QStackedWidget;
 QT_END_NAMESPACE
 
 class KCFileManager;
@@ -49,6 +50,7 @@ public:
 private slots:
     void printSummaryView();
     void exportView();
+    void refreshStackView(int);
 
 private:
     KCFileManager *fm;
@@ -56,6 +58,7 @@ private:
     QList<KCFileFormat*> formats;
     QComboBox *selectView;
     QString connectionName;
+    QStackedWidget *stackView;
 
     int balance;
 };

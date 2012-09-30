@@ -25,7 +25,6 @@
 #include <QStackedWidget>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QScrollArea>
 #include <QPushButton>
 #include <QComboBox>
 #include <QFormLayout>
@@ -48,13 +47,8 @@ KCSummaryPanel::KCSummaryPanel(KCFileManager *fm, QWidget *parent) :
 void KCSummaryPanel::selectPanel()
 {
     int b = fm->value("General/accountBalance").toInt();
-    if (b != balance) {
-        QList<KCSummaryView*>::iterator i;
-        for (i = views.begin(); i != views.end(); ++i) {
-            (*i)->setInitialBalance(b);
-        }
-        balance = b;
-    }
+    views.at(selectView->currentIndex())->setInitialBalance(b);
+    balance = b;
 }
 
 void KCSummaryPanel::initDB(const QString& connection)
@@ -83,25 +77,21 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
     balance = fm->value("General/accountBalance").toInt();
-    QStackedWidget *stack = new QStackedWidget(this);
+    stackView = new QStackedWidget(this);
     QStringList names;
 
     QList<KCSummaryView*>::iterator i;
     for (i = views.begin(); i != views.end(); ++i) {
-        (*i)->setInitialBalance(balance);
         (*i)->setConnectionName(connection);
+        (*i)->setInitialBalance(balance);
 
-        QWidget *page = new QWidget(stack);
+        QWidget *page = new QWidget(stackView);
 
         names << (*i)->summaryName();
         QGroupBox *options = new QGroupBox(tr("Options"),page);
         QVBoxLayout *optLayout = new QVBoxLayout();
         optLayout->addWidget((*i)->displayOptions());
         options->setLayout(optLayout);
-
-        QScrollArea *scroll = new QScrollArea(stack);
-        scroll->setWidget((*i)->summaryView());
-        scroll->setWidgetResizable(false);
 
         if ((*i)->optionsUnder()) {
             QHBoxLayout *optionsL = new QHBoxLayout();
@@ -110,7 +100,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
             optionsL->addStretch(1);
 
             QHBoxLayout *summaryL = new QHBoxLayout();
-            summaryL->addWidget(scroll);
+            summaryL->addWidget((*i)->summaryView());
 
             QVBoxLayout *vLayout = new QVBoxLayout();
             vLayout->addLayout(summaryL,1);
@@ -120,10 +110,10 @@ void KCSummaryPanel::buildGUI(const QString &connection)
         } else {
             QHBoxLayout *hLayout = new QHBoxLayout();
             hLayout->addWidget(options);
-            hLayout->addWidget(scroll,1);
+            hLayout->addWidget((*i)->summaryView(),1);
             page->setLayout(hLayout);
         }
-        stack->addWidget(page);
+        stackView->addWidget(page);
     }
 
     selectView = new QComboBox(this);
@@ -132,6 +122,7 @@ void KCSummaryPanel::buildGUI(const QString &connection)
     QFormLayout *selectF = new QFormLayout();
     selectF->addRow(tr("View type:"), selectView);
     selectL->addLayout(selectF);
+    selectL->addStretch(1);
     selectModel->setStringList(names);
     selectView->setModel(selectModel);
 
@@ -143,15 +134,21 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 
     QVBoxLayout *vBox = new QVBoxLayout();
     vBox->addLayout(selectL);
-    vBox->addWidget(stack);
+    vBox->addWidget(stackView);
     vBox->addLayout(btnLayout);
     this->setLayout(vBox);
 
-    stack->setCurrentIndex(0);
+    stackView->setCurrentIndex(0);
 
-    connect(selectView, SIGNAL(currentIndexChanged(int)), stack, SLOT(setCurrentIndex(int)));
+    connect(selectView, SIGNAL(currentIndexChanged(int)), this, SLOT(refreshStackView(int)));
     connect(exportBtn, SIGNAL(clicked()), this, SLOT(exportView()));
     connect(printBtn, SIGNAL(clicked()), this, SLOT(printSummaryView()));
+}
+
+void KCSummaryPanel::refreshStackView(int idx)
+{
+    stackView->setCurrentIndex(idx);
+    selectPanel();
 }
 
 void KCSummaryPanel::printSummaryView()
@@ -164,6 +161,7 @@ void KCSummaryPanel::printSummaryView()
     {
         views.at(selectView->currentIndex())->printSummary(&printer);
     }
+    this->activateWindow();
 }
 
 void KCSummaryPanel::exportView()
@@ -195,4 +193,5 @@ void KCSummaryPanel::exportView()
                                   views.at(selectView->currentIndex()));
         KCSettings::setProperty("lastExportedFile",QVariant(result));
     }
+    this->activateWindow();
 }

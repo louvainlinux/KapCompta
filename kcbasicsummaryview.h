@@ -22,21 +22,28 @@
 #ifndef KCBASICSUMMARYVIEW_H
 #define KCBASICSUMMARYVIEW_H
 
-#include <QWidget>
 #include "interfaces.h"
-#include <QList>
+#include <QModelIndex>
+#include <QObject>
 
 QT_BEGIN_NAMESPACE
-class QLabel;
+class QPainter;
+class QListView;
+class QPushButton;
+class QSqlTableModel;
+class QSqlRecord;
+class QTextEdit;
+class QWidget;
+class QComboBox;
 QT_END_NAMESPACE
 
-class KCBasicSummaryView : public QWidget, public KCSummaryView
+class KCBasicSummaryView : public QObject, public KCSummaryView
 {
     Q_OBJECT
     Q_INTERFACES(KCSummaryView)
 
 public:
-    explicit KCBasicSummaryView(QWidget *parent = 0);
+    explicit KCBasicSummaryView(QObject *parent = 0);
     QWidget* summaryView();
     const QString& summaryName();
     QWidget* displayOptions();
@@ -44,18 +51,34 @@ public:
     void setInitialBalance(int i);
     bool optionsUnder();
     void printSummary(QPrinter *printer);
+
 signals:
-    
+
 public slots:
-    
+    void backToGeneralView();
+    void selectPage(QModelIndex idx);
+    void refreshView();
+    void orderChanged(QString s);
+
 protected:
 
 private:
-    QList<QWidget*> pages;
-    QWidget *optionsPanel;
-    QString connection;
-    QLabel *balanceField;
+    void makeExpensePage(QSqlRecord *r);
+    void makeGeneralPage();
 
+    QWidget *optionsPanel;
+    QPushButton *generalBtn;
+    QListView *expenseList;
+    QSqlTableModel *expenseModel;
+    QTextEdit *view;
+    QComboBox *orderBy;
+    QString order;
+
+    QString connection;
+    int balance;
+    int minHeight;
+    int minWidth;
+    int selectedView;
 };
 
 #endif // KCBASICSUMMARYVIEW_H

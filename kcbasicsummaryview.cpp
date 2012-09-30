@@ -22,35 +22,80 @@
 #include "kcbasicsummaryview.h"
 #include <QPrinter>
 #include <QPainter>
-#include <QTableView>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QFormLayout>
-#include <QLabel>
-#include <QCheckBox>
 #include <QSqlDatabase>
-#include <QSqlRelationalTableModel>
 #include <QSqlTableModel>
 #include "kcdatabasehelper.h"
-#include <QColor>
 #include <QRect>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QListView>
+#include <QPushButton>
+#include <QTextEdit>
+#include <QWidget>
+#include <QComboBox>
+#include <QStringList>
 
-KCBasicSummaryView::KCBasicSummaryView(QWidget *parent) :
-    QWidget(parent)
+#define _MARGIN 10
+
+KCBasicSummaryView::KCBasicSummaryView(QObject *parent) :
+    QObject(parent)
 {
-    connection = QString("");
-    optionsPanel = new QWidget(this);
-    balanceField = new QLabel(this);
+    optionsPanel = new QWidget();
+    optionsPanel->setLayout(new QVBoxLayout());
+    minHeight = 450;
+    minWidth = 175;
+    expenseList = new QListView(optionsPanel);
+    generalBtn = new QPushButton(tr("General summary view"), optionsPanel);
+    orderBy = new QComboBox(optionsPanel);
+    orderBy->addItems(QStringList() << tr("Date") << tr("Amount"));
+    order = "date";
+    optionsPanel->layout()->addWidget(generalBtn);
+    optionsPanel->layout()->addWidget(expenseList);
+    optionsPanel->layout()->addWidget(orderBy);
+    generalBtn->setEnabled(false);
+    expenseList->setAlternatingRowColors(true);
+    expenseList->setEditTriggers(QListView::NoEditTriggers);
+    selectedView = -1;
+    view = new QTextEdit();
+    view->setReadOnly(true);
+    view->setMinimumSize(500,350);
+
+    connect(generalBtn, SIGNAL(clicked()), this, SLOT(backToGeneralView()));
+    connect(orderBy, SIGNAL(currentIndexChanged(QString)), this, SLOT(orderChanged(QString)));
+}
+
+void KCBasicSummaryView::orderChanged(QString s)
+{
+    order = s.toLower();
+    this->refreshView();
 }
 
 QWidget* KCBasicSummaryView::summaryView()
 {
-    return this;
+    return view;
+}
+
+void KCBasicSummaryView::backToGeneralView()
+{
+    selectedView = -1;
+    refreshView();
+    expenseList->reset();
+    generalBtn->setEnabled(false);
+}
+
+void KCBasicSummaryView::selectPage(QModelIndex idx)
+{
+    selectedView = idx.row();
+    refreshView();
+    generalBtn->setEnabled(true);
 }
 
 void KCBasicSummaryView::setInitialBalance(int i)
 {
-    balanceField->setText(QString::number(i));
+    balance = i;
+    expenseModel->select();
+    refreshView();
 }
 
 const QString& KCBasicSummaryView::summaryName()
@@ -72,38 +117,104 @@ bool KCBasicSummaryView::optionsUnder()
 void KCBasicSummaryView::setConnectionName(const QString& c)
 {
     connection = QString(c);
+    expenseModel = new QSqlTableModel(optionsPanel, QSqlDatabase::database(connection));
+    expenseModel->setTable("expenses");
+    expenseModel->select();
+    expenseList->setModel(expenseModel);
+    expenseList->setModelColumn(expenseModel->fieldIndex("name"));
+    connect(expenseList->selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+            this, SLOT(selectPage(QModelIndex)));
+    refreshView();
 }
 
 void KCBasicSummaryView::printSummary(QPrinter *printer)
 {
-    QPainter painter;
-    painter.begin(printer);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    QRect pageRect = printer->pageRect();
-    pageRect.moveTo(0,0);
-    // BUGFIX: by default Qt adds twice the margin to pageRect resulting
-    // in undrawed areas on the borders ...
-    // see: http://stackoverflow.com/questions/915775/qt-printing-pagerect-and-paperrect-issues
+    view->print(printer);
+}
 
-    QList<QWidget*>::iterator i = pages.begin();
-    while (i != pages.end())
-    {
-        QWidget *currentPrintView = qobject_cast<QWidget*>(*i);
+void KCBasicSummaryView::makeExpensePage(QSqlRecord *r)
+{
+    QString name = r->value("name").toString();
+    QString description = r->value("description").toString();
+    description.replace("\n","<br />");
+    view->insertHtml("<center><h1><b>" + name + "</b></h1></center>"
+                     "<p><i>" + description + "</i></p>"
+                     "<table width='100%'><tr><td><hr /></td></tr></table>");
+    // <hr /> tag bugs !
 
-        double xscale = printer->pageRect().width()/double(currentPrintView->width());
-        double yscale = printer->pageRect().height()/double(currentPrintView->height());
-        double scale = qMin(xscale, yscale);
-        painter.translate(printer->paperRect().x() + printer->pageRect().width()/2,
-                          printer->paperRect().y() + printer->pageRect().height()/2);
-        painter.scale(scale, scale);
-        painter.translate(- currentPrintView->width()/2, - currentPrintView->height()/2);
+    QString str = "<table width='100%'><tr><td><b><h3>" + tr("Amount") + "</h3></b></td>"
+            "<td><b><h3>" + tr("Date") + "</h3></b></td>"
+            "<td><b><h3>" + tr("Notes") + "</h3></b></td></tr>";
+    int id = r->value("id").toInt();
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("SELECT amount, notes, date FROM tickets WHERE expenseid = " + QString::number(id)
+               + " ORDER BY " + order +" ASC");
+    while (query.next()) {
+        QSqlRecord entry = query.record();
+        QString notes = entry.value("notes").toString();
+        notes.replace("\n","<br />");
+        QString date = entry.value("date").toString();
+        QString amount = entry.value("amount").toString();
 
-        currentPrintView->render(&painter);
-        if (currentPrintView != *(pages.end())) {
-            printer->newPage();
-        }
-        ++i;
+        str += "<tr>"
+                "<td><b>" + amount + " " + tr("eur.") + "</b></td>"
+                "<td>" + date + "</td>"
+                "<td><i>" + notes + "</i></td>"
+                "</tr>";
+    }
+    str += "</table>";
+    view->append(str);
+    view->append("<table width=\"100%\"><tr><td><hr /></td></tr></table>");
+    view->append("<p><b><h3>" + tr("Total:") + " "
+                 + QString::number(KCDataBaseHelper::sumExpenses(connection, id))
+                 + " " + tr("eur."));
+}
+
+void KCBasicSummaryView::makeGeneralPage()
+{
+    view->insertHtml("<h1><b><center>" + tr("General Summary") + "</center></b></h1>");
+    view->append("<table width='100%'><tr><td><hr /></td></tr></table>");
+
+    QString str = "<table width ='100%'><tr><td><b><h4>"
+            + tr("Item of expenses name") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Income") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Expense") + "</h4></b></td>"
+            "<td><b><h4>" + tr("Balance") + "</h4></b></td></tr>";
+
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("SELECT name, id FROM expenses ORDER BY name ASC");
+    while (query.next()) {
+        QSqlRecord entry = query.record();
+        int id = entry.value("id").toInt();
+        QString name = entry.value("name").toString();
+
+        str += "<tr>"
+                "<td>" + name + "</td>"
+                "<td><i>" + QString::number(KCDataBaseHelper::sumPositiveExpenses(connection, id))
+                + " " + tr("eur.") + "</i></td>"
+                "<td><i>" + QString::number(KCDataBaseHelper::sumNegativeExpenses(connection, id))
+                + " " + tr("eur.") + "</i></td>"
+                "<td><b>" + QString::number(KCDataBaseHelper::sumExpenses(connection, id))
+                + " " + tr("eur.") + "</b></td>"
+                "</tr>";
     }
 
-    painter.end();
+    str += "</table>"
+            "<table width=\"100%\"><tr><td><hr /></td></tr></table>"
+            "<p>" + tr("Initial Account Balance: ") + QString::number(balance) + " " + tr("eur.")
+            + "<br /><b>" + tr("Current Account Balance: ")
+            + QString::number(KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
+            "</b></p>";
+    view->append(str);
+}
+
+void KCBasicSummaryView::refreshView()
+{
+    view->clear();
+    if (selectedView == -1) {
+        makeGeneralPage();
+    } else {
+        QSqlRecord r = expenseModel->record(selectedView);
+        makeExpensePage(&r);
+    }
 }
