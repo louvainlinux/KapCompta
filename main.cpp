@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     }
 #endif
     pluginsDir.cd("plugins");
-    translator.load(QString(pluginsDir.absolutePath() + ("/kapcompta_") + locale);
+    translator.load(QString(pluginsDir.absolutePath() + ("/kapcompta_") + locale));
     a.installTranslator(&translator);
 
     KCMain w;
