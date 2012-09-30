@@ -23,6 +23,7 @@
 #include "kcmain.h"
 #include <QTranslator>
 #include <QLocale>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
@@ -32,11 +33,24 @@ int main(int argc, char *argv[])
 
     QString locale = QLocale::system().name();
     QTranslator translator;
-    translator.load(QString("kapcompta_") + locale);
+    QDir pluginsDir = QDir(qApp->applicationDirPath());
+
+#if defined(Q_OS_WIN)
+    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+        pluginsDir.cdUp();
+#elif defined(Q_OS_MAC)
+    if (pluginsDir.dirName() == "MacOS") {
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+    }
+#endif
+    pluginsDir.cd("plugins");
+    translator.load(QString(pluginsDir.absolutePath() + ("/kapcompta_") + locale);
     a.installTranslator(&translator);
 
     KCMain w;
     w.start();
-    
+
     return a.exec();
 }
