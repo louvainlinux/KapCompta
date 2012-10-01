@@ -184,8 +184,9 @@ void KCTicketPanel::filterChanged(QString s)
 void KCTicketPanel::addEntry()
 {
     QSqlRecord record = model->record();
-    record.setValue(model->fieldIndex("date"),QVariant(QDate::currentDate().toString("d/MM/yyyy") + tr(" *new")));
-    record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount")));
+    record.setValue(model->fieldIndex("date"),QVariant(QDate::currentDate().toString("d/MM/yyyy")
+                                                       + tr(" *new")));
+    record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount") + tr(" *new")));
     record.setValue(model->fieldIndex("notes"),QVariant(tr("Misc.")));
     record.setValue(personid,QVariant(1));
     record.setValue(expenseid,QVariant(1));

@@ -66,15 +66,14 @@ void KCPeoplePanel::addEntry()
     record.setValue(model->fieldIndex("name"),QVariant(tr("New Name")));
     record.setValue(model->fieldIndex("iban"),QVariant("BEXX XXXX XXXX XXXX"));
     record.setValue(model->fieldIndex("misc"),QVariant(tr("Misc.")));
+    record.setValue(model->fieldIndex("hidden"),QVariant(0));
     model->insertRecord(-1,record);
-    hideRows();
 }
 
 void KCPeoplePanel::removeEntry()
 {
     model->removeRow(listView->currentIndex().row());
     model->submitAll();
-    hideRows();
 }
 
 void KCPeoplePanel::buildGUI(const QString &connection)
@@ -84,6 +83,7 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     model = new QSqlTableModel(this,QSqlDatabase::database(connectionName));
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->setTable("person");
+    model->setFilter("hidden = 0");
     model->select();
 
     QLineEdit *name = new QLineEdit(this);
@@ -108,7 +108,6 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     listView->setModel(model);
     listView->setModelColumn(model->fieldIndex("name"));
-    hideRows();
 
     mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::AutoSubmit);
@@ -137,7 +136,6 @@ void KCPeoplePanel::buildGUI(const QString &connection)
 
     connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             listView, SLOT(dataChanged(QModelIndex,QModelIndex)));
-    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),this,SLOT(hideRows()));
     connect(listView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
             this,SLOT(setCurrentModelIndex()));
     connect(add, SIGNAL(clicked()), this, SLOT(addEntry()));
@@ -150,15 +148,11 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     this->setTabOrder(iban,misc);
 }
 
-void KCPeoplePanel::hideRows()
-{
-    listView->setRowHidden(0,true);
-}
-
 void KCPeoplePanel::initDB(const QString& connection)
 {
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec("CREATE TABLE person (id INTEGER PRIMARY KEY, "
-               "name TEXT, iban VARCHAR(27), misc TEXT)");
-    query.exec("INSERT INTO person(id, name) VALUES(1,'"+tr("Nobody")+"')");
+               "name TEXT, iban VARCHAR(27), misc TEXT,"
+               "hidden INTEGER DEFAULT 0)");
+    query.exec("INSERT INTO person(name, hidden) VALUES('"+tr("Nobody")+"', 1)");
 }

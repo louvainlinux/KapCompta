@@ -44,12 +44,11 @@ public:
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
 signals:
-    
+
 private slots:
     void addEntry();
     void removeEntry();
     void setCurrentModelIndex();
-    void hideRows();
 
 private:
     QListView *listView;
