@@ -28,11 +28,6 @@
 #include <QApplication>
 #include <QSqlRecord>
 
-KCDataBaseHelper::KCDataBaseHelper(QObject *parent) :
-    QObject(parent)
-{
-}
-
 void KCDataBaseHelper::initDB(const QString &path)
 {
     createConnection(path);
@@ -89,8 +84,8 @@ void KCDataBaseHelper::createConnection(const QString &path)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",path);
     db.setDatabaseName(path);
     if (!db.open()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                              tr("Unable to establish a database connection."
+        QMessageBox::critical(0, QObject::tr("Cannot open database"),
+                              QObject::tr("Unable to establish a database connection."
                                  ), QMessageBox::Cancel);
         QApplication::exit();
     }

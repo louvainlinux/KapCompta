@@ -22,7 +22,6 @@
 #ifndef KCDATABASEHELPER_H
 #define KCDATABASEHELPER_H
 
-#include <QObject>
 #include <QVariant>
 
 QT_BEGIN_NAMESPACE
@@ -30,11 +29,9 @@ class QStringList;
 class QFile;
 QT_END_NAMESPACE
 
-class KCDataBaseHelper : public QObject
+class KCDataBaseHelper
 {
-    Q_OBJECT
 public:
-    explicit KCDataBaseHelper(QObject *parent = 0);
     static void initDB(const QString &path);
     static void createConnection(const QString &path);
     static void close(const QString &path);

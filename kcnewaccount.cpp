@@ -25,10 +25,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include <QApplication>
 #include "kcfilemanager.h"
 #include <QVariant>
 #include <QHash>
+#include <QDir>
 
 KCNewAccount::KCNewAccount(QWidget *parent) :
     QWidget(parent)
@@ -61,7 +61,7 @@ void KCNewAccount::setSaveLocation()
     QString result = QFileDialog::getSaveFileName(
                 this,
                 tr("Where do you want to save the accounting file ?"),
-                QApplication::applicationDirPath(),
+                QDir::home(),
                 QString("Account file (*.account)"),
                 0,
                 QFileDialog::ShowDirsOnly
