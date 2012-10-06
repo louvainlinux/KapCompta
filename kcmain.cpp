@@ -146,6 +146,12 @@ void KCMain::buildGUI()
 
     QList<KCPanel*>::const_iterator iterator;
     bool initDB = fileManager->value("dbFileHasBeenInitialized").toBool();
+    if (!initDB) {
+        for(iterator = panels.begin(); iterator != panels.end(); ++iterator) {
+            (*iterator)->initDB(fileManager->dbPath());
+        }
+        fileManager->setValue("dbFileHasBeenInitialized",QVariant(true));
+    }
     for(iterator = panels.begin(); iterator != panels.end(); ++iterator) {
         if (!initDB) {
             (*iterator)->initDB(fileManager->dbPath());
@@ -157,10 +163,6 @@ void KCMain::buildGUI()
         button->setText((*iterator)->title());
         button->setTextAlignment(Qt::AlignHCenter);
         button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    }
-
-    if (!initDB) {
-        fileManager->setValue("dbFileHasBeenInitialized",QVariant(true));
     }
 
     wList->setCurrentRow(0);
