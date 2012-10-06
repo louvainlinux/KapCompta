@@ -203,7 +203,7 @@ void KCBasicSummaryView::makeGeneralPage()
             "<table width=\"100%\"><tr><td><hr /></td></tr></table>"
             "<p>" + tr("Initial Account Balance: ") + QString::number(balance) + " " + tr("eur.")
             + "<br /><b>" + tr("Current Account Balance: ")
-            + QString::number(KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
+            + QString::number(balance + KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
             "</b></p>";
     view->append(str);
 }
