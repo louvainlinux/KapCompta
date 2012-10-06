@@ -84,7 +84,7 @@ void KCPeoplePanel::buildGUI(const QString &connection)
     model->setEditStrategy(QSqlTableModel::OnFieldChange);
     model->setTable("person");
     model->setFilter("hidden = 0");
-    model->orderByClause("name ASC");
+    model->setSort(model->fieldIndex("name"), Qt::AscendingOrder);
     model->select();
 
     QLineEdit *name = new QLineEdit(this);
