@@ -32,6 +32,7 @@
 #include <QFileDialog>
 #include <QVariant>
 #include <QGroupBox>
+#include <QDir>
 
 KCWelcomeScreen::KCWelcomeScreen(QWidget *parent) :
     QWidget(parent),
@@ -102,7 +103,7 @@ void KCWelcomeScreen::openAccount()
 {
     QString result = QFileDialog::getOpenFileName(this,
                         tr("Select the account file"),
-                        QApplication::applicationDirPath(),QString(tr("Account File (*.account)")));
+                        QDir::home().absolutePath(),QString(tr("Account File (*.account)")));
     if (result != NULL) {
         emit knowProject(result);
     }
