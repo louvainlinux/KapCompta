@@ -87,6 +87,12 @@ void KCMain::openProject(QString p)
     fileManager = new KCFileManager(*projectPath,this);
 
     if (fileManager->open()) {
+        int maxLength = 30;
+        if (projectPath->length() > maxLength) {
+            int i = maxLength/2;
+            projectPath->remove(i, projectPath->length() - maxLength);
+            projectPath->insert(i,"[...]");
+        }
         QString accountName = QString(fileManager->value("General/accountName").toString());
         this->setWindowTitle("KapCompta - " + accountName + " - " + *projectPath);
         buildGUI();
@@ -154,9 +160,6 @@ void KCMain::buildGUI()
         fileManager->setValue("dbFileHasBeenInitialized",QVariant(true));
     }
     for(iterator = panels.begin(); iterator != panels.end(); ++iterator) {
-        if (!initDB) {
-            (*iterator)->initDB(fileManager->dbPath());
-        }
         (*iterator)->buildGUI(fileManager->dbPath());
         sidePanel->addWidget((*iterator)->panel());
         QListWidgetItem *button = new QListWidgetItem(wList);

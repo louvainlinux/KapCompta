@@ -56,9 +56,16 @@ void KCSummaryPanel::setFileFormats(QList<KCFileFormat*> l)
 
 void KCSummaryPanel::selectPanel()
 {
+    updateProperties();
+    views.at(selectView->currentIndex())->setAccountProperties(properties);
+}
+
+void KCSummaryPanel::updateProperties()
+{
     int b = fm->value("General/accountBalance").toInt();
-    views.at(selectView->currentIndex())->setInitialBalance(b);
-    balance = b;
+    QString n = fm->value("General/accountName").toString();
+    QString i = fm->value("General/accountIban").toString();
+    properties = KCAccountProperties(b,n,i);
 }
 
 void KCSummaryPanel::initDB(const QString& connection)
@@ -86,14 +93,14 @@ const QString& KCSummaryPanel::iconPath()
 void KCSummaryPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
-    balance = fm->value("General/accountBalance").toInt();
+    updateProperties();
     stackView = new QStackedWidget(this);
     QStringList names;
 
     QList<KCSummaryView*>::iterator i;
     for (i = views.begin(); i != views.end(); ++i) {
         (*i)->setConnectionName(connection);
-        (*i)->setInitialBalance(balance);
+        (*i)->setAccountProperties(properties);
 
         QWidget *page = new QWidget(stackView);
 

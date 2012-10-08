@@ -88,6 +88,22 @@ public:
     virtual void saveAll() {}
 };
 
+struct KCAccountProperties {
+    int balance;
+    QString name;
+    QString iban;
+
+    KCAccountProperties() {}
+
+    KCAccountProperties(int b, QString n, QString i)
+    {
+        balance = b;
+        name = n;
+        iban = i;
+    }
+
+};
+
 class KCSummaryView {
 public:
     virtual ~KCSummaryView() {}
@@ -118,7 +134,7 @@ public:
     /*
      * Sets the account initial balance
      **/
-    virtual void setInitialBalance(int i) = 0;
+    virtual void setAccountProperties(KCAccountProperties properties) = 0;
     /*
      * print to the specified QPrinter
      **/

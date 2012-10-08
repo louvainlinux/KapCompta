@@ -97,9 +97,9 @@ void KCBasicSummaryView::selectPage(QModelIndex idx)
     orderBy->setEnabled(true);
 }
 
-void KCBasicSummaryView::setInitialBalance(int i)
+void KCBasicSummaryView::setAccountProperties(KCAccountProperties properties)
 {
-    balance = i;
+    this->properties = properties;
     expenseModel->select();
     backToGeneralView();
 }
@@ -178,7 +178,7 @@ void KCBasicSummaryView::makeExpensePage(QSqlRecord *r)
 
 void KCBasicSummaryView::makeGeneralPage()
 {
-    view->insertHtml("<h1><b><center>" + tr("General Summary") + "</center></b></h1>");
+    view->insertHtml("<h1><b><center>" + properties.name + "</center></b></h1>");
     view->append("<table width='100%'><tr><td><hr /></td></tr></table>");
 
     QString str = "<table width ='100%'><tr><td><b><h4>"
@@ -207,9 +207,9 @@ void KCBasicSummaryView::makeGeneralPage()
 
     str += "</table>"
             "<table width=\"100%\"><tr><td><hr /></td></tr></table>"
-            "<p>" + tr("Initial Account Balance: ") + QString::number(balance) + " " + tr("eur.")
+            "<p>" + tr("Initial Account Balance: ") + QString::number(properties.balance) + " " + tr("eur.")
             + "<br /><b>" + tr("Current Account Balance: ")
-            + QString::number(balance + KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
+            + QString::number(properties.balance + KCDataBaseHelper::sumAllExpenses(connection)) + " " + tr("eur.") +
             "</b></p>";
     view->append(str);
 }

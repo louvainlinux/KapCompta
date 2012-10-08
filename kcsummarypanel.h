@@ -55,6 +55,8 @@ private slots:
     void refreshStackView(int);
 
 private:
+    void updateProperties();
+
     KCFileManager *fm;
     QList<KCSummaryView*> views;
     QList<KCFileFormat*> formats;
@@ -62,7 +64,7 @@ private:
     QString connectionName;
     QStackedWidget *stackView;
 
-    int balance;
+    KCAccountProperties properties;
 };
 
 #endif // KCSUMMARYPANEL_H

@@ -48,7 +48,7 @@ public:
     const QString& summaryName();
     QWidget* displayOptions();
     void setConnectionName(const QString& c);
-    void setInitialBalance(int i);
+    void setAccountProperties(KCAccountProperties properties);
     bool optionsUnder();
     void printSummary(QPrinter *printer);
 
@@ -75,7 +75,7 @@ private:
     QString order;
 
     QString connection;
-    int balance;
+    KCAccountProperties properties;
     int minHeight;
     int minWidth;
     int selectedView;
