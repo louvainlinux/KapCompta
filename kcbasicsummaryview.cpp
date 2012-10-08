@@ -35,6 +35,7 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QStringList>
+#include <QFormLayout>
 
 #define _MARGIN 10
 
@@ -50,9 +51,12 @@ KCBasicSummaryView::KCBasicSummaryView(QObject *parent) :
     orderBy = new QComboBox(optionsPanel);
     orderBy->addItems(QStringList() << tr("Date") << tr("Amount"));
     order = "date";
+    QFormLayout *orderByL = new QFormLayout();
+    orderByL->addRow(tr("Order By:"), orderBy);
+    orderBy->setEnabled(false);
     optionsPanel->layout()->addWidget(generalBtn);
     optionsPanel->layout()->addWidget(expenseList);
-    optionsPanel->layout()->addWidget(orderBy);
+    qobject_cast<QVBoxLayout*>(optionsPanel->layout())->addLayout(orderByL);
     generalBtn->setEnabled(false);
     expenseList->setAlternatingRowColors(true);
     expenseList->setEditTriggers(QListView::NoEditTriggers);
@@ -82,6 +86,7 @@ void KCBasicSummaryView::backToGeneralView()
     refreshView();
     expenseList->reset();
     generalBtn->setEnabled(false);
+    orderBy->setEnabled(false);
 }
 
 void KCBasicSummaryView::selectPage(QModelIndex idx)
@@ -89,6 +94,7 @@ void KCBasicSummaryView::selectPage(QModelIndex idx)
     selectedView = idx.row();
     refreshView();
     generalBtn->setEnabled(true);
+    orderBy->setEnabled(true);
 }
 
 void KCBasicSummaryView::setInitialBalance(int i)
