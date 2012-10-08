@@ -39,6 +39,7 @@
 #include <QDoubleValidator>
 #include <QSqlQuery>
 #include <QDate>
+#include <QModelIndex>
 
 KCTicketPanel::KCTicketPanel(QWidget *parent) :
     QWidget(parent)
@@ -72,7 +73,10 @@ void KCTicketPanel::unselectPanel()
 
 void KCTicketPanel::saveAll()
 {
+    QModelIndex idx = listView->currentIndex();
     model->submitAll();
+    listView->setCurrentIndex(idx);
+    mapper->setCurrentModelIndex(idx);
 }
 
 void KCTicketPanel::buildGUI(const QString &connection)

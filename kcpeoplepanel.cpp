@@ -32,6 +32,7 @@
 #include <QSqlRecord>
 #include <QCompleter>
 #include <QSqlQuery>
+#include <QModelIndex>
 
 KCPeoplePanel::KCPeoplePanel(QWidget *parent) :
     QWidget(parent)
@@ -86,7 +87,10 @@ void KCPeoplePanel::unselectPanel()
 
 void KCPeoplePanel::saveAll()
 {
+    QModelIndex idx = listView->currentIndex();
     model->submitAll();
+    listView->setCurrentIndex(idx);
+    mapper->setCurrentModelIndex(idx);
 }
 
 void KCPeoplePanel::buildGUI(const QString &connection)

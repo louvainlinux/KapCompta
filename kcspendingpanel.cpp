@@ -32,6 +32,7 @@
 #include <QCompleter>
 #include <QSqlQuery>
 #include <QPlainTextEdit>
+#include <QModelIndex>
 
 KCSpendingPanel::KCSpendingPanel(QWidget *parent) :
     QWidget(parent)
@@ -65,7 +66,10 @@ void KCSpendingPanel::unselectPanel()
 
 void KCSpendingPanel::saveAll()
 {
+    QModelIndex idx = listView->currentIndex();
     model->submitAll();
+    listView->setCurrentIndex(idx);
+    mapper->setCurrentModelIndex(idx);
 }
 
 void KCSpendingPanel::buildGUI(const QString &connection)
