@@ -101,7 +101,7 @@ void KCBasicSummaryView::setInitialBalance(int i)
 {
     balance = i;
     expenseModel->select();
-    refreshView();
+    backToGeneralView();
 }
 
 const QString& KCBasicSummaryView::summaryName()
