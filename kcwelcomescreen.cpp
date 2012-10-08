@@ -87,6 +87,7 @@ KCWelcomeScreen::KCWelcomeScreen(QWidget *parent) :
     layout->addLayout(right);
     layout->addStretch(1);
     this->setLayout(layout);
+    this->adjustSize();
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());
 
