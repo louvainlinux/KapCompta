@@ -67,6 +67,9 @@ void KCNewAccount::setSaveLocation()
                 QFileDialog::ShowDirsOnly
                 );
     if (result != NULL) {
+        if (!result.endsWith(".account")) {
+            result.append(".account");
+        }
         createAt(result);
     }
 }
