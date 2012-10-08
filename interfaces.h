@@ -82,6 +82,10 @@ public:
      * Called when the panel is about to be unselected
      **/
     virtual void unselectPanel() {}
+    /*
+     * Implement this if your panel needs to know when to save its data
+     */
+    virtual void saveAll() {}
 };
 
 class KCSummaryView {

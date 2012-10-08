@@ -12,6 +12,7 @@ class QStackedWidget;
 class QGroupBox;
 class KCPlugin;
 class KCPanel;
+class QCloseEvent;
 QT_END_NAMESPACE
 
 class KCFileManager;
@@ -24,7 +25,10 @@ public:
     KCMain(QWidget *parent = 0);
     ~KCMain();
     void start();
+    void saveAllPanels();
 
+protected:
+    void closeEvent(QCloseEvent *event);
 private slots:
     void openProject(QString p);
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);

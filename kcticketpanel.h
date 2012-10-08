@@ -39,13 +39,15 @@ class KCTicketPanel : public QWidget, public KCPanel
 
 public:
     explicit KCTicketPanel(QWidget *parent = 0);
+    ~KCTicketPanel();
     QWidget* panel();
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
     void selectPanel();
     void initDB(const QString& connection);
-
+    void unselectPanel();
+    void saveAll();
 signals:
 
 private slots:

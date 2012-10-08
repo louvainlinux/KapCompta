@@ -38,12 +38,14 @@ class KCSpendingPanel : public QWidget, public KCPanel
 
 public:
     explicit KCSpendingPanel(QWidget *parent = 0);
+    ~KCSpendingPanel();
     QWidget* panel();
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
-
+    void unselectPanel();
+    void saveAll();
 signals:
 
 private slots:

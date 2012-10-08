@@ -38,11 +38,14 @@ class KCPeoplePanel : public QWidget, public KCPanel
 
 public:
     explicit KCPeoplePanel(QWidget *parent = 0);
+    ~KCPeoplePanel();
     QWidget* panel();
     const QString& title();
     const QString& iconPath();
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
+    void unselectPanel();
+    void saveAll();
 signals:
 
 private slots:

@@ -38,6 +38,9 @@ KCSpendingPanel::KCSpendingPanel(QWidget *parent) :
 {
 }
 
+KCSpendingPanel::~KCSpendingPanel() {
+}
+
 QWidget* KCSpendingPanel::panel()
 {
     return this;
@@ -55,12 +58,22 @@ const QString& KCSpendingPanel::iconPath()
     return s;
 }
 
+void KCSpendingPanel::unselectPanel()
+{
+    saveAll();
+}
+
+void KCSpendingPanel::saveAll()
+{
+    model->submitAll();
+}
+
 void KCSpendingPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
 
     model = new QSqlTableModel(this,QSqlDatabase::database(connectionName));
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->setTable("expenses");
     model->setFilter("hidden = 0");
     model->select();

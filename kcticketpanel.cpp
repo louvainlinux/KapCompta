@@ -45,6 +45,9 @@ KCTicketPanel::KCTicketPanel(QWidget *parent) :
 {
 }
 
+KCTicketPanel::~KCTicketPanel() {
+}
+
 QWidget* KCTicketPanel::panel()
 {
     return this;
@@ -62,12 +65,22 @@ const QString& KCTicketPanel::iconPath()
     return s;
 }
 
+void KCTicketPanel::unselectPanel()
+{
+    saveAll();
+}
+
+void KCTicketPanel::saveAll()
+{
+    model->submitAll();
+}
+
 void KCTicketPanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
 
     model = new QSqlRelationalTableModel(this,QSqlDatabase::database(connectionName));
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->setTable("tickets");
     personid = model->fieldIndex("personid");
     model->setRelation(personid,

@@ -43,6 +43,9 @@ void KCPeoplePanel::setCurrentModelIndex()
     mapper->setCurrentModelIndex(listView->currentIndex());
 }
 
+KCPeoplePanel::~KCPeoplePanel() {
+}
+
 QWidget* KCPeoplePanel::panel()
 {
     return this;
@@ -76,12 +79,22 @@ void KCPeoplePanel::removeEntry()
     model->submitAll();
 }
 
+void KCPeoplePanel::unselectPanel()
+{
+    saveAll();
+}
+
+void KCPeoplePanel::saveAll()
+{
+    model->submitAll();
+}
+
 void KCPeoplePanel::buildGUI(const QString &connection)
 {
     connectionName = QString(connection);
 
     model = new QSqlTableModel(this,QSqlDatabase::database(connectionName));
-    model->setEditStrategy(QSqlTableModel::OnFieldChange);
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->setTable("person");
     model->setFilter("hidden = 0");
     model->setSort(model->fieldIndex("name"), Qt::AscendingOrder);

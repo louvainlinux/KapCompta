@@ -40,6 +40,7 @@
 #include <QGroupBox>
 #include <QDir>
 #include <QPluginLoader>
+#include <QCloseEvent>
 
 KCMain::KCMain(QWidget *parent)
     : QWidget(parent)
@@ -191,4 +192,20 @@ void KCMain::buildGUI()
     const QRect screen = QApplication::desktop()->screenGeometry();
     this->move(screen.center() - this->rect().center());
     this->show();
+}
+
+void KCMain::closeEvent(QCloseEvent *event)
+{
+    this->saveAllPanels();
+    event->accept();
+
+}
+
+void KCMain::saveAllPanels()
+{
+    qDebug("save");
+    QList<KCPanel*>::const_iterator i;
+    for (i = panels.begin(); i != panels.end(); ++i) {
+        (*i)->saveAll();
+    }
 }
