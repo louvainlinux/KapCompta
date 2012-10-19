@@ -25,6 +25,7 @@
 #include <QtPlugin>
 #include <QHash>
 #include <QList>
+#include "kcdatabasehelper.h"
 
 QT_BEGIN_NAMESPACE
 class QWidget;
@@ -216,6 +217,10 @@ public:
      * Returns the list of KCFileFormats in the plugin
      **/
     virtual QList<KCFileFormat *> fileFormats() { return QList<KCFileFormat*>(); }
+    /*
+     * Provides a KCDataBaseHelper object to facilitate database request to common routines
+     **/
+    virtual void setDBHelper(KCDataBaseHelper *helper) {}
 };
 
 QT_BEGIN_NAMESPACE

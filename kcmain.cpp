@@ -59,12 +59,16 @@ KCMain::KCMain(QWidget *parent)
 #endif
     pluginsDir.cd("plugins");
 
+    KCDataBaseHelper *helper = new KCDataBaseHelper(this);
     foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QObject *plugin = loader.instance();
         if (plugin) {
             KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
-            if (p) plugins << p;
+            if (p) {
+                plugins << p;
+                p->setDBHelper(helper);
+            }
         }
     }
 }
