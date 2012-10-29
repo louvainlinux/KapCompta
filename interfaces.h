@@ -220,7 +220,7 @@ public:
     /*
      * Provides a KCDataBaseHelper object to facilitate database request to common routines
      **/
-    virtual void setDBHelper(KCDataBaseHelper *helper) {}
+    virtual void setDBHelper(KCDataBaseHelper *helper) {Q_UNUSED(helper)}
 };
 
 QT_BEGIN_NAMESPACE

@@ -125,6 +125,7 @@ void KCBasicSummaryView::setConnectionName(const QString& c)
     connection = QString(c);
     expenseModel = new QSqlTableModel(optionsPanel, QSqlDatabase::database(connection));
     expenseModel->setTable("expenses");
+    expenseModel->setFilter("hidden = 0");
     expenseModel->select();
     expenseList->setModel(expenseModel);
     expenseList->setModelColumn(expenseModel->fieldIndex("name"));
@@ -188,7 +189,7 @@ void KCBasicSummaryView::makeGeneralPage()
             "<td><b><h4>" + tr("Balance") + "</h4></b></td></tr>";
 
     QSqlQuery query(QSqlDatabase::database(connection));
-    query.exec("SELECT name, id FROM expenses ORDER BY name ASC");
+    query.exec("SELECT name, id FROM expenses WHERE hidden = 0 ORDER BY name ASC");
     while (query.next()) {
         QSqlRecord entry = query.record();
         int id = entry.value("id").toInt();

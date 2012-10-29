@@ -23,15 +23,17 @@
 #define KCDATABASEHELPER_H
 
 #include <QVariant>
+#include <QObject>
 
 QT_BEGIN_NAMESPACE
 class QStringList;
 class QFile;
 QT_END_NAMESPACE
 
-class KCDataBaseHelper
+class KCDataBaseHelper : QObject
 {
 public:
+    explicit KCDataBaseHelper(QObject *parent = 0);
     static void initDB(const QString &path);
     static void createConnection(const QString &path);
     static void close(const QString &path);

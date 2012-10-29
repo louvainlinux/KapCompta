@@ -28,6 +28,13 @@
 #include <QApplication>
 #include <QSqlRecord>
 
+
+KCDataBaseHelper::KCDataBaseHelper(QObject *parent) : QObject(parent)
+{
+
+}
+
+
 void KCDataBaseHelper::initDB(const QString &path)
 {
     createConnection(path);

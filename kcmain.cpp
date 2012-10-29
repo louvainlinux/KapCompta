@@ -203,14 +203,13 @@ void KCMain::buildGUI()
 
 void KCMain::closeEvent(QCloseEvent *event)
 {
-    this->saveAllPanels();
-    event->accept();
+    //this->saveAllPanels();
+    //event->accept();
 
 }
 
 void KCMain::saveAllPanels()
 {
-    qDebug("save");
     QList<KCPanel*>::const_iterator i;
     for (i = panels.begin(); i != panels.end(); ++i) {
         (*i)->saveAll();
