@@ -46,6 +46,7 @@ public:
     void initDB(const QString& connection);
     void unselectPanel();
     void saveAll();
+    void selectPanel() {}
 signals:
 
 private slots:

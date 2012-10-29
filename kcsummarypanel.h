@@ -48,6 +48,8 @@ public:
     void selectPanel();
     void setSummaryViews(QList<KCSummaryView*> l);
     void setFileFormats(QList<KCFileFormat*> l);
+    void unselectPanel() {}
+    void saveAll() {}
 
 private slots:
     void printSummaryView();

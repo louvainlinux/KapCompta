@@ -47,6 +47,8 @@ public:
     void callback();
     void initDB(const QString& connection);
     void setSettingList(QList<KCAccountSetting*> l);
+    void selectPanel() {}
+    void saveAll() {}
 
 private slots:
     void saveSettings();

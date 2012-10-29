@@ -78,15 +78,15 @@ public:
     /*
      * Called when the panel is selected
      **/
-    virtual void selectPanel() {}
+    virtual void selectPanel() = 0;
     /*
      * Called when the panel is about to be unselected
      **/
-    virtual void unselectPanel() {}
+    virtual void unselectPanel() = 0;
     /*
      * Implement this if your panel needs to know when to save its data
      */
-    virtual void saveAll() {}
+    virtual void saveAll() = 0;
 };
 
 struct KCAccountProperties {
@@ -221,6 +221,10 @@ public:
      * Provides a KCDataBaseHelper object to facilitate database request to common routines
      **/
     virtual void setDBHelper(KCDataBaseHelper *helper) {Q_UNUSED(helper)}
+    /*
+     * Caution, in its current state, this wil _NOT_ work
+     * as the main app doesnt export symbols to be linked against ...
+     **/
 };
 
 QT_BEGIN_NAMESPACE

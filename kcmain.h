@@ -25,6 +25,8 @@ public:
     KCMain(QWidget *parent = 0);
     ~KCMain();
     void start();
+
+public slots:
     void saveAllPanels();
 
 protected:
