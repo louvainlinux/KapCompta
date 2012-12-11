@@ -3,3 +3,4 @@
 *.user
 *.qm
 *.dylib
+.DS_Store
