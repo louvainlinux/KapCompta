@@ -24,6 +24,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QDir>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +49,6 @@ int main(int argc, char *argv[])
     pluginsDir.cd("plugins");
     translator.load(QString(pluginsDir.absolutePath() + ("/kapcompta_") + locale));
     a.installTranslator(&translator);
-
     KCMain w;
     w.start();
 
