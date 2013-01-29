@@ -4,3 +4,8 @@
 *.qm
 *.dylib
 .DS_Store
+Makefile
+*.o
+*.so
+*.so.*
+moc_*.cpp
