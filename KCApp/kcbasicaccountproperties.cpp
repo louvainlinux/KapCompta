@@ -32,7 +32,7 @@ static QString IBANKEY    = ( QString("accountIBAN")    );
 static QString BALANCEKEY = ( QString("accountBalance") );
 
 KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
-    QObject(parent),
+    KCAccountSetting(parent),
     panel(new QWidget()),
     iban(new QLineEdit(QString("BEXX XXXX XXXX XXXX"), panel)),
     name(new QLineEdit(tr("Unnamed account"), panel)),

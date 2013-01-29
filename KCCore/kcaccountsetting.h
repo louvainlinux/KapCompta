@@ -32,10 +32,11 @@ QT_BEGIN_NAMESPACE
 class QWidget;
 QT_END_NAMESPACE
 
-class KCCORESHARED_EXPORT KCAccountSetting : QObject {
+class KCCORESHARED_EXPORT KCAccountSetting : public QObject {
     Q_OBJECT
 
 public:
+    KCAccountSetting(QObject *parent) : QObject(parent) {}
     virtual ~KCAccountSetting() {}
 
     /*
