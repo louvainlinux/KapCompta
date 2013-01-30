@@ -96,38 +96,37 @@ void KCSummaryPanel::buildGUI(const QString &connection)
     stackView = new QStackedWidget(this);
     QStringList names;
 
-    QList<KCSummaryView*>::iterator i;
-    for (i = views.begin(); i != views.end(); ++i) {
-        (*i)->setConnectionName(connection);
-        (*i)->setAccountProperties(properties);
-
+    foreach( KCSummaryView* sv, views) {
+        sv->setConnectionName(connection);
+        sv->setAccountProperties(properties);
         QWidget *page = new QWidget(stackView);
-
-        names << (*i)->summaryName();
-        QGroupBox *options = new QGroupBox(tr("Options"),page);
-        QVBoxLayout *optLayout = new QVBoxLayout();
-        optLayout->addWidget((*i)->displayOptions());
-        options->setLayout(optLayout);
-
-        if ((*i)->optionsUnder()) {
-            QHBoxLayout *optionsL = new QHBoxLayout();
-            optionsL->addStretch(1);
-            optionsL->addWidget(options);
-            optionsL->addStretch(1);
-
-            QHBoxLayout *summaryL = new QHBoxLayout();
-            summaryL->addWidget((*i)->summaryView());
-
-            QVBoxLayout *vLayout = new QVBoxLayout();
-            vLayout->addLayout(summaryL,1);
-            vLayout->addLayout(optionsL);
-
-            page->setLayout(vLayout);
-        } else {
-            QHBoxLayout *hLayout = new QHBoxLayout();
-            hLayout->addWidget(options);
-            hLayout->addWidget((*i)->summaryView(),1);
-            page->setLayout(hLayout);
+        names << sv->summaryName();
+        QWidget* summary = sv->summaryView();
+        QWidget* optionsW = sv->displayOptions();
+        // Do not add an option box if there are no options ...
+        if (summary) {
+            QGroupBox *options = new QGroupBox(tr("Options"),page);
+            QVBoxLayout *optLayout = new QVBoxLayout();
+            optLayout->addWidget(optionsW);
+            options->setLayout(optLayout);
+            // Change layout based on widget preference
+            if (sv->optionsUnder()) {
+                QHBoxLayout *optionsL = new QHBoxLayout();
+                optionsL->addStretch(1);
+                optionsL->addWidget(options);
+                optionsL->addStretch(1);
+                QHBoxLayout *summaryL = new QHBoxLayout();
+                summaryL->addWidget(summary);
+                QVBoxLayout *vLayout = new QVBoxLayout();
+                vLayout->addLayout(summaryL,1);
+                vLayout->addLayout(optionsL);
+                page->setLayout(vLayout);
+            } else {
+                QHBoxLayout *hLayout = new QHBoxLayout();
+                hLayout->addWidget(options);
+                hLayout->addWidget(summary,1);
+                page->setLayout(hLayout);
+            }
         }
         stackView->addWidget(page);
     }

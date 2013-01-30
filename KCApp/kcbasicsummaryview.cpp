@@ -114,7 +114,7 @@ QWidget* KCBasicSummaryView::displayOptions()
     return optionsPanel;
 }
 
-bool KCBasicSummaryView::optionsUnder()
+bool KCBasicSummaryView::optionsUnder() const
 {
     return false;
 }

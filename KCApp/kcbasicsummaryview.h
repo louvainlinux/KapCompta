@@ -53,7 +53,7 @@ public:
     QWidget* displayOptions();
     void setConnectionName(const QString& c);
     void setAccountProperties(const KCAccountProperties &properties);
-    bool optionsUnder();
+    bool optionsUnder() const;
     void printSummary(QPrinter *printer);
 
 signals:
