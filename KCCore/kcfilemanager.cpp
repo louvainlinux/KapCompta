@@ -29,7 +29,7 @@
 #include <QMessageBox>
 #include <QApplication>
 
-#define KC_CURRENT_FILE_VERSION ( (qint32)0xAAAAAAA0 )
+#define KC_CURRENT_FILE_VERSION ( (qint32)0xAAAAAAA5 )
 
 KCFileManager::KCFileManager(const QString& filePath, QObject *parent) :
     QObject(parent),
