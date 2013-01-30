@@ -49,10 +49,10 @@ public:
     explicit KCBasicSummaryView(QObject *parent = 0);
     // KCSummaryView interface
     QWidget* summaryView();
-    const QString& summaryName();
+    const QString summaryName() const;
     QWidget* displayOptions();
     void setConnectionName(const QString& c);
-    void setAccountProperties(KCAccountProperties properties);
+    void setAccountProperties(const KCAccountProperties &properties);
     bool optionsUnder();
     void printSummary(QPrinter *printer);
 

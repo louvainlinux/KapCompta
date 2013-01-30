@@ -97,10 +97,9 @@ void KCPropertiesPanel::buildGUI(const QString &connection)
 
 void KCPropertiesPanel::saveSettings()
 {
-    QList<KCAccountSetting*>::const_iterator settings;
     // Retrieve all settings and update the configuration file accordingly
-    for(settings = settingsList.begin(); settings != settingsList.end(); ++settings) {
-        fm->setValues(*((*settings)->settings()),(*settings)->category());
+    foreach(KCAccountSetting* as, settingsList) {
+        fm->setValues(as->settings(),as->category());
     }
     // Settings are written, cannot go-back anymore this disable the buttons
     reloadBtn->setEnabled(false);

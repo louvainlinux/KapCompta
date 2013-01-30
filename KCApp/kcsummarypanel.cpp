@@ -79,16 +79,14 @@ QWidget* KCSummaryPanel::panel()
     return this;
 }
 
-const QString& KCSummaryPanel::title()
+const QString KCSummaryPanel::title() const
 {
-    static QString s = QString(tr("Account summary"));
-    return s;
+    return tr("Account summary");
 }
 
-const QString& KCSummaryPanel::iconPath()
+const QString KCSummaryPanel::iconPath() const
 {
-    static QString s = QString(":/icons/summary");
-    return s;
+    return QString(":/icons/summary");
 }
 
 void KCSummaryPanel::buildGUI(const QString &connection)

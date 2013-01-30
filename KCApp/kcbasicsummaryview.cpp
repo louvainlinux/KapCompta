@@ -97,17 +97,16 @@ void KCBasicSummaryView::selectPage(QModelIndex idx)
     orderBy->setEnabled(true);
 }
 
-void KCBasicSummaryView::setAccountProperties(KCAccountProperties properties)
+void KCBasicSummaryView::setAccountProperties(const KCAccountProperties& properties)
 {
     this->properties = properties;
     expenseModel->select();
     backToGeneralView();
 }
 
-const QString& KCBasicSummaryView::summaryName()
+const QString KCBasicSummaryView::summaryName() const
 {
-    static QString s = tr("Default Summary view");
-    return s;
+    return tr("Default Summary view");
 }
 
 QWidget* KCBasicSummaryView::displayOptions()

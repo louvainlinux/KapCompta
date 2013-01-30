@@ -36,7 +36,7 @@ class KCPdfFormat : public QObject, public KCFileFormat
 public:
     explicit KCPdfFormat(QObject *parent = 0);
     // KCFileFormat interface
-    const QString& formatName();
+    const QString formatName() const;
     void exportToFile(const QString& fileName, const QString& connectionName,
                       KCSummaryView *view);
 signals:
