@@ -42,9 +42,9 @@ KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QDoubleValidator *balanceValidator = new QDoubleValidator(this);
     balance->setValidator(balanceValidator);
     // Connect signals/slots
-    connect(iban,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
-    connect(name,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
-    connect(balance,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
+    connect(iban,SIGNAL(textChanged(QString)),this,SIGNAL(settingChanged()));
+    connect(name,SIGNAL(textChanged(QString)),this,SIGNAL(settingChanged()));
+    connect(balance,SIGNAL(textChanged(QString)),this,SIGNAL(settingChanged()));
     // Setup layout
     QFormLayout *layout = new QFormLayout();
     layout->addRow(tr("Account name:"), name);
