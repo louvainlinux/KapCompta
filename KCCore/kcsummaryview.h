@@ -59,7 +59,7 @@ public:
      * Returns true if the option panel should be displayed under the summary view,
      * usefull for i.e. width views
      **/
-    virtual const bool optionsUnder() const { return true; }
+    virtual bool optionsUnder() const { return true; }
     /*
      * Sets the account initial balance
      **/
