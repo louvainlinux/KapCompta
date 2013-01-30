@@ -19,3 +19,12 @@ You will probably have to add the shared lib to the $PATH but I haven't tested y
 
 -- Linux
 You will probably have to add the shared lib to the $LD_LIBRARY_PATH ; haven't tested either
+
+#4 Plugins
+Plugins will be auto-detected/loaded if they are in the plugins subdirectory of the
+KCApp build dir.
+
+#5 Translations
+Compiled versions of the translation files (obtained with `lrelease somefile.ts`) must
+ be placed in the plugins dir as well in order to be loaded by the app.
+Running lupdate from times to time shouldn't be a luxury ...
