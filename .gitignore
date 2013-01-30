@@ -9,3 +9,4 @@ Makefile
 *.so
 *.so.*
 moc_*.cpp
+*.pro.user.*
