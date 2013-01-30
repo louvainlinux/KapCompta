@@ -10,3 +10,4 @@ Makefile
 *.so.*
 moc_*.cpp
 *.pro.user.*
+qrc_*.cpp
