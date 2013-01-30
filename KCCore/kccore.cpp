@@ -48,3 +48,8 @@ void KCCore::center(QWidget *w)
     const QRect screen = QApplication::desktop()->screenGeometry();
     w->move(screen.center() - w->rect().center());
 }
+
+const QString KCCore::hr()
+{
+    return QString("<table width=\"100%\"><tr><td><hr /></td></tr></table>");
+}

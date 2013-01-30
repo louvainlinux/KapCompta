@@ -44,6 +44,10 @@ public:
      * Center the given widget on the screen
      */
     static void center(QWidget* w);
+    /*
+     * Return a QString containing html code to display an horizontal line
+     */
+    static const QString hr();
 };
 
 #endif // KCCORE_H
