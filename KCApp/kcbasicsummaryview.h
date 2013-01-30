@@ -59,15 +59,21 @@ public:
 signals:
 
 public slots:
+    // The user wants a complete summary of the account
     void backToGeneralView();
+    // The user wants the details of an item of expense
     void selectPage(QModelIndex idx);
+    // Ups  update the view to reflect the selection changes
     void refreshView();
+    // The user wants to re-order the item of expense list
     void orderChanged(QString s);
 
 protected:
 
 private:
+    // Display the content of r as the view
     void makeExpensePage(QSqlRecord *r);
+    // Display the general summary view
     void makeGeneralPage();
 
     QWidget *optionsPanel;

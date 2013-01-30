@@ -36,13 +36,18 @@ public slots:
     void saveAllPanels();
 
 protected:
+    // Redefined to allow the application to save its data before closing
     void closeEvent(QCloseEvent *event);
 private slots:
+    // Open the project at path p
     void openProject(QString p);
+    // Called whenever the user selects another KCPanel in the QListWidget
     void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
+    // Build the GUI -- postponed from the constructor as it first needs to open a project
     void buildGUI();
+    // Load addons from the plugins
     void extractPluginList();
 
     KCWelcomeScreen *welcomeScreen;

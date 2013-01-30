@@ -164,6 +164,8 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 void KCSummaryPanel::refreshStackView(int idx)
 {
     stackView->setCurrentIndex(idx);
+    // To transmit the last version of the account properties to
+    // the newly selected view
     selectPanel();
 }
 

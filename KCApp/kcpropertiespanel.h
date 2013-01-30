@@ -54,8 +54,11 @@ public slots:
     void unselectPanel();
 
 private slots:
+    // Called by the save button
     void saveSettings();
+    // Called by the cancel button
     void reloadSettings();
+    // Called by the KCAccountSetting instances
     void settingsAltered();
 
 private:

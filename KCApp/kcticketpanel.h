@@ -40,6 +40,7 @@ class KCTicketPanel : public QWidget, public KCPanel
 public:
     explicit KCTicketPanel(QWidget *parent = 0);
     ~KCTicketPanel();
+    // KCPanel interface
     QWidget* panel();
     const QString title() const;
     const QString iconPath() const;
@@ -54,9 +55,13 @@ public slots:
 signals:
 
 private slots:
+    // The user pressed the + button
     void addEntry();
+    // The user pressed the - button
     void removeEntry();
+    // Propagate the index changes to the QDWM from the listView
     void setCurrentModelIndex();
+    // The user changed the filtering through the dropdown button
     void filterChanged(QString s);
 
 private:

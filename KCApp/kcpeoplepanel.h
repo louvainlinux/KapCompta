@@ -54,8 +54,11 @@ public slots:
 signals:
 
 private slots:
+    // The user pressed the + button
     void addEntry();
+    // The user pressed the - button
     void removeEntry();
+    // Propagate the index changes to the QDWM from the listView
     void setCurrentModelIndex();
 
 private:
