@@ -60,6 +60,22 @@ double KCDataBaseHelper::sumExpenses(const QString& connection, const int expens
                         "WHERE expenseid = " + QString::number(expense_id)).toDouble();
 }
 
+double KCDataBaseHelper::overalBalance(const QString &connection, const int person_id)
+{
+    return firstEntryOf(connection,
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE personid = " + QString::number(person_id)).toDouble();
+}
+
+double KCDataBaseHelper::overalBalanceForExpense(const QString& connection,
+                                                        const int person_id, const int expense_id)
+{
+    return firstEntryOf(connection,
+                        "SELECT SUM(amount) FROM tickets "
+                        "WHERE personid = " + QString::number(person_id) +
+                        " AND expenseid = " + QString::number(expense_id)).toDouble();
+}
+
 double KCDataBaseHelper::sumNegativeExpenses(const QString& connection, const int expense_id)
 {
     return firstEntryOf(connection,

@@ -67,7 +67,14 @@ public:
      * Return the sum of all positive expenses for the given database connection
      */
     static double sumPositiveExpenses(const QString& connection, const int expense_id);
-
+    /*
+     * Return the overal Balance of person X in the account
+     */
+    static double overalBalance(const QString &connection, const int person_id);
+    /*
+     * Return the balance of person X in the account for the specified item of expense
+     */
+    static double overalBalanceForExpense(const QString &connection, const int person_id, const int expense_id);
 private:
     /*
      * Return the first record resulting of querying the database opened
