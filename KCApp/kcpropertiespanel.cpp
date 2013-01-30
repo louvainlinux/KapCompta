@@ -76,7 +76,7 @@ void KCPropertiesPanel::buildGUI(const QString &connection)
         box->setLayout(vLayout);
         layout->addWidget(box);
         // And keep track of when edits have been made
-        connect(*settings, SIGNAL(settingChanged), this, SLOT(settingsAltered()));
+        connect(*settings, SIGNAL(settingChanged()), this, SLOT(settingsAltered()));
     }
     // Control buttons
     saveBtn = new QPushButton(tr("Save account properties"));
