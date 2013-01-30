@@ -1,0 +1,21 @@
+#1 Dependencies
+-> Qt 4.8 (core gui sql)
+
+#2 General
+The KapCompta.pro is the qmake master file,
+If you want to add extra plugins to your project, add their directories
+as subdir of KCPlugin/ and list them in the KCPlugin.pro file.
+The KCHousing.pro shows an example to automatically install the plugin
+and link it to the shared lib.
+
+#3 Platform specific notes
+-- Mac OSX
+In order to build the bundle, you need to add a deploy step which executes
+the 'osx_shared_lib.sh' script. Be sure it has the execution flag set (chmod +x).
+Execute it from the Build directory (or update it and commit it :D)
+
+-- Windows
+You will probably have to add the shared lib to the $PATH but I haven't tested yet
+
+-- Linux
+You will probably have to add the shared lib to the $LD_LIBRARY_PATH ; haven't tested either

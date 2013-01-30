@@ -53,15 +53,20 @@ public:
     void buildGUI(const QString &connection);
     void initDB(const QString& connection);
     void selectPanel();
+    // Plugin support
     void setSummaryViews(QList<KCSummaryView*> l);
     void setFileFormats(QList<KCFileFormat*> l);
 
 private slots:
+    // Called by the print button
     void printSummaryView();
+    // Called by the export button
     void exportView();
+    // The user has selected another summary view type
     void refreshStackView(int);
 
 private:
+    // Update the accountProperties
     void updateProperties();
 
     KCFileManager *fm;

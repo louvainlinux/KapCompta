@@ -5,6 +5,8 @@ SUBDIRS += KCCore\
            KCPlugins
 
 OTHER_FILES += \
-    LICENSE.txt
+    LICENSE.txt \
+    BUILDING.txt \
+    osx_shared_lib.sh
 
 KCApp.depends = KCCore

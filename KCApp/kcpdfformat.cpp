@@ -21,6 +21,7 @@
 
 #include "kcpdfformat.h"
 #include <QPrinter>
+#include <kcsummaryview.h>
 
 KCPdfFormat::KCPdfFormat(QObject *parent) :
     QObject(parent)

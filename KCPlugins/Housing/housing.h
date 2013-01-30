@@ -19,54 +19,26 @@
  *
  **/
 
-#ifndef KCPEOPLEPANEL_H
-#define KCPEOPLEPANEL_H
+#ifndef HOUSING_H
+#define HOUSING_H
 
-#include <QWidget>
-#include <kcpanel.h>
+#include <kcplugin.h>
 
-QT_BEGIN_NAMESPACE
-class QListView;
-class QSqlTableModel;
-class QDataWidgetMapper;
-QT_END_NAMESPACE
-
-class KCPeoplePanel : public QWidget, public KCPanel
+class Housing : public QObject, public KCPlugin
 {
     /*
-     * KCPanel to manage known people for the account
+     * Plugin to manage meals and drinks for a group of people
      */
     Q_OBJECT
-    Q_INTERFACES(KCPanel)
+    Q_INTERFACES(KCPlugin)
 
 public:
-    explicit KCPeoplePanel(QWidget *parent = 0);
-    ~KCPeoplePanel();
-    // KCPanel interface
-    QWidget* panel();
-    const QString title() const;
-    const QString iconPath() const;
-    void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
-public slots:
-    void unselectPanel();
-    void saveAll();
-signals:
-
-private slots:
-    // The user pressed the + button
-    void addEntry();
-    // The user pressed the - button
-    void removeEntry();
-    // Propagate the index changes to the QDWM from the listView
-    void setCurrentModelIndex();
-
+    // KCPlugin interface
+    const QList<KCPanel *> panels();
+    const QList<KCSummaryView *> summaryView();
+    const QList<KCAccountSetting *> accountSettings() { return QList<KCAccountSetting*>();}
+    const QList<KCFileFormat *> fileFormats() { return QList<KCFileFormat*>();}
 private:
-    QListView *listView;
-    QSqlTableModel *model;
-    QDataWidgetMapper *mapper;
-    QString connectionName;
-
 };
 
-#endif // KCPEOPLEPANEL_H
+#endif // HOUSING_H

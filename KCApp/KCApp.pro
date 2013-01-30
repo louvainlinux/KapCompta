@@ -43,5 +43,5 @@ else:unix: LIBS += -L$$OUT_PWD/../KCCore/ -lKCCore
 
 INCLUDEPATH += $$PWD/../KCCore
 DEPENDPATH += $$PWD/../KCCore
-
-PRE_TARGETDEPS += $$OUT_PWD/../KCCore/libKCCore.1.dylib
+# Might not be useful and caused bugs
+#PRE_TARGETDEPS += $$OUT_PWD/../KCCore/KCCore.1.dylib

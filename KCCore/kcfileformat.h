@@ -24,6 +24,7 @@
 
 #include "KCCore_global.h"
 #include <QString>
+#include <QObject>
 
 class KCSummaryView;
 

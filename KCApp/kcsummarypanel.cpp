@@ -79,16 +79,14 @@ QWidget* KCSummaryPanel::panel()
     return this;
 }
 
-const QString& KCSummaryPanel::title()
+const QString KCSummaryPanel::title() const
 {
-    static QString s = QString(tr("Account summary"));
-    return s;
+    return tr("Account summary");
 }
 
-const QString& KCSummaryPanel::iconPath()
+const QString KCSummaryPanel::iconPath() const
 {
-    static QString s = QString(":/icons/summary");
-    return s;
+    return QString(":/icons/summary");
 }
 
 void KCSummaryPanel::buildGUI(const QString &connection)
@@ -166,6 +164,8 @@ void KCSummaryPanel::buildGUI(const QString &connection)
 void KCSummaryPanel::refreshStackView(int idx)
 {
     stackView->setCurrentIndex(idx);
+    // To transmit the last version of the account properties to
+    // the newly selected view
     selectPanel();
 }
 

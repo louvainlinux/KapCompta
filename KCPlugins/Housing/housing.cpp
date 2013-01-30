@@ -19,54 +19,17 @@
  *
  **/
 
-#ifndef KCPEOPLEPANEL_H
-#define KCPEOPLEPANEL_H
+#include "housing.h"
+#include "meal.h"
 
-#include <QWidget>
-#include <kcpanel.h>
-
-QT_BEGIN_NAMESPACE
-class QListView;
-class QSqlTableModel;
-class QDataWidgetMapper;
-QT_END_NAMESPACE
-
-class KCPeoplePanel : public QWidget, public KCPanel
+const QList<KCPanel *> Housing::panels()
 {
-    /*
-     * KCPanel to manage known people for the account
-     */
-    Q_OBJECT
-    Q_INTERFACES(KCPanel)
+    return QList<KCPanel *>() << new Meal();
+}
 
-public:
-    explicit KCPeoplePanel(QWidget *parent = 0);
-    ~KCPeoplePanel();
-    // KCPanel interface
-    QWidget* panel();
-    const QString title() const;
-    const QString iconPath() const;
-    void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
-public slots:
-    void unselectPanel();
-    void saveAll();
-signals:
+const QList<KCSummaryView *> Housing::summaryView()
+{
+    return QList<KCSummaryView *>();
+}
 
-private slots:
-    // The user pressed the + button
-    void addEntry();
-    // The user pressed the - button
-    void removeEntry();
-    // Propagate the index changes to the QDWM from the listView
-    void setCurrentModelIndex();
-
-private:
-    QListView *listView;
-    QSqlTableModel *model;
-    QDataWidgetMapper *mapper;
-    QString connectionName;
-
-};
-
-#endif // KCPEOPLEPANEL_H
+Q_EXPORT_PLUGIN2(kc_housing, Housing)

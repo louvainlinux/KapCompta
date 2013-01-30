@@ -32,7 +32,7 @@ static QString IBANKEY    = ( QString("accountIBAN")    );
 static QString BALANCEKEY = ( QString("accountBalance") );
 
 KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
-    QObject(parent),
+    KCAccountSetting(parent),
     panel(new QWidget()),
     iban(new QLineEdit(QString("BEXX XXXX XXXX XXXX"), panel)),
     name(new QLineEdit(tr("Unnamed account"), panel)),
@@ -42,9 +42,9 @@ KCBasicAccountProperties::KCBasicAccountProperties(QObject *parent) :
     QDoubleValidator *balanceValidator = new QDoubleValidator(this);
     balance->setValidator(balanceValidator);
     // Connect signals/slots
-    connect(iban,SIGNAL(editingFinished()),this,SLOT(altered()));
-    connect(name,SIGNAL(editingFinished()),this,SLOT(altered()));
-    connect(balance,SIGNAL(editingFinished()),this,SLOT(altered()));
+    connect(iban,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
+    connect(name,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
+    connect(balance,SIGNAL(editingFinished()),this,SIGNAL(settingChanged()));
     // Setup layout
     QFormLayout *layout = new QFormLayout();
     layout->addRow(tr("Account name:"), name);

@@ -48,15 +48,17 @@ public:
     const QString title() const;
     const QString iconPath() const;
     void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
     void setSettingList(QList<KCAccountSetting*> l);
 
 public slots:
     void unselectPanel();
 
 private slots:
+    // Called by the save button
     void saveSettings();
+    // Called by the cancel button
     void reloadSettings();
+    // Called by the KCAccountSetting instances
     void settingsAltered();
 
 private:

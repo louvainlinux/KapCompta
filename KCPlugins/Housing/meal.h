@@ -19,60 +19,35 @@
  *
  **/
 
-#ifndef KCTICKETPANEL_H
-#define KCTICKETPANEL_H
+#ifndef MEAL_H
+#define MEAL_H
 
 #include <QWidget>
 #include <kcpanel.h>
 
-QT_BEGIN_NAMESPACE
-class QListView;
-class QSqlRelationalTableModel;
-class QSqlTableModel;
-class QDataWidgetMapper;
-QT_END_NAMESPACE
-
-class KCTicketPanel : public QWidget, public KCPanel
+class Meal : public QWidget, public KCPanel
 {
+    /*
+     * Provide a KCPanel to encode meals
+     **/
     Q_OBJECT
     Q_INTERFACES(KCPanel)
 
 public:
-    explicit KCTicketPanel(QWidget *parent = 0);
-    ~KCTicketPanel();
+    explicit Meal(QWidget *parent = 0);
     // KCPanel interface
+    void buildGUI(const QString& connection);
+    void initDB(const QString& connection);
     QWidget* panel();
     const QString title() const;
     const QString iconPath() const;
-    void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
-
-public slots:
-    void selectPanel();
-    void unselectPanel();
-    void saveAll();
 
 signals:
 
-private slots:
-    // The user pressed the + button
-    void addEntry();
-    // The user pressed the - button
-    void removeEntry();
-    // Propagate the index changes to the QDWM from the listView
-    void setCurrentModelIndex();
-    // The user changed the filtering through the dropdown button
-    void filterChanged(QString s);
+public slots:
 
 private:
-    QListView *listView;
-    QSqlRelationalTableModel *model;
-    QSqlTableModel *personRel;
-    QSqlTableModel *expenseRel;
-    QDataWidgetMapper *mapper;
-    QString connectionName;
-    int personid;
-    int expenseid;
+    QString connection;
 };
 
-#endif // KCTICKETPANEL_H
+#endif // MEAL_H

@@ -54,16 +54,14 @@ QWidget* KCTicketPanel::panel()
     return this;
 }
 
-const QString& KCTicketPanel::title()
+const QString KCTicketPanel::title() const
 {
-    static QString s = QString(tr("Receipts management"));
-    return s;
+    return tr("Receipts management");
 }
 
-const QString& KCTicketPanel::iconPath()
+const QString KCTicketPanel::iconPath() const
 {
-    static QString s = QString(":/icons/ticket");
-    return s;
+    return QString(":/icons/ticket");
 }
 
 void KCTicketPanel::unselectPanel()

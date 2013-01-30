@@ -24,12 +24,14 @@
 
 #include "KCCore_global.h"
 #include <QString>
+#include <QObject>
 
 QT_BEGIN_NAMESPACE
 class QWidget;
 QT_END_NAMESPACE
 
 class KCCORESHARED_EXPORT KCPanel {
+
 public:
     virtual ~KCPanel() {}
 

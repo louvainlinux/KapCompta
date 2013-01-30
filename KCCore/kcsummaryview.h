@@ -24,9 +24,11 @@
 
 #include "KCCore_global.h"
 #include <QString>
+#include <QObject>
 
 QT_BEGIN_NAMESPACE
 class QWidget;
+class QPrinter;
 QT_END_NAMESPACE
 
 struct KCAccountProperties;
@@ -68,6 +70,10 @@ public:
     virtual void printSummary(QPrinter *printer) = 0;
 };
 
+QT_BEGIN_NAMESPACE
+Q_DECLARE_INTERFACE(KCSummaryView, "org.kapcompta.kcsummaryview/1.0")
+QT_END_NAMESPACE
+
 struct KCCORESHARED_EXPORT KCAccountProperties {
     int balance;
     QString name;
@@ -83,9 +89,5 @@ struct KCCORESHARED_EXPORT KCAccountProperties {
     }
 
 };
-
-QT_BEGIN_NAMESPACE
-Q_DECLARE_INTERFACE(KCSummaryView, "org.kapcompta.kcsummaryview/1.0")
-QT_END_NAMESPACE
 
 #endif // KCSUMMARYVIEW_H
