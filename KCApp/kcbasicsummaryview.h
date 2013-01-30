@@ -25,16 +25,17 @@
 #include <kcsummaryview.h>
 #include <QModelIndex>
 #include <QObject>
+#include <QSqlRecord>
 
 QT_BEGIN_NAMESPACE
 class QPainter;
 class QListView;
 class QPushButton;
 class QSqlTableModel;
-class QSqlRecord;
 class QTextEdit;
 class QWidget;
 class QComboBox;
+class QCheckBox;
 QT_END_NAMESPACE
 
 class KCBasicSummaryView : public QObject, public KCSummaryView
@@ -72,9 +73,12 @@ protected:
 
 private:
     // Display the content of r as the view
-    void makeExpensePage(QSqlRecord *r);
+    void makeExpensePage(const QSqlRecord& r);
     // Display the general summary view
     void makeGeneralPage();
+    // Display the individual balance page, will ignore r if global is
+    // set to true
+    void makeIndividualPage(bool global, const QSqlRecord& r);
 
     QWidget *optionsPanel;
     QPushButton *generalBtn;
@@ -83,6 +87,7 @@ private:
     QTextEdit *view;
     QComboBox *orderBy;
     QString order;
+    QCheckBox *individual;
 
     QString connection;
     KCAccountProperties properties;
