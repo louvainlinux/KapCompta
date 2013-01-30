@@ -48,7 +48,6 @@ public:
     const QString title() const;
     const QString iconPath() const;
     void buildGUI(const QString &connection);
-    void initDB(const QString& connection);
     void setSettingList(QList<KCAccountSetting*> l);
 
 public slots:

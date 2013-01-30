@@ -31,6 +31,7 @@ class QWidget;
 QT_END_NAMESPACE
 
 class KCCORESHARED_EXPORT KCPanel {
+
 public:
     virtual ~KCPanel() {}
 
