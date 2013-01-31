@@ -127,6 +127,11 @@ void KCSummaryPanel::buildGUI(const QString &connection)
                 hLayout->addWidget(summary,1);
                 page->setLayout(hLayout);
             }
+        } else {
+            // Even if we don't have options we still would like to be displayed
+            QHBoxLayout *layout = new QHBoxLayout();
+            layout->addWidget(summary);
+            page->setLayout(layout);
         }
         stackView->addWidget(page);
     }
