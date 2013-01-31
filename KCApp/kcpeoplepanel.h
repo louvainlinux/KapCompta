@@ -40,6 +40,7 @@ class KCPeoplePanel : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
+    long ID() const {return 1;}
     explicit KCPeoplePanel(QWidget *parent = 0);
     ~KCPeoplePanel();
     // KCPanel interface

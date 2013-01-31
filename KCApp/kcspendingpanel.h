@@ -40,6 +40,7 @@ class KCSpendingPanel : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
+    long ID() const {return 3;}
     explicit KCSpendingPanel(QWidget *parent = 0);
     ~KCSpendingPanel();
     // KCPanel interface

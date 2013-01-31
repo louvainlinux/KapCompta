@@ -147,11 +147,10 @@ void KCMain::buildGUI()
     wList->setSpacing(12);
     // Check that each loaded KCPanel has had its chance to initialize the database
     foreach(KCPanel* p, panels) {
-        QString panelID = QString(p->title()).replace(" ", "_");
-        bool initDB = fileManager->value(panelID + "dbFileHasBeenInitialized").toBool();
+        bool initDB = fileManager->value(QString::number(p->ID()) + "dbFileHasBeenInitialized").toBool();
         if (!initDB) {
             p->initDB(fileManager->dbPath());
-            fileManager->setValue(panelID + "dbFileHasBeenInitialized",QVariant(true));
+            fileManager->setValue(QString::number(p->ID()) + "dbFileHasBeenInitialized",QVariant(true));
         }
     }
     // The widget holding all our KCPanel

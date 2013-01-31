@@ -33,6 +33,11 @@ QT_END_NAMESPACE
 class KCCORESHARED_EXPORT KCPanel {
 
 public:
+    /*
+     * Unique identifier for the KCPanel class
+     **/
+    virtual long ID() const = 0;
+
     virtual ~KCPanel() {}
 
     /*

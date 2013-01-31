@@ -34,6 +34,7 @@ class Meal : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
+    long ID() const {return 6;}
     explicit Meal(QWidget *parent = 0);
     // KCPanel interface
     void buildGUI(const QString& connection);

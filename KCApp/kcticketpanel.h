@@ -38,6 +38,7 @@ class KCTicketPanel : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
+    long ID() const {return 5;}
     explicit KCTicketPanel(QWidget *parent = 0);
     ~KCTicketPanel();
     // KCPanel interface

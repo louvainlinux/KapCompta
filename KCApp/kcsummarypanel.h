@@ -45,6 +45,7 @@ class KCSummaryPanel : public QWidget, public KCPanel
     Q_INTERFACES(KCPanel)
 
 public:
+    long ID() const {return 4;}
     explicit KCSummaryPanel(KCFileManager *fm, QWidget *parent = 0);
     // KCPanel interface
     QWidget* panel();
