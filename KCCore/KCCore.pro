@@ -10,7 +10,8 @@ SOURCES +=\
            kcdatabasehelper.cpp\
            kcfilemanager.cpp \
            kcsettings.cpp \
-    kccore.cpp
+    kccore.cpp \
+    kcdateedit.cpp
 
 HEADERS +=\
            KCCore_global.h\
@@ -22,4 +23,5 @@ HEADERS +=\
     kcsummaryview.h \
     kcaccountsetting.h \
     kcfileformat.h \
-    kcplugin.h
+    kcplugin.h \
+    kcdateedit.h

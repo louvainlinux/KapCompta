@@ -40,6 +40,7 @@
 #include <QSqlQuery>
 #include <QDate>
 #include <QModelIndex>
+#include <kcdateedit.h>
 
 KCTicketPanel::KCTicketPanel(QWidget *parent) :
     QWidget(parent)
@@ -96,15 +97,13 @@ void KCTicketPanel::buildGUI(const QString &connection)
 
     QLineEdit *amount = new QLineEdit(this);
     amount->setValidator(new QDoubleValidator(this));
-    QLineEdit *date = new QLineEdit(this);
-    QCompleter *dateCompleter = new QCompleter(this);
-    dateCompleter->setModel(model);
-    dateCompleter->setCompletionColumn(model->fieldIndex("date"));
-    dateCompleter->setCompletionMode(QCompleter::InlineCompletion);
-    date->setCompleter(dateCompleter);
     QPlainTextEdit *notes = new QPlainTextEdit(this);
     QPushButton *add = new QPushButton(QString("+"),this);
     QPushButton *remove = new QPushButton(QString("-"), this);
+
+    KCDateEdit *date = new KCDateEdit(QDate::currentDate(), this);
+    date->setCalendarPopup(true);
+    date->setDisplayFormat(QString("dd/MM/yyyy"));
 
     QComboBox *filter = new QComboBox(this);
     QStringListModel *filterModel = new QStringListModel(this);
@@ -200,9 +199,9 @@ void KCTicketPanel::filterChanged(QString s)
 void KCTicketPanel::addEntry()
 {
     QSqlRecord record = model->record();
-    record.setValue(model->fieldIndex("date"),QVariant(QDate::currentDate().toString("d/MM/yyyy")
-                                                       + tr(" *new")));
-    record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount") + tr(" *new")));
+    record.setValue(model->fieldIndex("date"),
+                    QVariant(QDate::currentDate().toString("dd/MM/yyyy")));
+    record.setValue(model->fieldIndex("amount"),QVariant(tr("the amount")));
     record.setValue(model->fieldIndex("notes"),QVariant(tr("Misc.")));
     record.setValue(personid,QVariant(1));
     record.setValue(expenseid,QVariant(1));
