@@ -20,18 +20,14 @@
  **/
 
 #include "meal.h"
+#include "mealcalendar.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlDatabase>
-#include <QHBoxLayout>
+#include <QtSql/QSqlRecord>
+#include <QVariant>
 #include <QVBoxLayout>
-#include <QPushButton>
-#include <QComboBox>
-#include <QListView>
-#include <QTableView>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QFormLayout>
+#include <QHash>
+#include <kccore.h>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -40,76 +36,47 @@ Meal::Meal(QWidget *parent) :
 
 void Meal::buildGUI(const QString& connection)
 {
-    // -- Left side of the panel
-    QListView *list = new QListView(this);
-
-    QPushButton *add = new QPushButton("+",this);
-    QPushButton *remove = new QPushButton("-",this);
-    QHBoxLayout *add_remove = new QHBoxLayout();
-    add_remove->addWidget(add);
-    add_remove->addWidget(remove);
-
-    QComboBox *filter = new QComboBox(this);
-    QFormLayout *filter_layout = new QFormLayout();
-    filter_layout->addRow(tr("List by:"), filter);
-    filter_layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-    filter_layout->setSizeConstraint(QLayout::SetNoConstraint);
-
-    QVBoxLayout *left = new QVBoxLayout();
-    left->addLayout(filter_layout);
-    left->addLayout(add_remove);
-    left->addWidget(list);
-
-    // -- Right side of the panel
-    QFormLayout *date_layout = new QFormLayout();
-    QLineEdit *date = new QLineEdit(this);
-    date_layout->addRow(tr("Date:"),date);
-    date_layout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
-    date_layout->setSizeConstraint(QLayout::SetNoConstraint);
-
-    QTableView *people = new QTableView(this);
-
-    QHBoxLayout *ticket_text_layout = new QHBoxLayout();
-    ticket_text_layout->addWidget(new QLabel(tr("Available tickets"), this));
-    ticket_text_layout->addStretch();
-    ticket_text_layout->addWidget(new QLabel(tr("Tickets selected for the meal")));
-
-    QTableView *available_tickets = new QTableView(this);
-    available_tickets->setAlternatingRowColors(true);
-
-    QPushButton *select_ticket = new QPushButton(">>>",this);
-    QPushButton *deselect_ticket = new QPushButton("<<<",this);
-    QVBoxLayout *selection_layout = new QVBoxLayout();
-    selection_layout->addStretch();
-    selection_layout->addWidget(select_ticket);
-    selection_layout->addWidget(deselect_ticket);
-    selection_layout->addStretch();
-
-    QTableView *selected_tickets = new QTableView(this);
-    selected_tickets->setAlternatingRowColors(true);
-
-    QHBoxLayout *table_layout = new QHBoxLayout();
-    table_layout->addWidget(available_tickets);
-    table_layout->addLayout(selection_layout);
-    table_layout->addWidget(selected_tickets);
-
-    QVBoxLayout *box_layout = new QVBoxLayout();
-    box_layout->addLayout(ticket_text_layout);
-    box_layout->addLayout(table_layout);
-
-    QGroupBox *tickets_box = new QGroupBox(this);
-    tickets_box->setLayout(box_layout);
-    tickets_box->setTitle(tr("Tickets"));
-
-    QVBoxLayout *right = new QVBoxLayout();
-    right->addLayout(date_layout);
-    right->addWidget(people);
-    right->addWidget(tickets_box);
-    // Panel layout
-    QHBoxLayout *layout = new QHBoxLayout();
-    layout->addLayout(left);
-    layout->addLayout(right,1);
+    this->connection = QString(connection);
+    // Setup calendar
+    calendar = new MealCalendar(this);
+    calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
+    calendar->setGridVisible(true);
+    refreshCalendar(QDate::currentDate().day(), QDate::currentDate().year());
+    connect(calendar, SIGNAL(currentPageChanged(int,int)), this, SLOT(refreshCalendar(int,int)));
+    connect(calendar, SIGNAL(clicked(QDate)), this, SLOT(editDay(QDate)));
+    // Setup layout
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(calendar);
     this->setLayout(layout);
+}
+
+void Meal::editDay(const QDate &day)
+{
+
+}
+
+void Meal::refreshCalendar(int year, int month)
+{
+    QHash<int,int> months;
+    QSqlQuery query(QSqlDatabase::database(connection));
+    for (int day = 1; day < 32; ++day) {
+        query.exec(QString("SELECT COUNT(*) FROM meals WHERE date = ") + KCCore::twoDigit(day)
+                   + "/" + KCCore::twoDigit(month) + "/" + KCCore::twoDigit(year));
+        query.first();
+        QSqlRecord record = query.record();
+        months.insert(day, record.value(0).toInt());
+    }
+    calendar->setCurrentMonthHighlights(months);
+}
+
+void Meal::selectPanel()
+{
+
+}
+
+void Meal::unselectPanel()
+{
+
 }
 
 void Meal::initDB(const QString& connection)

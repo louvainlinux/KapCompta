@@ -53,3 +53,8 @@ const QString KCCore::hr()
 {
     return QString("<table width=\"100%\"><tr><td><hr /></td></tr></table>");
 }
+
+QString KCCore::twoDigit(int x)
+{
+    return x >= 10 ? QString::number(x) : QString("0") + QString::number(x);
+}

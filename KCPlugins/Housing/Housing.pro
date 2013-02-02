@@ -2,9 +2,11 @@ QT           += core gui sql
 TEMPLATE      = lib
 CONFIG       += plugin
 HEADERS       = housing.h \
-                meal.h
+                meal.h \
+    mealcalendar.h
 SOURCES       = housing.cpp \
-                meal.cpp
+                meal.cpp \
+    mealcalendar.cpp
 TARGET        = $$qtLibraryTarget(kc_housing)
 
 DESTDIR       = $$OUT_PWD/../../KCApp/plugins

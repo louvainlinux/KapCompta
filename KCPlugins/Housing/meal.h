@@ -23,7 +23,10 @@
 #define MEAL_H
 
 #include <QWidget>
+#include <QDate>
 #include <kcpanel.h>
+
+class MealCalendar;
 
 class Meal : public QWidget, public KCPanel
 {
@@ -46,9 +49,14 @@ public:
 signals:
 
 public slots:
+    void refreshCalendar(int year, int month);
+    void selectPanel();
+    void unselectPanel();
+    void editDay(const QDate& day);
 
 private:
     QString connection;
+    MealCalendar *calendar;
 };
 
 #endif // MEAL_H

@@ -48,6 +48,10 @@ public:
      * Return a QString containing html code to display an horizontal line
      */
     static const QString hr();
+    /*
+     * Returns a two digit or more version of the number given
+     **/
+    static QString twoDigit(int x);
 };
 
 #endif // KCCORE_H
