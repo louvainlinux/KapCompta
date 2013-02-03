@@ -61,6 +61,7 @@ void Meal::buildGUI(const QString& connection)
     // Setup popup contents
     QVBoxLayout *popupLayout = new QVBoxLayout();
     popupContentLayout = new QVBoxLayout();
+    popupContentLayout->setSizeConstraint(QLayout::SetFixedSize);
     QHBoxLayout *hLayout = new QHBoxLayout();
     QPushButton *plus = new QPushButton("+");
     connect(plus, SIGNAL(clicked()), this, SLOT(addMeal()));
@@ -72,6 +73,8 @@ void Meal::buildGUI(const QString& connection)
     hLayout->addStretch(1);
     popupLayout->addLayout(hLayout);
     popupLayout->addLayout(popupContentLayout, 1);
+    popupLayout->setSizeConstraint(QLayout::SetFixedSize);
+    hLayout->setSizeConstraint(QLayout::SetFixedSize);
     popup->setLayout(popupLayout);
     // Setup layout
     QVBoxLayout *layout = new QVBoxLayout();
@@ -81,7 +84,7 @@ void Meal::buildGUI(const QString& connection)
 
 void Meal::addMeal()
 {
-    MealEditor *editor = new MealEditor(day, connection, this);
+    MealEditor *editor = new MealEditor(day, connection);
     popupContentLayout->addWidget(editor);
     connect(editor, SIGNAL(removed(MealEditor*)), this, SLOT(mealRemoved(MealEditor*)));
     popup->adjustSize();
@@ -91,9 +94,8 @@ void Meal::addMeal()
 void Meal::mealRemoved(MealEditor *editor)
 {
     popupContentLayout->removeWidget(editor);
-    popup->adjustSize();
     refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
-    delete editor;
+    editor->deleteLater();
 }
 
 void Meal::editDay(const QDate &day)
@@ -105,7 +107,7 @@ void Meal::editDay(const QDate &day)
     query.exec(QString("SELECT id FROM meals WHERE date = '") + day.toString("dd/MM/yyyy") + "'");
     while (query.next()) {
         QSqlRecord record = query.record();
-        MealEditor *editor = new MealEditor(day, connection, record.value("id").toInt(), this);
+        MealEditor *editor = new MealEditor(day, connection, record.value("id").toInt());
         popupContentLayout->addWidget(editor);
         connect(editor, SIGNAL(removed(MealEditor*)), this, SLOT(mealRemoved(MealEditor*)));
     }
@@ -212,20 +214,25 @@ void MealEditor::addRecord()
 
 void MealEditor::buildGUI()
 {
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     QGroupBox *box = new QGroupBox(this);
     QVBoxLayout *layout = new QVBoxLayout();
     QPushButton *remove = new QPushButton("-", this);
     QHBoxLayout *header = new QHBoxLayout();
     connect(remove, SIGNAL(clicked()), this, SLOT(remove()));
     subscriptions = new QLabel(this);
+    subscriptions->setStyleSheet("border: 1px solid grey");
     individualPrice = new QLabel(this);
+    individualPrice->setStyleSheet("border: 1px solid grey");
     totalPrice = new QLabel(this);
+    totalPrice->setStyleSheet("border: 1px solid grey");
     header->addWidget(remove);
     header->addWidget(subscriptions);
     header->addWidget(individualPrice);
     header->addWidget(totalPrice);
 
     layout->addLayout(header);
+    layout->setSizeConstraint(QLayout::SetFixedSize);
     box->setLayout(layout);
     this->setLayout(new QVBoxLayout());
     this->layout()->addWidget(box);
@@ -238,6 +245,7 @@ void MealEditor::remove()
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec("DELETE FROM meals WHERE id = '" + QString::number(meal_id) + "'");
     emit removed(this);
+    parentWidget()->adjustSize();
 }
 
 void MealEditor::updateHeader()
