@@ -28,10 +28,17 @@
 #include <QVBoxLayout>
 #include <QHash>
 #include <kccore.h>
+#include <QPushButton>
+#include <QLabel>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
 {
+}
+
+Meal::~Meal()
+{
+    delete popup;
 }
 
 void Meal::buildGUI(const QString& connection)
@@ -41,18 +48,63 @@ void Meal::buildGUI(const QString& connection)
     calendar = new MealCalendar(this);
     calendar->setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
     calendar->setGridVisible(true);
-    refreshCalendar(QDate::currentDate().day(), QDate::currentDate().year());
+    calendar->setFirstDayOfWeek(Qt::Monday);
+    refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
     connect(calendar, SIGNAL(currentPageChanged(int,int)), this, SLOT(refreshCalendar(int,int)));
     connect(calendar, SIGNAL(clicked(QDate)), this, SLOT(editDay(QDate)));
+    // Setup popup editor widget
+    popup = new QWidget();
+    popup->setWindowFlags(Qt::Popup);
+    popup->setVisible(false);
+    // Setup popup contents
+    QVBoxLayout *popupLayout = new QVBoxLayout();
+    popupContentLayout = new QVBoxLayout();
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    QPushButton *plus = new QPushButton("+");
+    connect(plus, SIGNAL(clicked()), this, SLOT(addMeal()));
+    popupDay = new QLabel(this);
+    popupDay->setAlignment(Qt::AlignCenter);
+    // Setup popup layouts
+    hLayout->addWidget(plus);
+    hLayout->addWidget(popupDay);
+    hLayout->addStretch(1);
+    popupLayout->addLayout(hLayout);
+    popupLayout->addLayout(popupContentLayout);
+    popup->setLayout(popupLayout);
     // Setup layout
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(calendar);
     this->setLayout(layout);
 }
 
+void Meal::addMeal()
+{
+    popupContentLayout->addWidget(new MealEditor(day, connection, this));
+    popup->adjustSize();
+    refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
+}
+
+void Meal::mealRemoved(MealEditor *editor)
+{
+    popupContentLayout->removeWidget(editor);
+    popup->adjustSize();
+    refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
+    delete editor;
+}
+
 void Meal::editDay(const QDate &day)
 {
-
+    if (popup->isVisible()) cleanPopup();
+    this->day = QDate(day);
+    popupDay->setText(tr("Edit meals on the <b>") + day.toString("dd/MM/yy") + "</b>");
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec(QString("SELECT id FROM meals WHERE date = '") + day.toString("dd/MM/yyyy") + "'");
+    while (query.next()) {
+        QSqlRecord record = query.record();
+        popupContentLayout->addWidget(new MealEditor(day, connection, record.value("id").toInt(), this));
+    }
+    popup->adjustSize();
+    popup->show();
 }
 
 void Meal::refreshCalendar(int year, int month)
@@ -60,8 +112,9 @@ void Meal::refreshCalendar(int year, int month)
     QHash<int,int> months;
     QSqlQuery query(QSqlDatabase::database(connection));
     for (int day = 1; day < 32; ++day) {
-        query.exec(QString("SELECT COUNT(*) FROM meals WHERE date = ") + KCCore::twoDigit(day)
-                   + "/" + KCCore::twoDigit(month) + "/" + KCCore::twoDigit(year));
+        QString queryText = QString("SELECT COUNT(*) FROM meals WHERE date = '") + KCCore::twoDigit(day)
+                + "/" + KCCore::twoDigit(month) + "/" + KCCore::twoDigit(year) + "'";
+        query.exec(queryText);
         query.first();
         QSqlRecord record = query.record();
         months.insert(day, record.value(0).toInt());
@@ -71,12 +124,25 @@ void Meal::refreshCalendar(int year, int month)
 
 void Meal::selectPanel()
 {
-
+    refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
 }
 
 void Meal::unselectPanel()
 {
+    cleanPopup();
+}
 
+void Meal::cleanPopup()
+{
+    popup->hide();
+    // Empty it
+    QLayoutItem* item;
+    while ((item = popupContentLayout->takeAt(0)) != NULL)
+    {
+        delete item->widget();
+        delete item;
+    }
+    popup->setLayout(new QVBoxLayout());
 }
 
 void Meal::initDB(const QString& connection)
@@ -87,9 +153,11 @@ void Meal::initDB(const QString& connection)
     query.exec("INSERT INTO expenses(name, hidden) VALUES('"+tr("Meals")+"', 1)");
     query.exec("CREATE TABLE meals_subscription (id INTEGER PRIMARY KEY, "
                "personid INTEGER REFERENCES person(id) "
-               "ON UPDATE CASCADE ON DELETE SET NULL, "
+               "ON UPDATE CASCADE ON DELETE DELETE, "
                "cross INTEGER)");
     query.exec("CREATE TABLE meals_ticket (id INTEGER PRIMARY KEY, "
+               "mealid INTEGER REFERENCES meals(id)"
+               "ON UPDATE CASCADE ON DELETE DELETE)"
                "ticketid INTEGER REFERENCES tickets(id) "
                "ON UPDATE CASCADE ON DELETE DELETE)");
 }
@@ -107,4 +175,34 @@ const QString Meal::title() const
 const QString Meal::iconPath() const
 {
     return QString(":/meals");
+}
+
+MealEditor::MealEditor(const QDate& day, const QString& connection, QWidget *parent)
+    : QWidget(parent)
+{
+    this->day = QDate(day);
+    this->connection = QString(connection);
+    addRecord();
+    buildGUI();
+}
+
+MealEditor::MealEditor(const QDate& day, const QString& connection, int meal_id, QWidget *parent)
+    : QWidget(parent)
+{
+    this->day = QDate(day);
+    this->meal_id = meal_id;
+    this->connection = QString(connection);
+    buildGUI();
+}
+
+void MealEditor::addRecord()
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    QString queryText = "INSERT INTO meals(date) VALUES('" + day.toString("dd/MM/yyyy")+ "')";
+    query.exec(queryText);
+}
+
+void MealEditor::buildGUI()
+{
+
 }

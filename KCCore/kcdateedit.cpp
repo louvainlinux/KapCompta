@@ -31,7 +31,7 @@ KCDateEdit::KCDateEdit(const QDate& date, QWidget* parent)
 {
 }
 
-const QString KCDateEdit::date()
+const QString KCDateEdit::date() const
 {
     // Simply make the type conversion
     return QDate(QDateEdit::date()).toString("dd/MM/yyyy");

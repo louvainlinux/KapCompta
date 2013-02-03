@@ -27,6 +27,12 @@
 #include <kcpanel.h>
 
 class MealCalendar;
+class MealEditor;
+
+QT_BEGIN_NAMESPACE
+class QVBoxLayout;
+class QLabel;
+QT_END_NAMESPACE
 
 class Meal : public QWidget, public KCPanel
 {
@@ -39,6 +45,7 @@ class Meal : public QWidget, public KCPanel
 public:
     long ID() const {return 6;}
     explicit Meal(QWidget *parent = 0);
+    ~Meal();
     // KCPanel interface
     void buildGUI(const QString& connection);
     void initDB(const QString& connection);
@@ -49,14 +56,42 @@ public:
 signals:
 
 public slots:
-    void refreshCalendar(int year, int month);
+    void refreshCalendar(int month, int year);
     void selectPanel();
     void unselectPanel();
     void editDay(const QDate& day);
+    void addMeal();
+    void mealRemoved(MealEditor *editor);
 
 private:
+    void cleanPopup();
+
     QString connection;
     MealCalendar *calendar;
+    QWidget *popup;
+    QVBoxLayout *popupContentLayout;
+    QLabel *popupDay;
+    QDate day;
+};
+
+class MealEditor : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit MealEditor(const QDate& day, const QString& connection, QWidget *parent = 0);
+    MealEditor(const QDate& day, const QString& connection, int meal_id, QWidget *parent = 0);
+
+signals:
+    void removed();
+
+private:
+    void addRecord();
+    void buildGUI();
+
+    QDate day;
+    QString connection;
+    int meal_id;
 };
 
 #endif // MEAL_H

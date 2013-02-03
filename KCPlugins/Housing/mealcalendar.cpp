@@ -43,7 +43,8 @@ void MealCalendar::paintCell(QPainter *painter, const QRect &rect, const QDate &
         painter->fillRect(rect, QBrush(QColor(60,150,75)));
         // Draw the day number & meal count
         painter->drawText(rect, QString::number(date.day()));
-        QString mealText = QString::number(highlights.value(date.day())) + tr(" Meals");
+        QString mealText = QString::number(highlights.value(date.day()))
+                + (highlights.value(date.day())> 1 ? tr(" Meals") : tr(" Meal"));
         painter->drawText(QRect(
                               rect.x(),
                               rect.y() + rect.height()/2 - painter->fontMetrics().height()/2,

@@ -38,7 +38,7 @@ public:
     KCDateEdit(const QDate& date, QWidget* parent = 0);
     // Add support for our new property
     void setDate(const QString& date);
-    const QString date();
+    const QString date() const;
 
 signals:
     void dateChanged(const QString& date);
