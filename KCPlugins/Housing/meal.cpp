@@ -30,6 +30,7 @@
 #include <kccore.h>
 #include <QPushButton>
 #include <QLabel>
+#include <QGroupBox>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -94,14 +95,17 @@ void Meal::mealRemoved(MealEditor *editor)
 
 void Meal::editDay(const QDate &day)
 {
-    if (popup->isVisible()) cleanPopup();
+    cleanPopup();
     this->day = QDate(day);
     popupDay->setText(tr("Edit meals on the <b>") + day.toString("dd/MM/yy") + "</b>");
     QSqlQuery query(QSqlDatabase::database(connection));
     query.exec(QString("SELECT id FROM meals WHERE date = '") + day.toString("dd/MM/yyyy") + "'");
     while (query.next()) {
         QSqlRecord record = query.record();
-        popupContentLayout->addWidget(new MealEditor(day, connection, record.value("id").toInt(), this));
+        QGroupBox *box = new QGroupBox(this);
+        box->setLayout(new QVBoxLayout());
+        box->layout()->addWidget(new MealEditor(day, connection, record.value("id").toInt(), box));
+        popupContentLayout->addWidget(box);
     }
     popup->adjustSize();
     popup->show();
@@ -139,10 +143,10 @@ void Meal::cleanPopup()
     QLayoutItem* item;
     while ((item = popupContentLayout->takeAt(0)) != NULL)
     {
+        delete item->widget()->layout();
         delete item->widget();
         delete item;
     }
-    popup->setLayout(new QVBoxLayout());
 }
 
 void Meal::initDB(const QString& connection)
