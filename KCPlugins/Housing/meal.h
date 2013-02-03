@@ -83,7 +83,11 @@ public:
     MealEditor(const QDate& day, const QString& connection, int meal_id, QWidget *parent = 0);
 
 signals:
-    void removed();
+    void removed(MealEditor*);
+
+public slots:
+    void remove();
+    void updateHeader();
 
 private:
     void addRecord();
@@ -92,6 +96,9 @@ private:
     QDate day;
     QString connection;
     int meal_id;
+    QLabel *subscriptions;
+    QLabel *totalPrice;
+    QLabel *individualPrice;
 };
 
 #endif // MEAL_H

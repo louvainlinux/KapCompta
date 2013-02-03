@@ -57,6 +57,7 @@ void Meal::buildGUI(const QString& connection)
     popup = new QWidget();
     popup->setWindowFlags(Qt::Popup);
     popup->setVisible(false);
+    popup->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     // Setup popup contents
     QVBoxLayout *popupLayout = new QVBoxLayout();
     popupContentLayout = new QVBoxLayout();
@@ -70,7 +71,7 @@ void Meal::buildGUI(const QString& connection)
     hLayout->addWidget(popupDay);
     hLayout->addStretch(1);
     popupLayout->addLayout(hLayout);
-    popupLayout->addLayout(popupContentLayout);
+    popupLayout->addLayout(popupContentLayout, 1);
     popup->setLayout(popupLayout);
     // Setup layout
     QVBoxLayout *layout = new QVBoxLayout();
@@ -80,7 +81,9 @@ void Meal::buildGUI(const QString& connection)
 
 void Meal::addMeal()
 {
-    popupContentLayout->addWidget(new MealEditor(day, connection, this));
+    MealEditor *editor = new MealEditor(day, connection, this);
+    popupContentLayout->addWidget(editor);
+    connect(editor, SIGNAL(removed(MealEditor*)), this, SLOT(mealRemoved(MealEditor*)));
     popup->adjustSize();
     refreshCalendar(QDate::currentDate().year(), QDate::currentDate().month());
 }
@@ -102,10 +105,9 @@ void Meal::editDay(const QDate &day)
     query.exec(QString("SELECT id FROM meals WHERE date = '") + day.toString("dd/MM/yyyy") + "'");
     while (query.next()) {
         QSqlRecord record = query.record();
-        QGroupBox *box = new QGroupBox(this);
-        box->setLayout(new QVBoxLayout());
-        box->layout()->addWidget(new MealEditor(day, connection, record.value("id").toInt(), box));
-        popupContentLayout->addWidget(box);
+        MealEditor *editor = new MealEditor(day, connection, record.value("id").toInt(), this);
+        popupContentLayout->addWidget(editor);
+        connect(editor, SIGNAL(removed(MealEditor*)), this, SLOT(mealRemoved(MealEditor*)));
     }
     popup->adjustSize();
     popup->show();
@@ -156,6 +158,8 @@ void Meal::initDB(const QString& connection)
                "date TEXT)");
     query.exec("INSERT INTO expenses(name, hidden) VALUES('"+tr("Meals")+"', 1)");
     query.exec("CREATE TABLE meals_subscription (id INTEGER PRIMARY KEY, "
+               "mealid INTEGER REFERENCES meals(id)"
+               "ON UPDATE CASCADE ON DELETE DELETE)"
                "personid INTEGER REFERENCES person(id) "
                "ON UPDATE CASCADE ON DELETE DELETE, "
                "cross INTEGER)");
@@ -208,5 +212,53 @@ void MealEditor::addRecord()
 
 void MealEditor::buildGUI()
 {
+    QGroupBox *box = new QGroupBox(this);
+    QVBoxLayout *layout = new QVBoxLayout();
+    QPushButton *remove = new QPushButton("-", this);
+    QHBoxLayout *header = new QHBoxLayout();
+    connect(remove, SIGNAL(clicked()), this, SLOT(remove()));
+    subscriptions = new QLabel(this);
+    individualPrice = new QLabel(this);
+    totalPrice = new QLabel(this);
+    header->addWidget(remove);
+    header->addWidget(subscriptions);
+    header->addWidget(individualPrice);
+    header->addWidget(totalPrice);
 
+    layout->addLayout(header);
+    box->setLayout(layout);
+    this->setLayout(new QVBoxLayout());
+    this->layout()->addWidget(box);
+    updateHeader();
+    this->adjustSize();
+}
+
+void MealEditor::remove()
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("DELETE FROM meals WHERE id = '" + QString::number(meal_id) + "'");
+    emit removed(this);
+}
+
+void MealEditor::updateHeader()
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("SELECT COUNT(*) FROM meals_subscription WHERE mealid = '"
+               + QString::number(meal_id) + "'");
+    query.first();
+    int subsCount = query.record().value(0).toInt();
+    query.exec("SELECT SUM(amount) FROM tickets WHERE id IN "
+               "(SELECT ticketid FROM meals_ticket WHERE mealid = '"
+               + QString::number(meal_id) + "'");
+    query.first();
+    double sum = query.record().value(0).toInt();
+    double costPP = (subsCount == 0 ? 0 : sum/subsCount);
+
+    totalPrice->setText(tr("Total meal price: ") + QString::number(sum) + " " + tr("eur."));
+    individualPrice->setText(tr("Price per person: ") + QString::number(costPP) + " " + tr("eur."));
+    subscriptions->setText(QString::number(subsCount)
+                          + (subsCount > 1 ? tr(" people have subscribed to the meal")
+                                           : tr(" person has subscribed to the meal")
+                                             ));
+    this->adjustSize();
 }
