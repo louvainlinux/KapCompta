@@ -31,6 +31,15 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QGroupBox>
+#include <QTableView>
+#include <QtSql/QSqlRelationalTableModel>
+#include <QtSql/QSqlRelationalDelegate>
+#include <QtSql/QSqlQueryModel>
+#include <QListView>
+#include <QHBoxLayout>
+#include <QtSql/QSqlRelation>
+#include <QHeaderView>
+#include <QSqlError>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -160,16 +169,17 @@ void Meal::initDB(const QString& connection)
                "date TEXT)");
     query.exec("INSERT INTO expenses(name, hidden) VALUES('"+tr("Meals")+"', 1)");
     query.exec("CREATE TABLE meals_subscription (id INTEGER PRIMARY KEY, "
-               "mealid INTEGER REFERENCES meals(id)"
-               "ON UPDATE CASCADE ON DELETE DELETE)"
+               "mealid INTEGER REFERENCES meals(id) "
+               "ON UPDATE CASCADE ON DELETE CASCADE, "
                "personid INTEGER REFERENCES person(id) "
-               "ON UPDATE CASCADE ON DELETE DELETE, "
+               "ON UPDATE CASCADE ON DELETE CASCADE, "
                "cross INTEGER)");
     query.exec("CREATE TABLE meals_ticket (id INTEGER PRIMARY KEY, "
-               "mealid INTEGER REFERENCES meals(id)"
-               "ON UPDATE CASCADE ON DELETE DELETE)"
+               "mealid INTEGER REFERENCES meals(id) "
+               "ON UPDATE CASCADE ON DELETE CASCADE, "
                "ticketid INTEGER REFERENCES tickets(id) "
-               "ON UPDATE CASCADE ON DELETE DELETE)");
+               "ON UPDATE CASCADE ON DELETE CASCADE)");
+    qDebug(query.lastError().text().toAscii());
 }
 
 QWidget* Meal::panel()
@@ -231,14 +241,85 @@ void MealEditor::buildGUI()
     header->addWidget(subscriptions);
     header->addWidget(individualPrice);
     header->addWidget(totalPrice);
-
+    header->addStretch(1);
+    // Setup subscription table
+    QTableView *subsTable = new QTableView(this);
+    QSqlRelationalTableModel *model = new QSqlRelationalTableModel(
+                this, QSqlDatabase::database(connection));
+    model->setTable("meals_subscription");
+    model->setFilter("mealid = '" + QString::number(meal_id) + "'");
+    int personField = model->fieldIndex("personid");
+    int crossField = model->fieldIndex("cross");
+    int mealidField = model->fieldIndex("mealid");
+    int idField = model->fieldIndex("id");
+    model->setRelation(personField, QSqlRelation("person", "id", "name"));
+    model->setEditStrategy(QSqlTableModel::OnFieldChange);
+    model->select();
+    model->setHeaderData(personField, Qt::Horizontal, tr("Person"));
+    model->setHeaderData(crossField, Qt::Horizontal, tr("Number of meals"));
+    subsTable->setModel(model);
+    subsTable->setItemDelegate(new QSqlRelationalDelegate(subsTable));
+    // hide mealid/id columns (but do not remove them or we cannot edit the table anymore)
+    subsTable->setColumnHidden(mealidField, true);
+    subsTable->setColumnHidden(idField, true);
+    subsTable->horizontalHeader()->setResizeMode(crossField, QHeaderView::ResizeToContents);
+    subsTable->horizontalHeader()->setResizeMode(personField, QHeaderView::Stretch);
+    // Setup tickets management
+    int exp_id = retrieveExpenseID(); // this is ugly!
+    availQuery = "SELECT date, amount FROM tickets WHERE expenseid = '"
+            + QString::number(exp_id) + "' AND id NOT IN "
+            "(SELECT ticketid FROM meals_ticket)";
+    usedQuery = "SELECT date, amount FROM tickets WHERE "
+            "id IN (SELECT ticketid FROM meals_ticket WHERE mealid = '"
+            + QString::number(meal_id) + "')";
+    QListView *availableTickets = new QListView(this);
+    availableTickets->setMaximumWidth(250);
+    availableTickets->setMinimumWidth(100);
+    QListView *usedTickets = new QListView(this);
+    usedTickets->setMaximumWidth(250);
+    usedTickets->setMinimumWidth(100);
+    TicketQueryModel *availModel = new TicketQueryModel();
+    availModel->setQuery(availQuery, QSqlDatabase::database(connection));
+    TicketQueryModel *usedModel = new TicketQueryModel();
+    usedModel->setQuery(usedQuery, QSqlDatabase::database(connection));
+    availableTickets->setModel(availModel);
+    usedTickets->setModel(usedModel);
+    // Button to make the ticket switch around
+    QPushButton *add = new QPushButton(">>>", this);
+    QPushButton *free = new QPushButton("<<<", this);
+    // Setup layout
+    QVBoxLayout *btnLayout = new QVBoxLayout();
+    btnLayout->addStretch(1);
+    btnLayout->addWidget(add);
+    btnLayout->addWidget(free);
+    btnLayout->addStretch(1);
+    QVBoxLayout *availL = new QVBoxLayout();
+    QVBoxLayout *usedL = new QVBoxLayout();
+    availL->addWidget(new QLabel(tr("Available tickets"), this));
+    availL->addWidget(availableTickets, 1);
+    usedL->addWidget(new QLabel(tr("Selected tickets"), this));
+    usedL->addWidget(usedTickets, 1);
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    hLayout->addWidget(subsTable, 1);
+    hLayout->addLayout(availL, 1);
+    hLayout->addLayout(btnLayout);
+    hLayout->addLayout(usedL, 1);
     layout->addLayout(header);
+    layout->addLayout(hLayout);
     layout->setSizeConstraint(QLayout::SetFixedSize);
     box->setLayout(layout);
     this->setLayout(new QVBoxLayout());
     this->layout()->addWidget(box);
     updateHeader();
     this->adjustSize();
+}
+
+int MealEditor::retrieveExpenseID()
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("SELECT id FROM expenses where name = '" + tr("Meals") + "'");
+    query.first();
+    return query.record().value(0).toInt();
 }
 
 void MealEditor::remove()
@@ -266,8 +347,24 @@ void MealEditor::updateHeader()
     totalPrice->setText(tr("Total meal price: ") + QString::number(sum) + " " + tr("eur."));
     individualPrice->setText(tr("Price per person: ") + QString::number(costPP) + " " + tr("eur."));
     subscriptions->setText(QString::number(subsCount)
-                          + (subsCount > 1 ? tr(" people have subscribed to the meal")
-                                           : tr(" person has subscribed to the meal")
-                                             ));
+                           + (subsCount > 1 ? tr(" people have subscribed to the meal")
+                                            : tr(" person has subscribed to the meal")
+                                              ));
     this->adjustSize();
+}
+
+TicketQueryModel::TicketQueryModel(QObject *parent)
+    : QSqlQueryModel(parent)
+{
+}
+
+QVariant TicketQueryModel::data(const QModelIndex &index, int role) const
+{
+    QVariant value = QSqlQueryModel::data(index, role);
+    if (value.isValid() && role == Qt::DisplayRole && index.column() == 0) {
+        QVariant value2 = QSqlQueryModel::data(this->index(index.row(), index.column() + 1), role);
+        return value.toString() + " (" + value2.toString() + " " + tr("eur.") +")";
+    }
+    // Other roles/columns value will follow the classical behaviour
+    return value;
 }

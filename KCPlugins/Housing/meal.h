@@ -25,6 +25,7 @@
 #include <QWidget>
 #include <QDate>
 #include <kcpanel.h>
+#include <QSqlQueryModel>
 
 class MealCalendar;
 class MealEditor;
@@ -92,6 +93,7 @@ public slots:
 private:
     void addRecord();
     void buildGUI();
+    int retrieveExpenseID();
 
     QDate day;
     QString connection;
@@ -99,6 +101,17 @@ private:
     QLabel *subscriptions;
     QLabel *totalPrice;
     QLabel *individualPrice;
+    QString availQuery;
+    QString usedQuery;
 };
+
+class TicketQueryModel : public QSqlQueryModel
+ {
+     Q_OBJECT
+    // Provide custom display style to list tickets
+ public:
+     TicketQueryModel(QObject *parent = 0);
+     QVariant data(const QModelIndex &item, int role) const;
+ };
 
 #endif // MEAL_H

@@ -174,8 +174,6 @@ void KCMain::buildGUI()
             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
     // Setup left side layout
-    //wList->setMaximumWidth(200);
-    //wList->setMinimumWidth(175);
     wList->setMinimumWidth(wList->sizeHintForColumn(0) + 15);
     wList->setMaximumWidth(wList->sizeHintForColumn(0) + 15);
     wList->adjustSize();
