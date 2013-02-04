@@ -40,6 +40,7 @@
 #include <QtSql/QSqlRelation>
 #include <QHeaderView>
 #include <QSqlField>
+#include <kcspinboxdelegate.h>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -257,7 +258,8 @@ void MealEditor::buildGUI()
     model->setHeaderData(personField, Qt::Horizontal, tr("Person"));
     model->setHeaderData(crossField, Qt::Horizontal, tr("Number of meals"));
     subsTable->setModel(model);
-    subsTable->setItemDelegate(new QSqlRelationalDelegate(subsTable));
+    subsTable->setItemDelegateForColumn(personField, new QSqlRelationalDelegate(subsTable));
+    subsTable->setItemDelegateForColumn(crossField, new KCSpinBoxDelegate(this));
     // hide mealid/id columns (but do not remove them or we cannot edit the table anymore)
     subsTable->setColumnHidden(mealidField, true);
     subsTable->setColumnHidden(idField, true);
@@ -339,7 +341,6 @@ void MealEditor::addSubscription()
     query.exec("INSERT INTO meals_subscription(mealid, cross, personid) "
                "VALUES('" + QString::number(meal_id) + "', '0', '1')");
     model->select();
-    qDebug(QString::number(model->rowCount()).toAscii());
     updateHeader();
 }
 

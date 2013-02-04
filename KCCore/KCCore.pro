@@ -11,7 +11,8 @@ SOURCES +=\
            kcfilemanager.cpp \
            kcsettings.cpp \
     kccore.cpp \
-    kcdateedit.cpp
+    kcdateedit.cpp \
+    kcspinboxdelegate.cpp
 
 HEADERS +=\
            KCCore_global.h\
@@ -24,4 +25,5 @@ HEADERS +=\
     kcaccountsetting.h \
     kcfileformat.h \
     kcplugin.h \
-    kcdateedit.h
+    kcdateedit.h \
+    kcspinboxdelegate.h
