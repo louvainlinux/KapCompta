@@ -145,6 +145,7 @@ void KCMain::buildGUI()
     wList->setIconSize(QSize(48, 48));
     wList->setMovement(QListView::Static);
     wList->setSpacing(12);
+    wList->viewport()->setAutoFillBackground(false);
     // Check that each loaded KCPanel has had its chance to initialize the database
     foreach(KCPanel* p, panels) {
         bool initDB = fileManager->value(QString::number(p->ID()) + "dbFileHasBeenInitialized").toBool();
@@ -161,9 +162,9 @@ void KCMain::buildGUI()
         sidePanel->addWidget(p->panel());
         // Add their name/picture to the menu
         QListWidgetItem *button = new QListWidgetItem(wList);
+        button->setTextAlignment(Qt::AlignHCenter);
         button->setIcon(QIcon(p->iconPath()));
         button->setText(p->title());
-        button->setTextAlignment(Qt::AlignHCenter);
         button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     }
     // We start with the top widget
@@ -173,14 +174,12 @@ void KCMain::buildGUI()
             SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
             this, SLOT(changePage(QListWidgetItem*,QListWidgetItem*)));
     // Setup left side layout
-    QGroupBox *leftBox = new QGroupBox(this);
-    QVBoxLayout *l = new QVBoxLayout();
-    l->addWidget(wList);
-    leftBox->setLayout(l);
-    layout->addWidget(leftBox);
-    wList->setMaximumWidth(200);
-    wList->setMinimumWidth(175);
+    //wList->setMaximumWidth(200);
+    //wList->setMinimumWidth(175);
+    wList->setMinimumWidth(wList->sizeHintForColumn(0) + 15);
+    wList->setMaximumWidth(wList->sizeHintForColumn(0) + 15);
     wList->adjustSize();
+    layout->addWidget(wList);
     // Setup right side layout
     box = new QGroupBox(qobject_cast<KCPanel*>(sidePanel->currentWidget())->title(),this);
     QVBoxLayout *vBox = new QVBoxLayout();
