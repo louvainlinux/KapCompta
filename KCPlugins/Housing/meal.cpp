@@ -377,7 +377,7 @@ void MealEditor::updateHeader()
     int subsCount = query.record().value(0).toInt();
     query.exec("SELECT SUM(amount) FROM tickets WHERE id IN "
                "(SELECT ticketid FROM meals_ticket WHERE mealid = '"
-               + QString::number(meal_id) + "'");
+               + QString::number(meal_id) + "')");
     query.first();
     double sum = query.record().value(0).toInt();
     double costPP = (subsCount == 0 ? 0 : sum/subsCount);
