@@ -39,7 +39,6 @@
 #include <QHBoxLayout>
 #include <QtSql/QSqlRelation>
 #include <QHeaderView>
-#include <QSqlError>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -179,7 +178,6 @@ void Meal::initDB(const QString& connection)
                "ON UPDATE CASCADE ON DELETE CASCADE, "
                "ticketid INTEGER REFERENCES tickets(id) "
                "ON UPDATE CASCADE ON DELETE CASCADE)");
-    qDebug(query.lastError().text().toAscii());
 }
 
 QWidget* Meal::panel()
