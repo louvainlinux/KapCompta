@@ -333,7 +333,7 @@ void MealEditor::addTicket()
     availModel->setQuery(availQuery, QSqlDatabase::database(connection));
     updateHeader();
 }
-#include <QSqlError>
+
 void MealEditor::freeTicket()
 {
     foreach (QModelIndex idx, usedTickets->selectionModel()->selectedIndexes()) {
@@ -342,12 +342,10 @@ void MealEditor::freeTicket()
         // Find ticketid based on selected row
         const QModelIndex index_id = usedModel->index(row, 2);
         QString id = usedModel->data(index_id, Qt::DisplayRole).toString();
-        qDebug(id.toAscii());
         // Remove it from the list
         QSqlQuery query(QSqlDatabase::database(connection));
         query.exec("DELETE FROM meals_ticket WHERE ticketid = '"
                    + id + "'");
-        qDebug(query.lastError().text().toAscii());
     }
     usedModel->setQuery(usedQuery, QSqlDatabase::database(connection));
     availModel->setQuery(availQuery, QSqlDatabase::database(connection));
