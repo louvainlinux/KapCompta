@@ -210,6 +210,7 @@ void MealEditor::addRecord()
     QSqlQuery query(QSqlDatabase::database(connection));
     QString queryText = "INSERT INTO meals(date) VALUES('" + day.toString("dd/MM/yyyy")+ "')";
     query.exec(queryText);
+    meal_id = query.lastInsertId().toInt();
 }
 
 void MealEditor::buildGUI()
