@@ -34,6 +34,8 @@ QT_BEGIN_NAMESPACE
 class QVBoxLayout;
 class QLabel;
 class QListView;
+class QSqlRelationalTableModel;
+class QTableView;
 QT_END_NAMESPACE
 
 class Meal : public QWidget, public KCPanel
@@ -96,6 +98,8 @@ public slots:
 private slots:
     void addTicket();
     void freeTicket();
+    void addSubscription();
+    void removeSubscription();
 
 private:
     void addRecord();
@@ -114,6 +118,8 @@ private:
     TicketQueryModel *usedModel;
     QListView *availableTickets;
     QListView *usedTickets;
+    QSqlRelationalTableModel *model;
+    QTableView *subsTable;
 };
 
 class TicketQueryModel : public QSqlQueryModel

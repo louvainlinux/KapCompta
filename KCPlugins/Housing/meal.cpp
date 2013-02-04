@@ -39,6 +39,7 @@
 #include <QHBoxLayout>
 #include <QtSql/QSqlRelation>
 #include <QHeaderView>
+#include <QSqlField>
 
 Meal::Meal(QWidget *parent) :
     QWidget(parent)
@@ -235,14 +236,14 @@ void MealEditor::buildGUI()
     individualPrice->setStyleSheet("border: 1px solid grey");
     totalPrice = new QLabel(this);
     totalPrice->setStyleSheet("border: 1px solid grey");
-    header->addWidget(remove);
     header->addWidget(subscriptions);
     header->addWidget(individualPrice);
     header->addWidget(totalPrice);
     header->addStretch(1);
+    header->addWidget(remove);
     // Setup subscription table
-    QTableView *subsTable = new QTableView(this);
-    QSqlRelationalTableModel *model = new QSqlRelationalTableModel(
+    subsTable = new QTableView(this);
+    model = new QSqlRelationalTableModel(
                 this, QSqlDatabase::database(connection));
     model->setTable("meals_subscription");
     model->setFilter("mealid = '" + QString::number(meal_id) + "'");
@@ -262,6 +263,15 @@ void MealEditor::buildGUI()
     subsTable->setColumnHidden(idField, true);
     subsTable->horizontalHeader()->setResizeMode(crossField, QHeaderView::ResizeToContents);
     subsTable->horizontalHeader()->setResizeMode(personField, QHeaderView::Stretch);
+    subsTable->setAlternatingRowColors(true);
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(updateHeader()));
+    connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            subsTable, SLOT(dataChanged(QModelIndex,QModelIndex)));
+    // Buttons to add/remove subscriptions
+    QPushButton *suscribe = new QPushButton("+", this);
+    QPushButton *unsuscribe = new QPushButton("-", this);
+    connect(suscribe, SIGNAL(clicked()), this, SLOT(addSubscription()));
+    connect(unsuscribe, SIGNAL(clicked()), this, SLOT(removeSubscription()));
     // Setup tickets management
     int exp_id = retrieveExpenseID(); // this is ugly!
     availQuery = "SELECT date, amount, id FROM tickets WHERE expenseid = '"
@@ -302,7 +312,14 @@ void MealEditor::buildGUI()
     usedL->addWidget(new QLabel(tr("Selected tickets"), this));
     usedL->addWidget(usedTickets, 1);
     QHBoxLayout *hLayout = new QHBoxLayout();
-    hLayout->addWidget(subsTable, 1);
+    QVBoxLayout *tableLayout = new QVBoxLayout();
+    QHBoxLayout *btnTable = new QHBoxLayout();
+    btnTable->addWidget(suscribe);
+    btnTable->addWidget(unsuscribe);
+    btnTable->addStretch(1);
+    tableLayout->addWidget(subsTable);
+    tableLayout->addLayout(btnTable);
+    hLayout->addLayout(tableLayout, 1);
     hLayout->addLayout(availL, 1);
     hLayout->addLayout(btnLayout);
     hLayout->addLayout(usedL, 1);
@@ -315,6 +332,25 @@ void MealEditor::buildGUI()
     updateHeader();
     this->adjustSize();
 }
+
+void MealEditor::addSubscription()
+{
+    QSqlQuery query(QSqlDatabase::database(connection));
+    query.exec("INSERT INTO meals_subscription(mealid, cross, personid) "
+               "VALUES('" + QString::number(meal_id) + "', '0', '1')");
+    model->select();
+    qDebug(QString::number(model->rowCount()).toAscii());
+    updateHeader();
+}
+
+void MealEditor::removeSubscription()
+{
+    foreach (QModelIndex idx, subsTable->selectionModel()->selectedIndexes()) {
+        model->removeRow(idx.row());
+    }
+    updateHeader();
+}
+
 void MealEditor::addTicket()
 {
     foreach (QModelIndex idx, availableTickets->selectionModel()->selectedIndexes()) {
@@ -371,7 +407,7 @@ void MealEditor::remove()
 void MealEditor::updateHeader()
 {
     QSqlQuery query(QSqlDatabase::database(connection));
-    query.exec("SELECT COUNT(*) FROM meals_subscription WHERE mealid = '"
+    query.exec("SELECT SUM(cross) FROM meals_subscription WHERE mealid = '"
                + QString::number(meal_id) + "'");
     query.first();
     int subsCount = query.record().value(0).toInt();
