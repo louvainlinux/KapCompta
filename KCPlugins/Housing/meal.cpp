@@ -264,27 +264,31 @@ void MealEditor::buildGUI()
     subsTable->horizontalHeader()->setResizeMode(personField, QHeaderView::Stretch);
     // Setup tickets management
     int exp_id = retrieveExpenseID(); // this is ugly!
-    availQuery = "SELECT date, amount FROM tickets WHERE expenseid = '"
+    availQuery = "SELECT date, amount, id FROM tickets WHERE expenseid = '"
             + QString::number(exp_id) + "' AND id NOT IN "
             "(SELECT ticketid FROM meals_ticket)";
-    usedQuery = "SELECT date, amount FROM tickets WHERE "
+    usedQuery = "SELECT date, amount, id FROM tickets WHERE "
             "id IN (SELECT ticketid FROM meals_ticket WHERE mealid = '"
             + QString::number(meal_id) + "')";
-    QListView *availableTickets = new QListView(this);
-    availableTickets->setMaximumWidth(250);
+    availableTickets = new QListView(this);
+    availableTickets->setMaximumWidth(200);
     availableTickets->setMinimumWidth(100);
-    QListView *usedTickets = new QListView(this);
-    usedTickets->setMaximumWidth(250);
+    availableTickets->setSelectionMode(QAbstractItemView::MultiSelection);
+    usedTickets = new QListView(this);
+    usedTickets->setMaximumWidth(200);
     usedTickets->setMinimumWidth(100);
-    TicketQueryModel *availModel = new TicketQueryModel();
+    usedTickets->setSelectionMode(QAbstractItemView::MultiSelection);
+    availModel = new TicketQueryModel();
     availModel->setQuery(availQuery, QSqlDatabase::database(connection));
-    TicketQueryModel *usedModel = new TicketQueryModel();
+    usedModel = new TicketQueryModel();
     usedModel->setQuery(usedQuery, QSqlDatabase::database(connection));
     availableTickets->setModel(availModel);
     usedTickets->setModel(usedModel);
     // Button to make the ticket switch around
     QPushButton *add = new QPushButton(">>>", this);
     QPushButton *free = new QPushButton("<<<", this);
+    connect(add, SIGNAL(clicked()), this, SLOT(addTicket()));
+    connect(free, SIGNAL(clicked()), this, SLOT(freeTicket()));
     // Setup layout
     QVBoxLayout *btnLayout = new QVBoxLayout();
     btnLayout->addStretch(1);
@@ -310,6 +314,44 @@ void MealEditor::buildGUI()
     this->layout()->addWidget(box);
     updateHeader();
     this->adjustSize();
+}
+void MealEditor::addTicket()
+{
+    foreach (QModelIndex idx, availableTickets->selectionModel()->selectedIndexes()) {
+        // Get selected row
+        int row = idx.row();
+        // Find id based on selected row
+        const QModelIndex index_id = availModel->index(row, 2);
+        QString id = availModel->data(index_id, Qt::DisplayRole).toString();
+        // Add it to the assigned tickets
+        QSqlQuery query(QSqlDatabase::database(connection));
+        query.exec("INSERT INTO meals_ticket (mealid, ticketid) "
+                   "VALUES('" + QString::number(meal_id) + "', '"
+                   + id + "')");
+    }
+    usedModel->setQuery(usedQuery, QSqlDatabase::database(connection));
+    availModel->setQuery(availQuery, QSqlDatabase::database(connection));
+    updateHeader();
+}
+#include <QSqlError>
+void MealEditor::freeTicket()
+{
+    foreach (QModelIndex idx, usedTickets->selectionModel()->selectedIndexes()) {
+        // Get selected row
+        int row = idx.row();
+        // Find ticketid based on selected row
+        const QModelIndex index_id = usedModel->index(row, 2);
+        QString id = usedModel->data(index_id, Qt::DisplayRole).toString();
+        qDebug(id.toAscii());
+        // Remove it from the list
+        QSqlQuery query(QSqlDatabase::database(connection));
+        query.exec("DELETE FROM meals_ticket WHERE ticketid = '"
+                   + id + "'");
+        qDebug(query.lastError().text().toAscii());
+    }
+    usedModel->setQuery(usedQuery, QSqlDatabase::database(connection));
+    availModel->setQuery(availQuery, QSqlDatabase::database(connection));
+    updateHeader();
 }
 
 int MealEditor::retrieveExpenseID()

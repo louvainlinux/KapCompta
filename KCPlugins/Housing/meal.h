@@ -33,6 +33,7 @@ class MealEditor;
 QT_BEGIN_NAMESPACE
 class QVBoxLayout;
 class QLabel;
+class QListView;
 QT_END_NAMESPACE
 
 class Meal : public QWidget, public KCPanel
@@ -75,6 +76,8 @@ private:
     QDate day;
 };
 
+class TicketQueryModel;
+
 class MealEditor : public QWidget
 {
     Q_OBJECT
@@ -90,6 +93,10 @@ public slots:
     void remove();
     void updateHeader();
 
+private slots:
+    void addTicket();
+    void freeTicket();
+
 private:
     void addRecord();
     void buildGUI();
@@ -103,6 +110,10 @@ private:
     QLabel *individualPrice;
     QString availQuery;
     QString usedQuery;
+    TicketQueryModel *availModel;
+    TicketQueryModel *usedModel;
+    QListView *availableTickets;
+    QListView *usedTickets;
 };
 
 class TicketQueryModel : public QSqlQueryModel
