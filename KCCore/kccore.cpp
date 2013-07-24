@@ -33,7 +33,7 @@ KCCore::KCCore() : d(new KCCorePrivate)
 
 KCCore::~KCCore()
 {
-
+    delete d;
 }
 
 KCCore* KCCore::instance()
