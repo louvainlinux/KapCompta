@@ -18,8 +18,17 @@ TRANSLATIONS += kapcompta_fr.ts
 
 DEFINES *= QT_USE_QSTRINGBUILDER
 
-LIBS += -L$$OUT_PWD/plugins -lKCCore
+macx {
+    KCCORE_LIB = $$OUT_PWD/../KCApp/KapCompta.app/Contents/MacOS/
+} else {
+    KCCORE_LIB = $$OUT_PWD/../KCApp/lib
+}
+
+CONFIG( debug, debug|release ) {
+    LIBS += -L$$KCCORE_LIB -lKCCore_debug
+} else {
+    LIBS += -L$$KCCORE_LIB -lKCCore
+}
 
 INCLUDEPATH += $$PWD/../KCCore
 DEPENDPATH += $$PWD/../KCCore
-

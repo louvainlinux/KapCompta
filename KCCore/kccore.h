@@ -24,8 +24,24 @@
 
 #include "kccore_global.h"
 
+class KCCorePrivate;
+
 class KCCORESHARED_EXPORT KCCore
 {
+public:
+    static KCCore* instance();
+
+    void initialize();
+    void uninitialize();
+
+protected:
+    KCCore();
+    ~KCCore();
+
+private:
+    static KCCore *s_instance;
+
+    KCCorePrivate *d;
 };
 
 #endif // KCCORE_H

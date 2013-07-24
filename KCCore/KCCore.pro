@@ -1,6 +1,10 @@
 QT += core sql
 
-DESTDIR       = $$OUT_PWD/../KCApp/plugins
+macx {
+    DESTDIR = $$OUT_PWD/../KCApp/KapCompta.app/Contents/MacOS/
+} else {
+    DESTDIR = $$OUT_PWD/../KCApp/lib
+}
 
 TARGET = $$qtLibraryTarget(KCCore)
 TEMPLATE = lib

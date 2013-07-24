@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -20,41 +20,34 @@
  **/
 
 #include "kccore.h"
-#include <QApplication>
-#include <QWidget>
-#include <QRect>
-#include <QDesktopWidget>
 
-QDir KCCore::pluginsDir(QApplication *app)
+class KCCorePrivate {
+
+};
+
+KCCore* KCCore::s_instance = NULL;
+
+KCCore::KCCore() : d(new KCCorePrivate)
 {
-    QDir pluginsDir = QDir(app->applicationDirPath());
-#if defined(Q_OS_WIN)
-    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-        pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (pluginsDir.dirName() == "MacOS") { // xxx.app/Contents/MacOS/binaryBlob
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-    }
-#endif
-    pluginsDir.cd("plugins");
-
-    return pluginsDir;
 }
 
-void KCCore::center(QWidget *w)
+KCCore::~KCCore()
 {
-    const QRect screen = QApplication::desktop()->screenGeometry();
-    w->move(screen.center() - w->rect().center());
+
 }
 
-const QString KCCore::hr()
+KCCore* KCCore::instance()
 {
-    return QString("<table width=\"100%\"><tr><td><hr /></td></tr></table>");
+    if (!s_instance) s_instance = new KCCore();
+    return s_instance;
 }
 
-QString KCCore::twoDigit(int x)
+void KCCore::initialize()
 {
-    return x >= 10 ? QString::number(x) : QString("0") + QString::number(x);
+
+}
+
+void KCCore::uninitialize()
+{
+
 }

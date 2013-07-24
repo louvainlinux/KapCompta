@@ -11,9 +11,17 @@ DESTDIR       = $$OUT_PWD/../../KCApp/plugins
 
 #RESOURCES +=
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../KCCore/release/ -lKCCore
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../KCCore/debug/ -lKCCore
-else:unix: LIBS += -L$$OUT_PWD/../../KCCore/ -lKCCore
+macx {
+    KCCORE_LIB = $$OUT_PWD/../../KCApp/KapCompta.app/Contents/MacOS/
+} else {
+    KCCORE_LIB = $$OUT_PWD/../../KCApp/lib
+}
+
+CONFIG( debug, debug|release ) {
+    LIBS += -L$$KCCORE_LIB -lKCCore_debug
+} else {
+    LIBS += -L$$KCCORE_LIB -lKCCore
+}
 
 INCLUDEPATH += $$PWD/../../KCCore
 DEPENDPATH += $$PWD/../../KCCore

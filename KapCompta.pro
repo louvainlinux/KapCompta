@@ -12,5 +12,3 @@ OTHER_FILES += \
 KCApp.depends = KCCore
 KCPlugins.depends = KCCore \
     KCApp
-
- QMAKE_POST_LINK =+
