@@ -70,7 +70,6 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
     d->panels = QList<KCPanel*>(KCCore::instance()->panels());
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it);
-    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
 }
