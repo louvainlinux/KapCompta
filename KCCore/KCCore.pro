@@ -12,7 +12,10 @@ TEMPLATE = lib
 DEFINES += KCCORE_LIBRARY
 DEFINES *= QT_USE_QSTRINGBUILDER
 
-SOURCES += kccore.cpp
+SOURCES += kccore.cpp \
+    kcaccountfile.cpp
 
 HEADERS += kccore_global.h \
-       kccore.h
+       kccore.h \
+    kcplugin.h \
+    kcaccountfile.h

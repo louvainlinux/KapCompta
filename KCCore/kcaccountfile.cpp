@@ -19,36 +19,8 @@
  *
  **/
 
-#ifndef KCCORE_H
-#define KCCORE_H
+#include "kcaccountfile.h"
 
-#include "kccore_global.h"
-#include <QObject>
-
-class KCCorePrivate;
-
-class KCCORESHARED_EXPORT KCCore : public QObject
+KCAccountFile::KCAccountFile()
 {
-    Q_OBJECT
-
-public:
-    static KCCore* instance();
-
-signals:
-    void pluginsLoaded();
-
-protected:
-    KCCore();
-    ~KCCore();
-
-private:
-    static KCCore *s_instance;
-
-    KCCorePrivate *d;
-
-    void extractPluginInfo(const QString&);
-    void loadPlugin(const QString&);
-    bool loadable(const QString&);
-};
-
-#endif // KCCORE_H
+}

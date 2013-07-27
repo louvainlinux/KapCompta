@@ -19,36 +19,12 @@
  *
  **/
 
-#ifndef KCCORE_H
-#define KCCORE_H
+#ifndef KCPLUGIN_H
+#define KCPLUGIN_H
 
-#include "kccore_global.h"
-#include <QObject>
+class KCPlugin {
 
-class KCCorePrivate;
-
-class KCCORESHARED_EXPORT KCCore : public QObject
-{
-    Q_OBJECT
-
-public:
-    static KCCore* instance();
-
-signals:
-    void pluginsLoaded();
-
-protected:
-    KCCore();
-    ~KCCore();
-
-private:
-    static KCCore *s_instance;
-
-    KCCorePrivate *d;
-
-    void extractPluginInfo(const QString&);
-    void loadPlugin(const QString&);
-    bool loadable(const QString&);
 };
 
-#endif // KCCORE_H
+Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin")
+#endif // KCPLUGIN_H
