@@ -50,7 +50,11 @@ KCCore* KCCore::s_instance = NULL;
 KCCore::KCCore() : QObject(),
     d(new KCCorePrivate) {
     QDir path = QDir(qApp->applicationDirPath());
+
+#if defined(Q_OS_MAC)
     path.cdUp();
+#endif
+
     path.cd("plugins");
     QFileInfoList files = path.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
     for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
@@ -118,4 +122,13 @@ bool KCCore::loadable(const QString &p)
         }
     }
     return true;
+}
+
+
+const QList<KCPanel*> KCCore::panels()
+{
+    QList<KCPanel*> l;
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+        l << ((KCPlugin*)*it)->panels();
+    return l;
 }

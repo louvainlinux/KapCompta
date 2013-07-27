@@ -24,8 +24,10 @@
 
 #include "kccore_global.h"
 #include <QObject>
+#include <QList>
 
 class KCCorePrivate;
+class KCPanel;
 
 class KCCORESHARED_EXPORT KCCore : public QObject
 {
@@ -33,9 +35,9 @@ class KCCORESHARED_EXPORT KCCore : public QObject
 
 public:
     static KCCore* instance();
+    const QList<KCPanel *> panels();
 
 signals:
-    void pluginsLoaded();
 
 protected:
     KCCore();

@@ -24,3 +24,8 @@
 Housing::Housing()
 {
 }
+
+const QList<KCPanel*> Housing::panels()
+{
+    return QList<KCPanel*>();
+}

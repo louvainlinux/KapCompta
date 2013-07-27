@@ -22,15 +22,32 @@
 #include "kcmainwindow.h"
 #include "ui_kcmainwindow.h"
 #include "kccore.h"
+#include "interfaces/kcpanel.h"
+#include <QList>
+
+class KCMainWindowPrivate
+{
+public:
+    QList<KCPanel*> panels;
+};
 
 KCMainWindow::KCMainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::KCMainWindow)
+    ui(new Ui::KCMainWindow),
+    d(new KCMainWindowPrivate)
 {
     ui->setupUi(this);
+    d->panels = QList<KCPanel*>(KCCore::instance()->panels());
+    for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
+        loadPanel(*it);
 }
 
 KCMainWindow::~KCMainWindow()
 {
     delete ui;
+}
+
+void KCMainWindow::loadPanel(KCPanel *)
+{
+
 }

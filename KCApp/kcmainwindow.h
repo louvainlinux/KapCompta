@@ -24,6 +24,9 @@
 
 #include <QMainWindow>
 
+class KCPanel;
+class KCMainWindowPrivate;
+
 namespace Ui {
 class KCMainWindow;
 }
@@ -31,13 +34,17 @@ class KCMainWindow;
 class KCMainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit KCMainWindow(QWidget *parent = 0);
     ~KCMainWindow();
-    
+
 private:
     Ui::KCMainWindow *ui;
+    KCMainWindowPrivate *d;
+
+private slots:
+    void loadPanel(KCPanel*);
 };
 
 #endif // KCMAINWINDOW_H

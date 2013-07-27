@@ -31,6 +31,7 @@ class Housing : public KCPlugin
     Q_PLUGIN_METADATA(IID "org.kapcompta.housing" FILE "housing.json")
 public:
     Housing();
+    const QList<KCPanel *> panels();
 };
 
 #endif // HOUSING_H

@@ -23,6 +23,7 @@
 #define KCPLUGIN_H
 
 #include <QList>
+#include <QtPlugin>
 
 class KCPanel;
 
@@ -30,7 +31,7 @@ class KCPlugin {
 public:
     virtual ~KCPlugin() {}
     // Returns all panels provided by the plugin (or an empty list)
-    QList<KCPanel*> panels() = 0;
+    virtual const QList<KCPanel*> panels() = 0;
 };
 
 Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin")
