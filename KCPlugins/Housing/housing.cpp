@@ -19,18 +19,8 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include "ui_kcmainwindow.h"
-#include "kccore.h"
+#include "housing.h"
 
-KCMainWindow::KCMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::KCMainWindow)
+Housing::Housing()
 {
-    ui->setupUi(this);
-}
-
-KCMainWindow::~KCMainWindow()
-{
-    delete ui;
 }

@@ -19,18 +19,19 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include "ui_kcmainwindow.h"
-#include "kccore.h"
+#ifndef KCPLUGIN_H
+#define KCPLUGIN_H
 
-KCMainWindow::KCMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::KCMainWindow)
-{
-    ui->setupUi(this);
-}
+#include <QList>
 
-KCMainWindow::~KCMainWindow()
-{
-    delete ui;
-}
+class KCPanel;
+
+class KCPlugin {
+public:
+    virtual ~KCPlugin() {}
+    // Returns all panels provided by the plugin (or an empty list)
+    QList<KCPanel*> panels() = 0;
+};
+
+Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin")
+#endif // KCPLUGIN_H

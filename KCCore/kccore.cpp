@@ -20,7 +20,7 @@
  **/
 
 #include "kccore.h"
-#include "kcplugin.h"
+#include "interfaces/kcplugin.h"
 #include <QtDebug>
 #include <QHash>
 #include <QDir>

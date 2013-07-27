@@ -19,18 +19,42 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include "ui_kcmainwindow.h"
-#include "kccore.h"
+#ifndef KCPANEL_H
+#define KCPANEL_H
 
-KCMainWindow::KCMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::KCMainWindow)
-{
-    ui->setupUi(this);
-}
+#include <QObject>
 
-KCMainWindow::~KCMainWindow()
+QT_BEGIN_NAMESPACE
+class QWidget;
+QT_END_NAMESPACE
+
+class KCPanel : public QObject
 {
-    delete ui;
-}
+    Q_OBJECT
+public:
+    KCPanel(QObject *parent = 0) : QObject(parent) {}
+    virtual ~KCPanel() {}
+
+    /**
+     * Mandatory methods
+     **/
+public:
+    // Returns the displayed name of the panel
+    const QString panelName() = 0;
+    // Returns the panel to display
+    const QWidget* panel() = 0;
+
+    /**
+     * Optional
+     **/
+public:
+    // Returns the path to the panel's icon (can be a ressource path)
+    const QString iconName() { return QString(); }
+public slots:
+    // Called when the panel appears on screen
+    void selected() {}
+    // Called when another panel is selected while this one was active
+    void unselected() {}
+};
+
+#endif // KCPANEL_H

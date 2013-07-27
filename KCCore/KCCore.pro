@@ -1,4 +1,5 @@
-QT += core sql
+QT += core sql gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 macx {
     DESTDIR = $$OUT_PWD/../KCApp/KapCompta.app/Contents/MacOS/
@@ -17,5 +18,6 @@ SOURCES += kccore.cpp \
 
 HEADERS += kccore_global.h \
        kccore.h \
-    kcplugin.h \
-    kcaccountfile.h
+    interfaces/kcplugin.h \
+    kcaccountfile.h \
+    interfaces/kcpanel.h

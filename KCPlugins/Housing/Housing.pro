@@ -1,5 +1,12 @@
 include(../kcplugin.prf)
 TARGET  = $$qtLibraryTarget(kc_housing)
-#HEADERS =
-#SOURCES =
+
+OTHER_FILES += \
+    housing.json
+
+HEADERS += \
+    housing.h
+
+SOURCES += \
+    housing.cpp
 

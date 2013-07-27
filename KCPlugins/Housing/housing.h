@@ -19,12 +19,18 @@
  *
  **/
 
-#ifndef KCPLUGIN_H
-#define KCPLUGIN_H
+#ifndef HOUSING_H
+#define HOUSING_H
 
-class KCPlugin {
+#include "interfaces/kcplugin.h"
+#include <QtPlugin>
 
+class Housing : public KCPlugin
+{
+    Q_INTERFACES(KCPlugin)
+    Q_PLUGIN_METADATA(IID "org.kapcompta.housing" FILE "housing.json")
+public:
+    Housing();
 };
 
-Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin")
-#endif // KCPLUGIN_H
+#endif // HOUSING_H
