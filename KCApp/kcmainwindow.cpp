@@ -52,10 +52,10 @@ public:
     KCMainWindowPrivate() : currentPanel(NULL), pendingPanel(NULL) {
         a_slideIn.setPropertyName("pos");
         a_slideIn.setDuration(TRANSITION_DURATION);
-        a_slideIn.setEndValue(QPoint(0,0));
+        a_slideIn.setEasingCurve(QEasingCurve::InOutCubic);
         a_slideOut.setPropertyName("pos");
         a_slideOut.setDuration(TRANSITION_DURATION);
-        a_slideOut.setStartValue(QPoint(0,0));
+        a_slideOut.setEasingCurve(QEasingCurve::InOutCubic);
         animation.addAnimation(&a_slideIn);
         animation.addAnimation(&a_slideOut);
     }
@@ -70,6 +70,8 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
     d->panels = QList<KCPanel*>(KCCore::instance()->panels());
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it);
+    d->currentPanel = d->panels.at(0);
+    d->currentPanel->panel()->setVisible(true);
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
 }
@@ -87,8 +89,8 @@ void KCMainWindow::loadPanel(KCPanel *p)
     QAction* action = ui->mainToolBar->addAction(QIcon(iconPath), p->panelName());
     d->actions.insert(action, p);
     p->panel()->adjustSize();
-    p->panel()->setParent(ui->centralWidget);
-    p->panel()->move(-p->panel()->width()-10,0);
+    ui->centralWidget->layout()->addWidget(p->panel());
+    p->panel()->setVisible(false);
 }
 
 void KCMainWindow::on_actionSettings_triggered()
@@ -115,20 +117,17 @@ void KCMainWindow::closeEvent(QCloseEvent *event)
 void KCMainWindow::toolbarTriggered(QAction *a)
 {
     KCPanel* panel = d->actions.value(a);
+    if (panel == d->currentPanel) return;
+    ui->centralWidget->layout()->setEnabled(false);
+    panel->panel()->resize(d->currentPanel->panel()->size());
     d->pendingPanel = panel;
     panel->panel()->setVisible(true);
-    if (!d->currentPanel) {
-        qDebug() << "no current";
-        d->pendingPanel->panel()->move(0,0);
-        d->currentPanel = d->pendingPanel;
-        d->currentPanel->selected();
-        return;
-    }
     d->currentPanel->unselected();
     d->a_slideIn.setTargetObject(panel->panel());
-    d->a_slideIn.setStartValue(QPoint(-panel->panel()->width()-10,0));
+    d->a_slideIn.setStartValue(QPoint(-panel->panel()->width(),d->currentPanel->panel()->pos().y()));
+    d->a_slideIn.setEndValue(d->currentPanel->panel()->pos());
     d->a_slideOut.setTargetObject(d->currentPanel->panel());
-    d->a_slideOut.setEndValue(QPoint(this->width()+10,0));
+    d->a_slideOut.setEndValue(QPoint(this->width(),d->currentPanel->panel()->pos().y()));
     d->animation.start();
 }
 
@@ -137,4 +136,5 @@ void KCMainWindow::transitionCompleted()
     d->currentPanel->panel()->setVisible(false);
     d->currentPanel = d->pendingPanel;
     d->currentPanel->selected();
+    ui->centralWidget->layout()->setEnabled(true);
 }
