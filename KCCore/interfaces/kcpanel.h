@@ -42,7 +42,7 @@ public:
     // Returns the displayed name of the panel
     virtual const QString panelName() = 0;
     // Returns the panel to display
-    virtual const QWidget* panel() = 0;
+    virtual QWidget* panel() = 0;
 
     /**
      * Optional

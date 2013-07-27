@@ -12,7 +12,7 @@ HEADERS  += kcmainwindow.h
 
 FORMS += kcmainwindow.ui
 
-#RESOURCES += \
+RESOURCES += rsrc.qrc
 
 TRANSLATIONS += kapcompta_fr.ts
 

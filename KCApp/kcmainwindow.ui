@@ -28,9 +28,22 @@
      <string>Panels</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuMain">
+    <property name="title">
+     <string>Misc</string>
+    </property>
+    <addaction name="actionOnline_Documentation"/>
+    <addaction name="separator"/>
+    <addaction name="actionSettings"/>
+    <addaction name="actionAbout_KapCompta"/>
+   </widget>
    <addaction name="menuPanels"/>
+   <addaction name="menuMain"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -39,6 +52,21 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOnline_Documentation">
+   <property name="text">
+    <string>Browse Online Documentation</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionAbout_KapCompta">
+   <property name="text">
+    <string>About KapCompta</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

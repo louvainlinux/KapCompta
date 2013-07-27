@@ -24,6 +24,11 @@
 
 #include <QMainWindow>
 
+QT_BEGIN_NAMESPACE
+class QCloseEvent;
+class QAction;
+QT_END_NAMESPACE
+
 class KCPanel;
 class KCMainWindowPrivate;
 
@@ -39,12 +44,20 @@ public:
     explicit KCMainWindow(QWidget *parent = 0);
     ~KCMainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private:
     Ui::KCMainWindow *ui;
     KCMainWindowPrivate *d;
 
 private slots:
     void loadPanel(KCPanel*);
+    void on_actionSettings_triggered();
+    void on_actionOnline_Documentation_triggered();
+    void on_actionAbout_KapCompta_triggered();
+    void toolbarTriggered(QAction*);
+    void transitionCompleted();
 };
 
 #endif // KCMAINWINDOW_H

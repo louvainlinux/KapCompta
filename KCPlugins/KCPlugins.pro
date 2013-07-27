@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS += Housing
+SUBDIRS += People \
+    Housing
 OTHER_FILES += kcplugin.prf
