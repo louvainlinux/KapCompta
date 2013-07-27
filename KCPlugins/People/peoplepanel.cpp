@@ -27,10 +27,7 @@ class PeoplePanelPrivate {
 public:
     QWidget* widget;
 
-    PeoplePanelPrivate()
-    {
-        widget = new QWidget();
-    }
+    PeoplePanelPrivate() : widget(new QWidget) {}
 };
 
 PeoplePanel::PeoplePanel(QWidget *parent) :

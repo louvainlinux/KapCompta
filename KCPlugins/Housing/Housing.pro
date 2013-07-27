@@ -13,5 +13,6 @@ SOURCES += \
     mealpanel.cpp
 
 FORMS += \
-    meal
+    mealsubscription.ui \
+    meal.ui
 

@@ -26,6 +26,7 @@
 
 namespace Ui {
 class Meal;
+class MealSubscription;
 }
 
 class MealPanelPrivate;
@@ -45,6 +46,7 @@ public slots:
 
 private:
     Ui::Meal *ui;
+    Ui::MealSubscription *dialog;
     MealPanelPrivate *d;
 };
 

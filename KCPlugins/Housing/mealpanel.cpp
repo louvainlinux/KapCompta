@@ -21,24 +21,29 @@
 
 #include "mealpanel.h"
 #include "ui_meal.h"
+#include "ui_mealsubscription.h"
 #include <QtWidgets/QWidget>
+#include <QDialog>
 
 class MealPanelPrivate {
 public:
     QWidget* widget;
+    QDialog* dialog;
 
-    MealPanelPrivate()
-    {
-        widget = new QWidget();
-    }
+    MealPanelPrivate() : widget(new QWidget), dialog(new QDialog) {}
 };
 
 MealPanel::MealPanel(QWidget *parent) :
     KCPanel(parent),
     ui(new Ui::Meal),
+    dialog(new Ui::MealSubscription),
     d(new MealPanelPrivate)
 {
     ui->setupUi(d->widget);
+    dialog->setupUi(d->dialog);
+    d->dialog->hide();
+    connect(ui->add, SIGNAL(clicked()), d->dialog, SLOT(show()));
+    connect(dialog->cancel, SIGNAL(clicked()), d->dialog, SLOT(hide()));
 }
 
 MealPanel::~MealPanel()
