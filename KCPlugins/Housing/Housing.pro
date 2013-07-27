@@ -6,11 +6,13 @@ OTHER_FILES += \
 
 HEADERS += \
     housing.h \
-    mealpanel.h
+    mealpanel.h \
+    mealcalendar.h
 
 SOURCES += \
     housing.cpp \
-    mealpanel.cpp
+    mealpanel.cpp \
+    mealcalendar.cpp
 
 FORMS += \
     mealsubscription.ui \

@@ -13,5 +13,6 @@ SOURCES += \
     peoplepanel.cpp
 
 FORMS += \
-    people.ui
+    people.ui \
+    addperson.ui
 

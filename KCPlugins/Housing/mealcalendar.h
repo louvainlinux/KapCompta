@@ -19,46 +19,33 @@
  *
  **/
 
-#include "mealpanel.h"
-#include "ui_meal.h"
-#include "ui_mealsubscription.h"
-#include <QtWidgets/QWidget>
-#include <QDialog>
+#ifndef MEALCALENDAR_H
+#define MEALCALENDAR_H
 
-class MealPanelPrivate {
+#include <QCalendarWidget>
+#include <QHash>
+
+class MealCalendar : public QCalendarWidget
+{
+    /*
+     * Customise the basic calendar widget to color cells containing meals
+     **/
+    Q_OBJECT
 public:
-    QWidget* widget;
-    QDialog* dialog;
+    explicit MealCalendar(QWidget *parent = 0);
+    /*
+     * Gives an hashmap where keys are day number in the month (thus 1-31)
+     * and values are the number of highlights on that day
+     **/
+    void setCurrentMonthHighlights(const QHash<int,int>& highlights);
+signals:
 
-    MealPanelPrivate() : widget(new QWidget), dialog(new QDialog) {}
+public slots:
+
+protected:
+    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
+
+private:
+    QHash<int,int> highlights;
 };
-
-MealPanel::MealPanel(QWidget *parent) :
-    KCPanel(parent),
-    ui(new Ui::Meal),
-    dialog(new Ui::MealSubscription),
-    d(new MealPanelPrivate)
-{
-    ui->setupUi(d->widget);
-    dialog->setupUi(d->dialog);
-    d->dialog->hide();
-    d->dialog->setModal(true);
-    d->dialog->setWindowTitle(tr("Register a subscription to a meal"));
-    connect(ui->add, SIGNAL(clicked()), d->dialog, SLOT(show()));
-    connect(dialog->cancel, SIGNAL(clicked()), d->dialog, SLOT(hide()));
-}
-
-MealPanel::~MealPanel()
-{
-    delete ui;
-}
-
-const QString MealPanel::panelName()
-{
-    return "Meal management";
-}
-
-QWidget* MealPanel::panel()
-{
-    return d->widget;
-}
+#endif // MEALCALENDAR_H

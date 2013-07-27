@@ -18,7 +18,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,4">
    <item>
-    <widget class="QCalendarWidget" name="calendarWidget"/>
+    <widget class="MealCalendar" name="calendarWidget"/>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -43,6 +43,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MealCalendar</class>
+   <extends>QCalendarWidget</extends>
+   <header>mealcalendar.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

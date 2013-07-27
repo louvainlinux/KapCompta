@@ -26,6 +26,7 @@
 
 namespace Ui {
 class People;
+class AddPerson;
 }
 
 class PeoplePanelPrivate;
@@ -45,6 +46,7 @@ public slots:
 
 private:
     Ui::People *ui;
+    Ui::AddPerson *addP;
     PeoplePanelPrivate *d;
 };
 

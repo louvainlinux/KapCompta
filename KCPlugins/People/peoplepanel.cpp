@@ -21,21 +21,31 @@
 
 #include "peoplepanel.h"
 #include "ui_people.h"
+#include "ui_addperson.h"
 #include <QtWidgets/QWidget>
+#include "QDialog"
 
 class PeoplePanelPrivate {
 public:
     QWidget* widget;
+    QDialog *dialog;
 
-    PeoplePanelPrivate() : widget(new QWidget) {}
+    PeoplePanelPrivate() : widget(new QWidget), dialog(new QDialog) {}
 };
 
 PeoplePanel::PeoplePanel(QWidget *parent) :
     KCPanel(parent),
     ui(new Ui::People),
+    addP(new Ui::AddPerson),
     d(new PeoplePanelPrivate)
 {
     ui->setupUi(d->widget);
+    addP->setupUi(d->dialog);
+    d->dialog->hide();
+    d->dialog->setModal(true);
+    d->dialog->setWindowTitle(tr("Add a person"));
+    connect(ui->addPerson, SIGNAL(clicked()), d->dialog, SLOT(show()));
+    connect(addP->cancel, SIGNAL(clicked()), d->dialog, SLOT(hide()));
 }
 
 PeoplePanel::~PeoplePanel()
