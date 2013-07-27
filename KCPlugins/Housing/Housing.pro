@@ -6,12 +6,12 @@ OTHER_FILES += \
 
 HEADERS += \
     housing.h \
-    housingpanel.h
+    mealpanel.h
 
 SOURCES += \
     housing.cpp \
-    housingpanel.cpp
+    mealpanel.cpp
 
 FORMS += \
-    housing.ui
+    meal
 

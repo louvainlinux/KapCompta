@@ -19,39 +19,39 @@
  *
  **/
 
-#include "housingpanel.h"
-#include "ui_housing.h"
+#include "mealpanel.h"
+#include "ui_meal.h"
 #include <QtWidgets/QWidget>
 
-class HousingPanelPrivate {
+class MealPanelPrivate {
 public:
     QWidget* widget;
 
-    HousingPanelPrivate()
+    MealPanelPrivate()
     {
         widget = new QWidget();
     }
 };
 
-HousingPanel::HousingPanel(QWidget *parent) :
+MealPanel::MealPanel(QWidget *parent) :
     KCPanel(parent),
-    ui(new Ui::Housing),
-    d(new HousingPanelPrivate)
+    ui(new Ui::Meal),
+    d(new MealPanelPrivate)
 {
     ui->setupUi(d->widget);
 }
 
-HousingPanel::~HousingPanel()
+MealPanel::~MealPanel()
 {
     delete ui;
 }
 
-const QString HousingPanel::panelName()
+const QString MealPanel::panelName()
 {
     return "Meal management";
 }
 
-QWidget* HousingPanel::panel()
+QWidget* MealPanel::panel()
 {
     return d->widget;
 }

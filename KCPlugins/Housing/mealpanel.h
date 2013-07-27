@@ -19,23 +19,23 @@
  *
  **/
 
-#ifndef HOUSINGPANEL_H
-#define HOUSINGPANEL_H
+#ifndef MEALPANEL_H
+#define MEALPANEL_H
 
 #include "interfaces/kcpanel.h"
 
 namespace Ui {
-class Housing;
+class Meal;
 }
 
-class HousingPanelPrivate;
+class MealPanelPrivate;
 
-class HousingPanel : public KCPanel
+class MealPanel : public KCPanel
 {
     Q_OBJECT
 public:
-    explicit HousingPanel(QWidget *parent = 0);
-    ~HousingPanel();
+    explicit MealPanel(QWidget *parent = 0);
+    ~MealPanel();
     const QString panelName();
     QWidget* panel();
 
@@ -44,8 +44,8 @@ signals:
 public slots:
 
 private:
-    Ui::Housing *ui;
-    HousingPanelPrivate *d;
+    Ui::Meal *ui;
+    MealPanelPrivate *d;
 };
 
-#endif // HOUSINGPANEL_H
+#endif // MEALPANEL_H
