@@ -5,7 +5,7 @@ TEMPLATE      = lib
 CONFIG       += plugin
 
 macx {
-    DESTDIR    = $$OUT_PWD/../../KCApp/KapCompta.app/Contents/plugins
+    DESTDIR    = $$OUT_PWD/../../KCApp/KapCompta.app/Contents/plugins/
     KCCORE_LIB = $$OUT_PWD/../../KCApp/KapCompta.app/Contents/MacOS/
 } else {
     DESTDIR    = $$OUT_PWD/../../KCApp/plugins

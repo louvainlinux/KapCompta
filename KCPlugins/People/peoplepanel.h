@@ -19,15 +19,33 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include <QApplication>
+#ifndef PEOPLEPANEL_H
+#define PEOPLEPANEL_H
 
-int main(int argc, char *argv[])
-{
-    Q_INIT_RESOURCE(rsrc);
-    QApplication a(argc, argv);
-    KCMainWindow w;
-    w.show();
+#include "interfaces/kcpanel.h"
 
-    return a.exec();
+namespace Ui {
+class People;
 }
+
+class PeoplePanelPrivate;
+
+class PeoplePanel : public KCPanel
+{
+    Q_OBJECT
+public:
+    explicit PeoplePanel(QWidget *parent = 0);
+    ~PeoplePanel();
+    const QString panelName();
+    QWidget* panel();
+
+signals:
+
+public slots:
+
+private:
+    Ui::People *ui;
+    PeoplePanelPrivate *d;
+};
+
+#endif // PEOPLEPANEL_H

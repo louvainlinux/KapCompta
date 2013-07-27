@@ -23,14 +23,14 @@
 #define HOUSING_H
 
 #include "interfaces/kcplugin.h"
-#include <QtPlugin>
+#include <QObject>
 
-class Housing : public KCPlugin
+class Housing : public QObject, public KCPlugin
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID KCPLUGIN_IID FILE "housing.json")
     Q_INTERFACES(KCPlugin)
-    Q_PLUGIN_METADATA(IID "org.kapcompta.housing" FILE "housing.json")
 public:
-    Housing();
     const QList<KCPanel *> panels();
 };
 

@@ -61,6 +61,7 @@ KCCore::KCCore() : QObject(),
         extractPluginInfo((*it).absoluteFilePath());
     for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
         loadPlugin((*it).absoluteFilePath());
+    qDebug() << Q_FUNC_INFO << "Loaded" << d->p_core.size() << "plugins";
 }
 
 KCCore::~KCCore()
@@ -90,7 +91,8 @@ void KCCore::loadPlugin(const QString &p)
     if (loadable(p)) {
         QPluginLoader loader(p);
         QObject *plugin = loader.instance();
-        if (plugin) { // did we manage to load our plugin
+        if (!loader.isLoaded()) qDebug() << Q_FUNC_INFO << loader.errorString();
+        else {
             KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
             if (p) { // is it a real KCPlugin ?
                 d->p_core.append(p);
@@ -107,17 +109,17 @@ bool KCCore::loadable(const QString &p)
         QString id = map.value("identifier").toString();
         QVariant version = map.value("version");
         if (!d->p_versions.contains(id)) {
-            qDebug() << Q_FUNC_INFO << "Missing dependancy " << id << " for " << p;
+            qDebug() << Q_FUNC_INFO << "Missing dependancy" << id << "for" << p;
             return false;
         }
         if (d->p_versions.value(id) != version) {
-            qDebug() << Q_FUNC_INFO << "Uncompatible version, found "
-                     << d->p_versions.value(id).toString() << " instead of "
-                     << version.toString() << " required by " << p;
+            qDebug() << Q_FUNC_INFO << "Uncompatible version, found"
+                     << d->p_versions.value(id).toString() << "instead of"
+                     << version.toString() << "required by" << p;
             return false;
         }
         if (!loadable(d->p_locations.value(id))) {
-            qDebug() << Q_FUNC_INFO << "Cannot load dependancy " << id << " for " << p;
+            qDebug() << Q_FUNC_INFO << "Cannot load dependancy" << id << "for" << p;
             return false;
         }
     }

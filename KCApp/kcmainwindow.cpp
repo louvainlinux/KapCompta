@@ -32,9 +32,10 @@
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include <QPoint>
+#include <QtDebug>
 
 #define HELP_URL "http://github.com/louvainlinux/KapCompta/wiki"
-#define TRANSITION_DURATION 1000
+#define TRANSITION_DURATION 175
 
 class KCMainWindowPrivate
 {
@@ -46,18 +47,17 @@ public:
     // transition between panels
     QPropertyAnimation a_slideIn;
     QPropertyAnimation a_slideOut;
-    QPropertyAnimation a_resize;
     QParallelAnimationGroup animation;
 
-    KCMainWindowPrivate() {
+    KCMainWindowPrivate() : currentPanel(NULL), pendingPanel(NULL) {
         a_slideIn.setPropertyName("pos");
-        a_slideIn.setDuration(1000);
+        a_slideIn.setDuration(TRANSITION_DURATION);
         a_slideIn.setEndValue(QPoint(0,0));
         a_slideOut.setPropertyName("pos");
-        a_slideOut.setDuration(1000);
+        a_slideOut.setDuration(TRANSITION_DURATION);
         a_slideOut.setStartValue(QPoint(0,0));
-        a_resize.setPropertyName("size");
-        a_resize.setDuration(1000);
+        animation.addAnimation(&a_slideIn);
+        animation.addAnimation(&a_slideOut);
     }
 };
 
@@ -70,6 +70,7 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
     d->panels = QList<KCPanel*>(KCCore::instance()->panels());
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it);
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
 }
@@ -82,10 +83,13 @@ KCMainWindow::~KCMainWindow()
 void KCMainWindow::loadPanel(KCPanel *p)
 {
     QString iconPath;
-    if (p->iconName().isNull()) iconPath = QString(":/icons/no.jpeg");
+    if (p->iconName().isEmpty()) iconPath = QString(":/icon/no.jpeg");
     else iconPath = p->iconName();
     QAction* action = ui->mainToolBar->addAction(QIcon(iconPath), p->panelName());
     d->actions.insert(action, p);
+    p->panel()->adjustSize();
+    p->panel()->setParent(ui->centralWidget);
+    p->panel()->move(-p->panel()->width()-10,0);
 }
 
 void KCMainWindow::on_actionSettings_triggered()
@@ -113,16 +117,25 @@ void KCMainWindow::toolbarTriggered(QAction *a)
 {
     KCPanel* panel = d->actions.value(a);
     d->pendingPanel = panel;
+    panel->panel()->setVisible(true);
+    if (!d->currentPanel) {
+        qDebug() << "no current";
+        d->pendingPanel->panel()->move(0,0);
+        d->currentPanel = d->pendingPanel;
+        d->currentPanel->selected();
+        return;
+    }
+    d->currentPanel->unselected();
     d->a_slideIn.setTargetObject(panel->panel());
     d->a_slideIn.setStartValue(QPoint(-panel->panel()->width()-10,0));
     d->a_slideOut.setTargetObject(d->currentPanel->panel());
-    d->a_slideOut.setEndValue(QPoint(d->currentPanel->panel()->width()+10,0));
-    d->a_resize.setStartValue(d->currentPanel->panel()->size());
-    d->a_resize.setEndValue(panel->panel()->size());
+    d->a_slideOut.setEndValue(QPoint(this->width()+10,0));
     d->animation.start();
 }
 
 void KCMainWindow::transitionCompleted()
 {
+    d->currentPanel->panel()->setVisible(false);
     d->currentPanel = d->pendingPanel;
+    d->currentPanel->selected();
 }

@@ -19,15 +19,39 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include <QApplication>
+#include "peoplepanel.h"
+#include "ui_people.h"
+#include <QtWidgets/QWidget>
 
-int main(int argc, char *argv[])
+class PeoplePanelPrivate {
+public:
+    QWidget* widget;
+
+    PeoplePanelPrivate()
+    {
+        widget = new QWidget();
+    }
+};
+
+PeoplePanel::PeoplePanel(QWidget *parent) :
+    KCPanel(parent),
+    ui(new Ui::People),
+    d(new PeoplePanelPrivate)
 {
-    Q_INIT_RESOURCE(rsrc);
-    QApplication a(argc, argv);
-    KCMainWindow w;
-    w.show();
+    ui->setupUi(d->widget);
+}
 
-    return a.exec();
+PeoplePanel::~PeoplePanel()
+{
+    delete ui;
+}
+
+const QString PeoplePanel::panelName()
+{
+    return "People management";
+}
+
+QWidget* PeoplePanel::panel()
+{
+    return d->widget;
 }

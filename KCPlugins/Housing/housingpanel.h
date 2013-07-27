@@ -19,15 +19,33 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include <QApplication>
+#ifndef HOUSINGPANEL_H
+#define HOUSINGPANEL_H
 
-int main(int argc, char *argv[])
-{
-    Q_INIT_RESOURCE(rsrc);
-    QApplication a(argc, argv);
-    KCMainWindow w;
-    w.show();
+#include "interfaces/kcpanel.h"
 
-    return a.exec();
+namespace Ui {
+class Housing;
 }
+
+class HousingPanelPrivate;
+
+class HousingPanel : public KCPanel
+{
+    Q_OBJECT
+public:
+    explicit HousingPanel(QWidget *parent = 0);
+    ~HousingPanel();
+    const QString panelName();
+    QWidget* panel();
+
+signals:
+
+public slots:
+
+private:
+    Ui::Housing *ui;
+    HousingPanelPrivate *d;
+};
+
+#endif // HOUSINGPANEL_H

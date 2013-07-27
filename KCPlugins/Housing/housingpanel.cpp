@@ -19,15 +19,39 @@
  *
  **/
 
-#include "kcmainwindow.h"
-#include <QApplication>
+#include "housingpanel.h"
+#include "ui_housing.h"
+#include <QtWidgets/QWidget>
 
-int main(int argc, char *argv[])
+class HousingPanelPrivate {
+public:
+    QWidget* widget;
+
+    HousingPanelPrivate()
+    {
+        widget = new QWidget();
+    }
+};
+
+HousingPanel::HousingPanel(QWidget *parent) :
+    KCPanel(parent),
+    ui(new Ui::Housing),
+    d(new HousingPanelPrivate)
 {
-    Q_INIT_RESOURCE(rsrc);
-    QApplication a(argc, argv);
-    KCMainWindow w;
-    w.show();
+    ui->setupUi(d->widget);
+}
 
-    return a.exec();
+HousingPanel::~HousingPanel()
+{
+    delete ui;
+}
+
+const QString HousingPanel::panelName()
+{
+    return "Meal management";
+}
+
+QWidget* HousingPanel::panel()
+{
+    return d->widget;
 }

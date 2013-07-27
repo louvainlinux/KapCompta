@@ -5,8 +5,13 @@ OTHER_FILES += \
     housing.json
 
 HEADERS += \
-    housing.h
+    housing.h \
+    housingpanel.h
 
 SOURCES += \
-    housing.cpp
+    housing.cpp \
+    housingpanel.cpp
+
+FORMS += \
+    housing.ui
 

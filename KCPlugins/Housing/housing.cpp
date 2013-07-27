@@ -20,12 +20,11 @@
  **/
 
 #include "housing.h"
-
-Housing::Housing()
-{
-}
+#include "housingpanel.h"
 
 const QList<KCPanel*> Housing::panels()
 {
-    return QList<KCPanel*>();
+    QList<KCPanel*> l;
+    l << new HousingPanel();
+    return l;
 }

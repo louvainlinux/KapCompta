@@ -34,5 +34,6 @@ public:
     virtual const QList<KCPanel*> panels() = 0;
 };
 
-Q_DECLARE_INTERFACE(KCPlugin, "org.kapcompta.kcplugin")
+#define KCPLUGIN_IID "org.kapcompta.kcplugin"
+Q_DECLARE_INTERFACE(KCPlugin, KCPLUGIN_IID)
 #endif // KCPLUGIN_H
