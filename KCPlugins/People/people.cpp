@@ -22,6 +22,11 @@
 #include "people.h"
 #include "peoplepanel.h"
 
+People::People()
+{
+    Q_INIT_RESOURCE(rsrc);
+}
+
 const QList<KCPanel*> People::panels()
 {
     QList<KCPanel*> l;

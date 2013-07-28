@@ -62,3 +62,8 @@ QWidget* PeoplePanel::panel()
 {
     return d->widget;
 }
+
+const QString PeoplePanel::iconName()
+{
+    return QString(":/icon/people");
+}

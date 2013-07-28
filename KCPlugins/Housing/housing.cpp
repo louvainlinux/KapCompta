@@ -22,6 +22,11 @@
 #include "housing.h"
 #include "mealpanel.h"
 
+Housing::Housing()
+{
+    Q_INIT_RESOURCE(rsrc);
+}
+
 const QList<KCPanel*> Housing::panels()
 {
     QList<KCPanel*> l;

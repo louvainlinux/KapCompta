@@ -16,3 +16,6 @@ FORMS += \
     people.ui \
     addperson.ui
 
+RESOURCES += \
+    rsrc.qrc
+

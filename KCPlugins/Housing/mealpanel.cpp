@@ -62,3 +62,8 @@ QWidget* MealPanel::panel()
 {
     return d->widget;
 }
+
+const QString MealPanel::iconName()
+{
+    return QString(":/icon/meal");
+}

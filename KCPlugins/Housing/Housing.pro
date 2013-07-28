@@ -18,3 +18,6 @@ FORMS += \
     mealsubscription.ui \
     meal.ui
 
+RESOURCES += \
+    rsrc.qrc
+

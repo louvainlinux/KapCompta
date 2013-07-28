@@ -31,6 +31,7 @@ class People : public QObject, public KCPlugin
     Q_PLUGIN_METADATA(IID KCPLUGIN_IID FILE "people.json")
     Q_INTERFACES(KCPlugin)
 public:
+    People();
     const QList<KCPanel *> panels();
 };
 

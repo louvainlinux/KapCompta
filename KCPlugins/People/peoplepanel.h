@@ -39,6 +39,7 @@ public:
     ~PeoplePanel();
     const QString panelName();
     QWidget* panel();
+    const QString iconName();
 
 signals:
 

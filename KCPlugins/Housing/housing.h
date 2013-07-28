@@ -31,6 +31,7 @@ class Housing : public QObject, public KCPlugin
     Q_PLUGIN_METADATA(IID KCPLUGIN_IID FILE "housing.json")
     Q_INTERFACES(KCPlugin)
 public:
+    Housing();
     const QList<KCPanel *> panels();
 };
 
