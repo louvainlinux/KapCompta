@@ -72,6 +72,7 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
         loadPanel(*it);
     d->currentPanel = d->panels.at(0);
     d->currentPanel->panel()->setVisible(true);
+    this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
 }
@@ -137,4 +138,5 @@ void KCMainWindow::transitionCompleted()
     d->currentPanel = d->pendingPanel;
     d->currentPanel->selected();
     ui->centralWidget->layout()->setEnabled(true);
+    this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
 }
