@@ -45,19 +45,30 @@ public:
     KCPanel* currentPanel;
     KCPanel* pendingPanel;
     // transition between panels
-    QPropertyAnimation a_slideIn;
-    QPropertyAnimation a_slideOut;
+    QPropertyAnimation *a_slideIn;
+    QPropertyAnimation *a_slideOut;
     QParallelAnimationGroup animation;
 
-    KCMainWindowPrivate() : currentPanel(NULL), pendingPanel(NULL) {
-        a_slideIn.setPropertyName("pos");
-        a_slideIn.setDuration(TRANSITION_DURATION);
-        a_slideIn.setEasingCurve(QEasingCurve::InOutCubic);
-        a_slideOut.setPropertyName("pos");
-        a_slideOut.setDuration(TRANSITION_DURATION);
-        a_slideOut.setEasingCurve(QEasingCurve::InOutCubic);
-        animation.addAnimation(&a_slideIn);
-        animation.addAnimation(&a_slideOut);
+    KCMainWindowPrivate() :
+        currentPanel(NULL),
+        pendingPanel(NULL),
+        a_slideIn(new QPropertyAnimation),
+        a_slideOut(new QPropertyAnimation)
+    {
+        a_slideIn->setPropertyName("pos");
+        a_slideIn->setDuration(TRANSITION_DURATION);
+        a_slideIn->setEasingCurve(QEasingCurve::InOutCubic);
+        a_slideOut->setPropertyName("pos");
+        a_slideOut->setDuration(TRANSITION_DURATION);
+        a_slideOut->setEasingCurve(QEasingCurve::InOutCubic);
+        animation.addAnimation(a_slideIn);
+        animation.addAnimation(a_slideOut);
+    }
+
+    ~KCMainWindowPrivate()
+    {
+        qDeleteAll(panels);
+        qDeleteAll(actions.keys());
     }
 };
 
@@ -75,11 +86,14 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
     this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
+    connect(KCCore::instance(), SIGNAL(statusUpdate(QString)), ui->statusBar, SLOT(showMessage(QString)));
+    ui->statusBar->showMessage("Loading completed");
 }
 
 KCMainWindow::~KCMainWindow()
 {
     delete ui;
+    delete d;
 }
 
 void KCMainWindow::loadPanel(KCPanel *p)
@@ -124,11 +138,11 @@ void KCMainWindow::toolbarTriggered(QAction *a)
     d->pendingPanel = panel;
     panel->panel()->setVisible(true);
     d->currentPanel->unselected();
-    d->a_slideIn.setTargetObject(panel->panel());
-    d->a_slideIn.setStartValue(QPoint(-panel->panel()->width(),d->currentPanel->panel()->pos().y()));
-    d->a_slideIn.setEndValue(d->currentPanel->panel()->pos());
-    d->a_slideOut.setTargetObject(d->currentPanel->panel());
-    d->a_slideOut.setEndValue(QPoint(this->width(),d->currentPanel->panel()->pos().y()));
+    d->a_slideIn->setTargetObject(panel->panel());
+    d->a_slideIn->setStartValue(QPoint(-panel->panel()->width(),d->currentPanel->panel()->pos().y()));
+    d->a_slideIn->setEndValue(d->currentPanel->panel()->pos());
+    d->a_slideOut->setTargetObject(d->currentPanel->panel());
+    d->a_slideOut->setEndValue(QPoint(this->width(),d->currentPanel->panel()->pos().y()));
     d->animation.start();
 }
 

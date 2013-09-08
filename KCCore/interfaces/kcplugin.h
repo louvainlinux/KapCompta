@@ -31,6 +31,9 @@ class KCPlugin {
 public:
     virtual ~KCPlugin() {}
     // Returns all panels provided by the plugin (or an empty list)
+    // Multiple calls to this function should return multiple panel instances.
+    // This behaviour will later allow one to have multiple mainwindow opened but with all of them
+    // sharing the same core/plugins instance.
     virtual const QList<KCPanel*> panels() = 0;
 };
 

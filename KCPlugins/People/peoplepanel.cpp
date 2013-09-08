@@ -27,10 +27,11 @@
 
 class PeoplePanelPrivate {
 public:
-    QWidget* widget;
-    QDialog *dialog;
+    QWidget widget;
+    QDialog dialog;
 
-    PeoplePanelPrivate() : widget(new QWidget), dialog(new QDialog) {}
+    PeoplePanelPrivate()
+    {}
 };
 
 PeoplePanel::PeoplePanel(QWidget *parent) :
@@ -39,18 +40,20 @@ PeoplePanel::PeoplePanel(QWidget *parent) :
     addP(new Ui::AddPerson),
     d(new PeoplePanelPrivate)
 {
-    ui->setupUi(d->widget);
-    addP->setupUi(d->dialog);
-    d->dialog->hide();
-    d->dialog->setModal(true);
-    d->dialog->setWindowTitle(tr("Add a person"));
-    connect(ui->addPerson, SIGNAL(clicked()), d->dialog, SLOT(show()));
-    connect(addP->cancel, SIGNAL(clicked()), d->dialog, SLOT(hide()));
+    ui->setupUi(&d->widget);
+    addP->setupUi(&d->dialog);
+    d->dialog.hide();
+    d->dialog.setModal(true);
+    d->dialog.setWindowTitle(tr("Add a person"));
+    connect(ui->addPerson, SIGNAL(clicked()), &d->dialog, SLOT(show()));
+    connect(addP->cancel, SIGNAL(clicked()), &d->dialog, SLOT(hide()));
 }
 
 PeoplePanel::~PeoplePanel()
 {
     delete ui;
+    delete addP;
+    delete d;
 }
 
 const QString PeoplePanel::panelName()
@@ -60,7 +63,7 @@ const QString PeoplePanel::panelName()
 
 QWidget* PeoplePanel::panel()
 {
-    return d->widget;
+    return &d->widget;
 }
 
 const QString PeoplePanel::iconName()

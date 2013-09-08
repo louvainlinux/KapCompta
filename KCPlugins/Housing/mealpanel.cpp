@@ -27,10 +27,11 @@
 
 class MealPanelPrivate {
 public:
-    QWidget* widget;
-    QDialog* dialog;
+    QWidget widget;
+    QDialog dialog;
 
-    MealPanelPrivate() : widget(new QWidget), dialog(new QDialog) {}
+    MealPanelPrivate()
+    {}
 };
 
 MealPanel::MealPanel(QWidget *parent) :
@@ -39,18 +40,20 @@ MealPanel::MealPanel(QWidget *parent) :
     dialog(new Ui::MealSubscription),
     d(new MealPanelPrivate)
 {
-    ui->setupUi(d->widget);
-    dialog->setupUi(d->dialog);
-    d->dialog->hide();
-    d->dialog->setModal(true);
-    d->dialog->setWindowTitle(tr("Register a subscription to a meal"));
-    connect(ui->add, SIGNAL(clicked()), d->dialog, SLOT(show()));
-    connect(dialog->cancel, SIGNAL(clicked()), d->dialog, SLOT(hide()));
+    ui->setupUi(&d->widget);
+    dialog->setupUi(&d->dialog);
+    d->dialog.hide();
+    d->dialog.setModal(true);
+    d->dialog.setWindowTitle(tr("Register a subscription to a meal"));
+    connect(ui->add, SIGNAL(clicked()), &d->dialog, SLOT(show()));
+    connect(dialog->cancel, SIGNAL(clicked()), &d->dialog, SLOT(hide()));
 }
 
 MealPanel::~MealPanel()
 {
     delete ui;
+    delete dialog;
+    delete d;
 }
 
 const QString MealPanel::panelName()
@@ -60,7 +63,7 @@ const QString MealPanel::panelName()
 
 QWidget* MealPanel::panel()
 {
-    return d->widget;
+    return &d->widget;
 }
 
 const QString MealPanel::iconName()

@@ -25,9 +25,10 @@
 
 class TicketPanelPrivate {
 public:
-    QWidget* widget;
+    QWidget widget;
 
-    TicketPanelPrivate() : widget(new QWidget) {}
+    TicketPanelPrivate()
+    {}
 };
 
 TicketPanel::TicketPanel(QWidget *parent) :
@@ -35,12 +36,13 @@ TicketPanel::TicketPanel(QWidget *parent) :
     ui(new Ui::People),
     d(new TicketPanelPrivate)
 {
-    ui->setupUi(d->widget);
+    ui->setupUi(&d->widget);
 }
 
 TicketPanel::~TicketPanel()
 {
     delete ui;
+    delete d;
 }
 
 const QString TicketPanel::panelName()
@@ -50,7 +52,7 @@ const QString TicketPanel::panelName()
 
 QWidget* TicketPanel::panel()
 {
-    return d->widget;
+    return &d->widget;
 }
 
 const QString TicketPanel::iconName()

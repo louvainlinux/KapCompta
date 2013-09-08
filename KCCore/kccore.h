@@ -38,6 +38,10 @@ public:
     const QList<KCPanel *> panels();
 
 signals:
+    void statusUpdate(const QString&);
+
+public slots:
+    void setStatus(const QString&);
 
 protected:
     KCCore();
