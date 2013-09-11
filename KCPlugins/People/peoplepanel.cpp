@@ -58,7 +58,7 @@ PeoplePanel::~PeoplePanel()
 
 const QString PeoplePanel::panelName()
 {
-    return "People management";
+    return tr("People management");
 }
 
 QWidget* PeoplePanel::panel()

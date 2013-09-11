@@ -58,7 +58,7 @@ MealPanel::~MealPanel()
 
 const QString MealPanel::panelName()
 {
-    return "Meal management";
+    return tr("Meal management");
 }
 
 QWidget* MealPanel::panel()

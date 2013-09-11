@@ -47,7 +47,7 @@ TicketPanel::~TicketPanel()
 
 const QString TicketPanel::panelName()
 {
-    return "Ticket management";
+    return tr("Ticket management");
 }
 
 QWidget* TicketPanel::panel()
