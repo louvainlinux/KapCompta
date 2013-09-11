@@ -19,46 +19,17 @@
  *
  **/
 
-#ifndef KCMAINWINDOW_H
-#define KCMAINWINDOW_H
+#include "startupdialog.h"
+#include "ui_startupdialog.h"
 
-#include <QMainWindow>
-
-QT_BEGIN_NAMESPACE
-class QCloseEvent;
-class QAction;
-QT_END_NAMESPACE
-
-class KCPanel;
-class KCMainWindowPrivate;
-
-namespace Ui {
-class KCMainWindow;
+StartupDialog::StartupDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::StartupDialog)
+{
+    ui->setupUi(this);
 }
 
-class KCMainWindow : public QMainWindow
+StartupDialog::~StartupDialog()
 {
-    Q_OBJECT
-
-public:
-    explicit KCMainWindow(QWidget *parent = 0);
-    ~KCMainWindow();
-
-protected:
-    void closeEvent(QCloseEvent *event);
-
-private:
-    Ui::KCMainWindow *ui;
-    KCMainWindowPrivate *d;
-
-private slots:
-    void loadPanel(KCPanel*);
-    void on_actionSettings_triggered();
-    void on_actionOnline_Documentation_triggered();
-    void on_actionAbout_KapCompta_triggered();
-    void toolbarTriggered(QAction*);
-    void transitionCompleted();
-    void on_actionAbout_Qt_triggered();
-};
-
-#endif // KCMAINWINDOW_H
+    delete ui;
+}

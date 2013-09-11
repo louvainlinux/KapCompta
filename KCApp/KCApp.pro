@@ -6,11 +6,14 @@ TEMPLATE = app
 ICON = icons/logo.png
 
 SOURCES += main.cpp \
-        kcmainwindow.cpp
+        kcmainwindow.cpp \
+    startupdialog.cpp
 
-HEADERS  += kcmainwindow.h
+HEADERS  += kcmainwindow.h \
+    startupdialog.h
 
-FORMS += kcmainwindow.ui
+FORMS += kcmainwindow.ui \
+    startupdialog.ui
 
 RESOURCES += rsrc.qrc
 

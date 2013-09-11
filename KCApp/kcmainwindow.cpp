@@ -36,6 +36,7 @@
 
 #define HELP_URL "http://github.com/louvainlinux/KapCompta/wiki"
 #define TRANSITION_DURATION 175
+#define STATUS_DURATION 5000
 
 class KCMainWindowPrivate
 {
@@ -86,8 +87,8 @@ KCMainWindow::KCMainWindow(QWidget *parent) :
     this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
-    connect(KCCore::instance(), SIGNAL(statusUpdate(QString)), ui->statusBar, SLOT(showMessage(QString)));
-    ui->statusBar->showMessage("Loading completed");
+    connect(KCCore::instance(), SIGNAL(statusUpdate(QString,int)), ui->statusBar, SLOT(showMessage(QString,int)));
+    ui->statusBar->showMessage("Loading completed", STATUS_DURATION);
 }
 
 KCMainWindow::~KCMainWindow()
@@ -152,5 +153,12 @@ void KCMainWindow::transitionCompleted()
     d->currentPanel = d->pendingPanel;
     d->currentPanel->selected();
     ui->centralWidget->layout()->setEnabled(true);
-    this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
+    const QString pName = d->currentPanel->panelName();
+    this->setWindowTitle("KapCompta - " + pName);
+    ui->statusBar->showMessage(tr("Switched to %1").arg(pName), STATUS_DURATION);
+}
+
+void KCMainWindow::on_actionAbout_Qt_triggered()
+{
+    QApplication::aboutQt();
 }

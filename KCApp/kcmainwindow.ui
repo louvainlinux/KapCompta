@@ -38,6 +38,7 @@
     <addaction name="separator"/>
     <addaction name="actionSettings"/>
     <addaction name="actionAbout_KapCompta"/>
+    <addaction name="actionAbout_Qt"/>
    </widget>
    <addaction name="menuPanels"/>
    <addaction name="menuMain"/>
@@ -71,6 +72,11 @@
   <action name="actionAbout_KapCompta">
    <property name="text">
     <string>About KapCompta</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About Qt</string>
    </property>
   </action>
  </widget>
