@@ -40,6 +40,12 @@
     <addaction name="actionAbout_KapCompta"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
    <addaction name="menuPanels"/>
    <addaction name="menuMain"/>
   </widget>

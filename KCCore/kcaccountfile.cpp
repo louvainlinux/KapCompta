@@ -22,13 +22,20 @@
 #include "kcaccountfile.h"
 
 #include <QTemporaryDir>
+#include <QHash>
+#include <QList>
+#include <QSet>
 
+#define ACCOUNT_MAGIC 0xa1a4a5a8
 #define VERSION_1 0xdeadbeef
 
 class KCAccountFilePrivate {
 public:
+    QString lasterror;
     QString filename;
     QTemporaryDir tempDir;
+    QHash<QString, QVariant> properties;
+    QSet<QString> components;
 
     KCAccountFilePrivate(const QString& f)
         : filename(QString(f))
@@ -50,21 +57,117 @@ KCAccountFile::~KCAccountFile()
 
 bool KCAccountFile::read() const
 {
-    return true;
+    d->lasterror = QString();
+    QFile file(d->filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        d->lasterror = tr("Failed to open the account file !");
+        qDebug() << Q_FUNC_INFO << d->lasterror;
+        return false;
+    }
+    QDataStream in(&file);
+    quint32 magic;
+    qint32 version;
+    in >> magic;
+    if (magic != (quint32)ACCOUNT_MAGIC) {
+        d->lasterror = tr("Wrong magic number");
+        qDebug() << Q_FUNC_INFO << d->lasterror;
+        return false;
+    }
+    in >> version;
+    switch (version) {
+    case VERSION_1:
+        in.setVersion(QDataStream::Qt_5_1);
+        d->properties.clear();
+        in >> d->properties;
+        quint32 componentCount;
+        in >> componentCount;
+        d->components.clear();
+        for (int i = 0; i < componentCount; ++i) {
+            QString s;
+            QByteArray content;
+            in >> s >> content;
+            d->components.insert(s);
+            QFile f(componentPath(s));
+            if (!f.open(QIODevice::WriteOnly)) {
+                d->lasterror = tr("Failed to open the component %1").arg(f.fileName());
+                qDebug() << Q_FUNC_INFO << d->lasterror;
+            }
+            f.write(content);
+            f.close();
+        }
+        file.close();
+        return d->lasterror != QString();;
+    default:
+        d->lasterror = tr("Unkown version of the account file !");
+        file.close();
+        return false;
+    }
 }
 
 bool KCAccountFile::save() const
 {
-    return true;
+    d->lasterror = QString();
+    QFile file(d->filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        d->lasterror = tr("Failed to open the account file !");
+        qDebug() << Q_FUNC_INFO << d->lasterror;
+        return false;
+    }
+    QDataStream out(&file);
+    // Specify our filetype
+    out << (quint32)ACCOUNT_MAGIC;
+    // Specify our version code and the corresponding encoding scheme
+    out << (qint32)VERSION_1;
+    out.setVersion(QDataStream::Qt_5_1);
+    // Save the account properties
+    QMap<QString, QVariant> prop;
+    QHash<QString, QVariant>::const_iterator propertiesIterator = d->properties.constBegin();
+    while (propertiesIterator != d->properties.constEnd()) {
+        prop[propertiesIterator.key()] = propertiesIterator.value();
+        ++i;
+    }
+    out << prop;
+    // Save the name/data pair for each component.
+    out << (quint32)d->components.size();
+    QSet<QString>::const_iterator i = d->components.constBegin();
+    while (i != d->components.constEnd()) {
+        out << *i;
+        QFile f(componentPath(*i));
+        if (!f.open(QIODevice::ReadOnly)) {
+            d->lasterror = tr("Failed to open the component %1").arg(f.fileName());
+            qDebug() << Q_FUNC_INFO << d->lasterror;
+        }
+        out << f.readAll();
+        f.close();
+    }
+    file.close();
+    return d->lasterror != QString();
 }
 
 void KCAccountFile::addComponent(const QString &componentName)
 {
-    Q_UNUSED(componentName)
+    d->components.insert(componentName);
 }
 
 const QString KCAccountFile::componentPath(const QString &componentName) const
 {
-    Q_UNUSED(componentName)
-    return QString();
+    if (!d->components.contains(componentName)) return QString();
+    const QString tDir = d->tempDir.path();
+    return QString("%1/%2").arg(tDir.endsWith('/') ? tDir.remove(tDir.length()-1, 1) : tDir,
+                                *(d->components.find(componentName)));
+}
+
+void KCAccountFile::setProperty(const QString& key, const QVariant& value)
+{
+    d->properties[key] = value;
+}
+
+const QVariant KCAccountFile::getProperty(const QString& key) const
+{
+    return d->properties.value(key);
+}
+
+const QString KCAccountFile::lastError() const
+{
+    return d->lasterror;
 }

@@ -25,7 +25,8 @@
 
 #include <QSettings>
 
-#define RECENT_ACCOUNT_KEY QString("default/recently_opened")
+static const QString RECENT_ACCOUNT_KEY = QString("default/recently_opened");
+static const QString SELECT_ITEM        = QString("...");
 
 StartupDialog::StartupDialog(QWidget *parent) :
     QDialog(parent),
@@ -37,7 +38,7 @@ StartupDialog::StartupDialog(QWidget *parent) :
     connect(ui->accountName, SIGNAL(textChanged(QString)), this, SLOT(checkCreationInfo()));
     connect(ui->create, SIGNAL(clicked()), this, SLOT(createAccount()));
     connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseAccount()));
-    connect(ui->recent, SIGNAL(activated(int)), this, SLOT(recentAccount(int)));
+    connect(ui->recent, SIGNAL(activated(QString)), this, SLOT(recentAccount(QString)));
 }
 
 StartupDialog::~StartupDialog()
@@ -55,9 +56,9 @@ void StartupDialog::browseAccount()
     this->openAccount(NULL);
 }
 
-void StartupDialog::recentAccount(int index)
+void StartupDialog::recentAccount(const QString& index)
 {
-    if (!index) return;
+    if (index == SELECT_ITEM) return;
     this->openAccount(NULL);
 }
 
@@ -71,14 +72,13 @@ void StartupDialog::populateRecentAccounts()
 {
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
-    recents.prepend(tr("..."));
+    recents.prepend(SELECT_ITEM);
     ui->recent->insertItems(0, recents);
 }
 
 void StartupDialog::openAccount(const QString &path)
 {
     KCMainWindow *mainWindow = new KCMainWindow(path);
-    mainWindow->adjustSize();
     mainWindow->show();
     this->hide();
     this->deleteLater();

@@ -33,8 +33,11 @@
 #include <QParallelAnimationGroup>
 #include <QPoint>
 #include <QtDebug>
+#include <QSettings>
 
-#define HELP_URL "http://github.com/louvainlinux/KapCompta/wiki"
+static const QString WINDOW_FRAME_KEY = QString("default/kcmainwindow_geometry");
+static const QUrl HELP_URL = QUrl("http://github.com/louvainlinux/KapCompta/wiki");
+
 #define TRANSITION_DURATION 175
 #define STATUS_DURATION 5000
 
@@ -89,6 +92,9 @@ KCMainWindow::KCMainWindow(const QString & account, QWidget *parent) :
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
     connect(KCCore::instance(), SIGNAL(statusUpdate(QString,int)), ui->statusBar, SLOT(showMessage(QString,int)));
     ui->statusBar->showMessage("Loading completed", STATUS_DURATION);
+    QSettings s;
+    QRect r = s.value(WINDOW_FRAME_KEY).toRect();
+    if (r != QRect(0,0,0,0)) this->setGeometry(r);
 }
 
 KCMainWindow::~KCMainWindow()
@@ -116,7 +122,7 @@ void KCMainWindow::on_actionSettings_triggered()
 
 void KCMainWindow::on_actionOnline_Documentation_triggered()
 {
-    QDesktopServices::openUrl(QUrl(QString(HELP_URL)));
+    QDesktopServices::openUrl(HELP_URL);
 }
 
 void KCMainWindow::on_actionAbout_KapCompta_triggered()
@@ -126,6 +132,9 @@ void KCMainWindow::on_actionAbout_KapCompta_triggered()
 
 void KCMainWindow::closeEvent(QCloseEvent *event)
 {
+    QSettings s;
+    s.setValue(WINDOW_FRAME_KEY, this->geometry());
+    s.sync();
     event->accept();
 }
 

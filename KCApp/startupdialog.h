@@ -39,7 +39,7 @@ public:
 private slots:
     void createAccount();
     void browseAccount();
-    void recentAccount(int);
+    void recentAccount(const QString &);
     void checkCreationInfo();
 
 private:

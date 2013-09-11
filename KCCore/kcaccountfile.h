@@ -23,6 +23,7 @@
 #define KCACCOUNTFILE_H
 
 #include <QObject>
+#include <QVariant>
 
 class KCAccountFilePrivate;
 /**
@@ -62,6 +63,23 @@ public:
      * @return the absolute path to that component if it exists, or an empty string.
      */
     const QString componentPath(const QString& componentName) const;
+    /**
+     * @brief setProperty will associate the given value to the given key for this account file
+     * @param key the property name
+     * @param value its associated value
+     */
+    void setProperty(const QString& key, const QVariant& value);
+    /**
+     * @brief getProperty will return the property value corresponding to the given key
+     * @param key the property to look for
+     * @return its associated value or an empty QVariant if not present
+     */
+    const QVariant getProperty(const QString& key) const;
+    /**
+     * @brief lastError returns the last error message that happened
+     * @return the message or an empty string if no error happened
+     */
+    const QString lastError() const;
 
 private:
     KCAccountFilePrivate *d;
