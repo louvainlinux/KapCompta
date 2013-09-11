@@ -21,6 +21,50 @@
 
 #include "kcaccountfile.h"
 
-KCAccountFile::KCAccountFile()
+#include <QTemporaryDir>
+
+#define VERSION_1 0xdeadbeef
+
+class KCAccountFilePrivate {
+public:
+    QString filename;
+    QTemporaryDir tempDir;
+
+    KCAccountFilePrivate(const QString& f)
+        : filename(QString(f))
+    {}
+    ~KCAccountFilePrivate()
+    {}
+};
+
+KCAccountFile::KCAccountFile(const QString &filename, QObject *parent)
+    : QObject(parent),
+      d(new KCAccountFilePrivate(filename))
 {
+}
+
+KCAccountFile::~KCAccountFile()
+{
+    delete d;
+}
+
+bool KCAccountFile::read() const
+{
+    return true;
+}
+
+bool KCAccountFile::save() const
+{
+    return true;
+}
+
+void KCAccountFile::addComponent(const QString &componentName)
+{
+    Q_UNUSED(componentName)
+}
+
+const QString KCAccountFile::componentPath(const QString &componentName) const
+{
+    Q_UNUSED(componentName)
+    return QString();
 }

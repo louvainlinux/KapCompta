@@ -27,13 +27,18 @@
 
 class KCPanel;
 
+/**
+ * @brief The KCPlugin class is the base interface for the plugins.
+ */
 class KCPlugin {
 public:
     virtual ~KCPlugin() {}
-    // Returns all panels provided by the plugin (or an empty list)
-    // Multiple calls to this function should return multiple panel instances.
-    // This behaviour will later allow one to have multiple mainwindow opened but with all of them
-    // sharing the same core/plugins instance.
+    /**
+     * @brief panels returns all panels provided by the plugins. Successive calls to this
+     *              method should result in multiple instances of the same kind of panel,
+     *              which will later allow one to have mutliple account opened at once.
+     * @return all panels provided by the plugin (or an empty list)
+     */
     virtual const QList<KCPanel*> panels() = 0;
 };
 

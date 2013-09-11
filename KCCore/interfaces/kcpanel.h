@@ -39,21 +39,34 @@ public:
      * Mandatory methods
      **/
 public:
-    // Returns the displayed name of the panel
+    /**
+     * @brief panelName returns the displayed name of the panel.
+     * @return the panel name
+     */
     virtual const QString panelName() = 0;
-    // Returns the panel to display
+    /**
+     * @brief panel return the panel to display
+     * @return the widget provided by this panel
+     */
     virtual QWidget* panel() = 0;
 
     /**
      * Optional
      **/
 public:
-    // Returns the path to the panel's icon (can be a ressource path)
+    /**
+     * @brief iconName returns the path to the panel's icon (can be a ressource path).
+     * @return an image path
+     */
     virtual const QString iconName() { return QString(); }
 public slots:
-    // Called when the panel appears on screen
+    /**
+     * @brief selected notifies the panel that it appeared on the screen.
+     */
     virtual void selected() {}
-    // Called when another panel is selected while this one was active
+    /**
+     * @brief unselected notifies the panel that itappeared on the screen.
+     */
     virtual void unselected() {}
 };
 

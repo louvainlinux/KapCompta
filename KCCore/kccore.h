@@ -34,27 +34,40 @@ class KCCORESHARED_EXPORT KCCore : public QObject
     Q_OBJECT
 
 public:
+    /**
+     * @brief instance gives the global instance of the shared lib
+     * @return the shared object
+     */
     static KCCore* instance();
+    /**
+     * @brief panels concatenate all available panels and export them to the caller.
+     *              those can come from plugins, ... Multiple calls will generate new instances
+     *              which must be managed by the caller.
+     * @return  the list of panel.
+     */
     const QList<KCPanel *> panels();
 
 signals:
-    void statusUpdate(const QString&);
+    /**
+     * @brief statusUpdate emitted when the shared wants to notify all observers that a new status
+     *                      message is available.
+     * @param timeout the duration in ms after which the message is no longer valid.
+     */
+    void statusUpdate(const QString&, int timeout = 0);
 
 public slots:
-    void setStatus(const QString&);
+    /**
+     * @brief setStatus post a status update message; triggers statusUpdate()
+     * @param timeout @see statusUpdate()
+     */
+    void setStatus(const QString&, int timeout = 0);
 
-protected:
+private:
     KCCore();
     ~KCCore();
 
-private:
     static KCCore *s_instance;
-
     KCCorePrivate *d;
-
-    void extractPluginInfo(const QString&);
-    void loadPlugin(const QString&);
-    bool loadable(const QString&);
 };
 
 #endif // KCCORE_H

@@ -43,6 +43,77 @@ public:
      * The plugins themselves
      **/
     QList<KCPlugin*> p_core;
+
+private:
+    void extractPluginInfo(const QString &p)
+    {
+        QPluginLoader loader(p);
+        QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
+        p_dependancies.insert(id, loader.metaData().value("MetaData").toObject()
+                                 .value("dependancies").toArray().toVariantList());
+        p_versions.insert(id, loader.metaData().value("MetaData").toObject()
+                             .value("version").toVariant());
+        p_locations.insert(id, p);
+    }
+
+    bool loadable(const QString &p)
+    {
+        QVariantList dep = p_dependancies.value(p);
+        for (QVariantList::iterator it = dep.begin(); it != dep.end(); ++it) {
+            QVariantMap map = (*it).toMap();
+            QString id = map.value("identifier").toString();
+            QVariant version = map.value("version");
+            if (!p_versions.contains(id)) {
+                qDebug() << Q_FUNC_INFO << "Missing dependancy" << id << "for" << p;
+                return false;
+            }
+            if (p_versions.value(id) != version) {
+                qDebug() << Q_FUNC_INFO << "Uncompatible version, found"
+                         << p_versions.value(id).toString() << "instead of"
+                         << version.toString() << "required by" << p;
+                return false;
+            }
+            if (!loadable(p_locations.value(id))) {
+                qDebug() << Q_FUNC_INFO << "Cannot load dependancy" << id << "for" << p;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void loadPlugin(const QString &p)
+    {
+        if (loadable(p)) {
+            QPluginLoader loader(p);
+            QObject *plugin = loader.instance();
+            if (!loader.isLoaded()) qDebug() << Q_FUNC_INFO << loader.errorString();
+            else {
+                KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
+                if (p) { // is it a real KCPlugin ?
+                    p_core.append(p);
+                }
+            }
+        }
+    }
+
+public:
+    KCCorePrivate()
+    {
+        QDir path = QDir(qApp->applicationDirPath());
+
+    #if defined(Q_OS_MAC)
+        path.cdUp();
+    #endif
+
+        path.cd("plugins");
+        QFileInfoList files = path.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+        for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
+            extractPluginInfo((*it).absoluteFilePath());
+        for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
+            loadPlugin((*it).absoluteFilePath());
+        qDebug() << Q_FUNC_INFO << "Loaded" << p_core.size() << "plugins";
+    }
+
     ~KCCorePrivate()
     {
         qDeleteAll(p_core);
@@ -53,21 +124,7 @@ KCCore* KCCore::s_instance = NULL;
 
 KCCore::KCCore() : QObject(),
     d(new KCCorePrivate)
-{
-    QDir path = QDir(qApp->applicationDirPath());
-
-#if defined(Q_OS_MAC)
-    path.cdUp();
-#endif
-
-    path.cd("plugins");
-    QFileInfoList files = path.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
-    for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
-        extractPluginInfo((*it).absoluteFilePath());
-    for (QFileInfoList::iterator it = files.begin(); it != files.end(); ++it)
-        loadPlugin((*it).absoluteFilePath());
-    qDebug() << Q_FUNC_INFO << "Loaded" << d->p_core.size() << "plugins";
-}
+{}
 
 KCCore::~KCCore()
 {
@@ -80,58 +137,6 @@ KCCore* KCCore::instance()
     return s_instance;
 }
 
-void KCCore::extractPluginInfo(const QString &p)
-{
-    QPluginLoader loader(p);
-    QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
-    d->p_dependancies.insert(id, loader.metaData().value("MetaData").toObject()
-                             .value("dependancies").toArray().toVariantList());
-    d->p_versions.insert(id, loader.metaData().value("MetaData").toObject()
-                         .value("version").toVariant());
-    d->p_locations.insert(id, p);
-}
-
-void KCCore::loadPlugin(const QString &p)
-{
-    if (loadable(p)) {
-        QPluginLoader loader(p);
-        QObject *plugin = loader.instance();
-        if (!loader.isLoaded()) qDebug() << Q_FUNC_INFO << loader.errorString();
-        else {
-            KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
-            if (p) { // is it a real KCPlugin ?
-                d->p_core.append(p);
-            }
-        }
-    }
-}
-
-bool KCCore::loadable(const QString &p)
-{
-    QVariantList dep = d->p_dependancies.value(p);
-    for (QVariantList::iterator it = dep.begin(); it != dep.end(); ++it) {
-        QVariantMap map = (*it).toMap();
-        QString id = map.value("identifier").toString();
-        QVariant version = map.value("version");
-        if (!d->p_versions.contains(id)) {
-            qDebug() << Q_FUNC_INFO << "Missing dependancy" << id << "for" << p;
-            return false;
-        }
-        if (d->p_versions.value(id) != version) {
-            qDebug() << Q_FUNC_INFO << "Uncompatible version, found"
-                     << d->p_versions.value(id).toString() << "instead of"
-                     << version.toString() << "required by" << p;
-            return false;
-        }
-        if (!loadable(d->p_locations.value(id))) {
-            qDebug() << Q_FUNC_INFO << "Cannot load dependancy" << id << "for" << p;
-            return false;
-        }
-    }
-    return true;
-}
-
-
 const QList<KCPanel*> KCCore::panels()
 {
     QList<KCPanel*> l;
@@ -140,7 +145,7 @@ const QList<KCPanel*> KCCore::panels()
     return l;
 }
 
-void KCCore::setStatus(const QString &s)
+void KCCore::setStatus(const QString &s, int timeout)
 {
-    emit statusUpdate(s);
+    emit statusUpdate(s, timeout);
 }

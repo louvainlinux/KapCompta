@@ -22,10 +22,49 @@
 #ifndef KCACCOUNTFILE_H
 #define KCACCOUNTFILE_H
 
-class KCAccountFile
+#include <QObject>
+
+class KCAccountFilePrivate;
+/**
+ * @brief The KCAccountFile class provides an abstraction for all operation available
+ *        on an account file.
+ */
+class KCAccountFile : public QObject
 {
+    Q_OBJECT
+
 public:
-    KCAccountFile();
+    /**
+     * @brief KCAccountFile initializes an account file at the given path.
+     * @param filename the name of the account file to create.
+     */
+    KCAccountFile(const QString& filename, QObject *parent = 0);
+    ~KCAccountFile();
+    /**
+     * @brief saves the current state of the account to its filename.
+     * @return true on success, false otherwise.
+     */
+    bool save() const;
+    /**
+     * @brief reads the account, potentially resetting any unsaved change.
+     * @return true on success, false otherwise.
+     */
+    bool read() const;
+    /**
+     * @brief addComponent adds a component with the given name to the account file.
+     * @param componentName the name of the component to be added.
+     */
+    void addComponent(const QString& componentName);
+    /**
+     * @brief componentPath provide a path which can be used to retrieve (or set) the content of
+     *          the given account file component.
+     * @param componentName the name of the component to look for
+     * @return the absolute path to that component if it exists, or an empty string.
+     */
+    const QString componentPath(const QString& componentName) const;
+
+private:
+    KCAccountFilePrivate *d;
 };
 
 #endif // KCACCOUNTFILE_H
