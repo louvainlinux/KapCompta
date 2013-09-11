@@ -23,6 +23,10 @@
 #include "kcmainwindow.h"
 #include "ui_startupdialog.h"
 
+#include <QSettings>
+
+#define RECENT_ACCOUNT_KEY QString("default/recently_opened")
+
 StartupDialog::StartupDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StartupDialog)
@@ -53,6 +57,7 @@ void StartupDialog::browseAccount()
 
 void StartupDialog::recentAccount(int index)
 {
+    if (!index) return;
     this->openAccount(NULL);
 }
 
@@ -64,7 +69,10 @@ void StartupDialog::checkCreationInfo()
 
 void StartupDialog::populateRecentAccounts()
 {
-
+    QSettings s;
+    QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
+    recents.prepend(tr("..."));
+    ui->recent->insertItems(0, recents);
 }
 
 void StartupDialog::openAccount(const QString &path)

@@ -124,7 +124,11 @@ KCCore* KCCore::s_instance = NULL;
 
 KCCore::KCCore() : QObject(),
     d(new KCCorePrivate)
-{}
+{
+    QCoreApplication::setOrganizationName("Louvain-li-Nux");
+    QCoreApplication::setOrganizationDomain("louvainlinux.be");
+    QCoreApplication::setApplicationName("KapCompta");
+}
 
 KCCore::~KCCore()
 {
