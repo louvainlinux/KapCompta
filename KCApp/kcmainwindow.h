@@ -41,7 +41,7 @@ class KCMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit KCMainWindow(QWidget *parent = 0);
+    explicit KCMainWindow(const QString& account, QWidget *parent = 0);
     ~KCMainWindow();
 
 protected:

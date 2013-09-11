@@ -73,7 +73,7 @@ public:
     }
 };
 
-KCMainWindow::KCMainWindow(QWidget *parent) :
+KCMainWindow::KCMainWindow(const QString & account, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::KCMainWindow),
     d(new KCMainWindowPrivate)

@@ -20,6 +20,7 @@
  **/
 
 #include "startupdialog.h"
+#include "kcmainwindow.h"
 #include "ui_startupdialog.h"
 
 StartupDialog::StartupDialog(QWidget *parent) :
@@ -27,9 +28,50 @@ StartupDialog::StartupDialog(QWidget *parent) :
     ui(new Ui::StartupDialog)
 {
     ui->setupUi(this);
+    populateRecentAccounts();
+    this->setWindowTitle(tr("Welcome in KapCompta"));
+    connect(ui->accountName, SIGNAL(textChanged(QString)), this, SLOT(checkCreationInfo()));
+    connect(ui->create, SIGNAL(clicked()), this, SLOT(createAccount()));
+    connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseAccount()));
+    connect(ui->recent, SIGNAL(activated(int)), this, SLOT(recentAccount(int)));
 }
 
 StartupDialog::~StartupDialog()
 {
     delete ui;
+}
+
+void StartupDialog::createAccount()
+{
+    this->openAccount(NULL);
+}
+
+void StartupDialog::browseAccount()
+{
+    this->openAccount(NULL);
+}
+
+void StartupDialog::recentAccount(int index)
+{
+    this->openAccount(NULL);
+}
+
+void StartupDialog::checkCreationInfo()
+{
+    if (ui->accountName->text().length()) ui->create->setEnabled(true);
+    else ui->create->setEnabled(false);
+}
+
+void StartupDialog::populateRecentAccounts()
+{
+
+}
+
+void StartupDialog::openAccount(const QString &path)
+{
+    KCMainWindow *mainWindow = new KCMainWindow(path);
+    mainWindow->adjustSize();
+    mainWindow->show();
+    this->hide();
+    this->deleteLater();
 }

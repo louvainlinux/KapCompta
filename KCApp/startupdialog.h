@@ -31,13 +31,22 @@ class StartupDialog;
 class StartupDialog : public QDialog
 {
     Q_OBJECT
-    
+
 public:
     explicit StartupDialog(QWidget *parent = 0);
     ~StartupDialog();
-    
+
+private slots:
+    void createAccount();
+    void browseAccount();
+    void recentAccount(int);
+    void checkCreationInfo();
+
 private:
     Ui::StartupDialog *ui;
+
+    void populateRecentAccounts();
+    void openAccount(const QString& path);
 };
 
 #endif // STARTUPDIALOG_H

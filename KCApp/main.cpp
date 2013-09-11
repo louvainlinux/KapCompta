@@ -19,15 +19,17 @@
  *
  **/
 
-#include "kcmainwindow.h"
+#include "startupdialog.h"
+#include <kccore.h>
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(rsrc);
     QApplication a(argc, argv);
-    KCMainWindow w;
-    w.show();
+    KCCore::instance();
+    StartupDialog *d = new StartupDialog();
+    d->show();
 
     return a.exec();
 }
