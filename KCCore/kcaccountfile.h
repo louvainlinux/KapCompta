@@ -26,6 +26,10 @@
 #include <QObject>
 #include <QVariant>
 
+QT_BEGIN_NAMESPACE
+class QAbstractItemModel;
+QT_END_NAMESPACE
+
 class KCAccountFilePrivate;
 /**
  * @brief The KCAccountFile class provides an abstraction for all operation available
@@ -86,6 +90,19 @@ public:
      * @return the corresponding file for this acount
      */
     const QString fileName() const;
+    /**
+     * @brief registerModel registers the given model to the account with the specified key.
+     *          The account will take ownership of the model !
+     * @param model the object modelling some data about this account
+     * @param key the associated key
+     */
+    void registerModel(QAbstractItemModel* model, const QString& key);
+    /**
+     * @brief model returns the model associated to the acount for the given key
+     * @param key the key to look for
+     * @return the model, or NULL if not found
+     */
+    QAbstractItemModel* model(const QString& key);
 
 signals:
     /**

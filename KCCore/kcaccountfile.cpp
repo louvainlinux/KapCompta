@@ -26,6 +26,7 @@
 #include <QList>
 #include <QSet>
 #include <QDebug>
+#include <QAbstractItemModel>
 
 #define ACCOUNT_MAGIC 0xa1a4a5a8
 #define VERSION_1 0xdeadbeef
@@ -37,12 +38,15 @@ public:
     QTemporaryDir tempDir;
     QHash<QString, QVariant> properties;
     QSet<QString> components;
+    QHash<QString, QAbstractItemModel*> models;
 
     KCAccountFilePrivate(const QString& f)
         : filename(QString(f))
     {}
     ~KCAccountFilePrivate()
-    {}
+    {
+        qDeleteAll(models);
+    }
 };
 
 KCAccountFile::KCAccountFile(const QString &filename, QObject *parent)
@@ -186,4 +190,16 @@ const QString KCAccountFile::lastError() const
 const QString KCAccountFile::fileName() const
 {
     return d->filename;
+}
+
+void KCAccountFile::registerModel(QAbstractItemModel* model, const QString& key)
+{
+    d->models[key] = model;
+}
+
+QAbstractItemModel* KCAccountFile::model(const QString& key)
+{
+    if (d->models.contains(key))
+        return d->models[key];
+    return NULL;
 }
