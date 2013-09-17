@@ -21,6 +21,7 @@
 
 #include "kcmainwindow.h"
 #include "ui_kcmainwindow.h"
+#include "startupdialog.h"
 #include <kcglobals.h>
 #include <kccore.h>
 #include <interfaces/kcpanel.h>
@@ -122,6 +123,7 @@ void KCMainWindow::loadPanel(KCPanel *p)
     p->panel()->adjustSize();
     ui->centralWidget->layout()->addWidget(p->panel());
     p->panel()->setVisible(false);
+    ui->menuPanels->addAction(action);
 }
 
 void KCMainWindow::on_actionSettings_triggered()
@@ -181,4 +183,17 @@ void KCMainWindow::transitionCompleted()
 void KCMainWindow::on_actionAbout_Qt_triggered()
 {
     QApplication::aboutQt();
+}
+
+void KCMainWindow::on_actionOpen_Create_account_triggered()
+{
+    StartupDialog* s = new StartupDialog();
+    s->show();
+}
+
+void KCMainWindow::on_actionSave_triggered()
+{
+    d->account->save();
+    ui->statusBar->showMessage(tr("Changes to [%1] have been saved").arg(d->account->fileName()),
+                               STATUS_DURATION);
 }

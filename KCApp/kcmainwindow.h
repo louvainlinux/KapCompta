@@ -60,6 +60,8 @@ private slots:
     void toolbarTriggered(QAction*);
     void transitionCompleted();
     void on_actionAbout_Qt_triggered();
+    void on_actionOpen_Create_account_triggered();
+    void on_actionSave_triggered();
 };
 
 #endif // KCMAINWINDOW_H
