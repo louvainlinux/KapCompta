@@ -21,6 +21,7 @@
 
 #include "people.h"
 #include "peoplepanel.h"
+#include <kcdatabase.h>
 
 People::People()
 {
@@ -32,4 +33,14 @@ const QList<KCPanel*> People::panels(KCAccountFile *account)
     QList<KCPanel*> l;
     l << new PeoplePanel(account);
     return l;
+}
+
+void People::init(KCAccountFile *account)
+{
+
+}
+
+void People::initDone(KCAccountFile *account)
+{
+
 }

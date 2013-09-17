@@ -33,6 +33,8 @@ class Housing : public QObject, public KCPlugin
 public:
     Housing();
     const QList<KCPanel *> panels(KCAccountFile *account);
+    void init(KCAccountFile *account);
+    void initDone(KCAccountFile *account);
 };
 
 #endif // HOUSING_H

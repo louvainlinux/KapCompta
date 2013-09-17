@@ -33,3 +33,13 @@ const QList<KCPanel*> Housing::panels(KCAccountFile *account)
     l << new MealPanel(account);
     return l;
 }
+
+void Housing::init(KCAccountFile *account)
+{
+
+}
+
+void Housing::initDone(KCAccountFile *account)
+{
+
+}

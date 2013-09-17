@@ -23,7 +23,6 @@
 #include "kcmainwindow.h"
 #include "ui_startupdialog.h"
 #include <kcaccountfile.h>
-#include <kcdatabase.h>
 #include <kcglobals.h>
 #include <kccore.h>
 
@@ -62,11 +61,8 @@ void StartupDialog::createAccount()
                                                 tr("Where do you want to save the account ?"),
                                                 defPath);
     if (!name.isEmpty()) {
-        KCAccountFile f(name);
-        KCDatabase::create(&f);
-        f.setProperty(PROPERTY_ACCOUNT_NAME, ui->accountName->text());
-        f.setProperty(PROPERTY_ACCOUNT_DESCR, ui->description->toPlainText());
-        f.save();
+        KCCore::instance()->createAccount(name, ui->accountName->text(),
+                                          ui->description->toPlainText());
         this->openAccount(name);
     }
 }

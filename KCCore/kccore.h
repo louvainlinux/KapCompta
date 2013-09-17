@@ -48,6 +48,13 @@ public:
      * @return  the list of panel.
      */
     const QList<KCPanel *> panels(KCAccountFile *account);
+    /**
+     * @brief createAccount initialize a new KCAccountFile at the given location
+     * @param location the place where the account should be saved
+     * @param name the account name
+     * @param description the account description
+     */
+    void createAccount(const QString &location, const QString& name, const QString &description);
 
 signals:
     /**

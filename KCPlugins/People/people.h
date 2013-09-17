@@ -22,7 +22,7 @@
 #ifndef PEOPLE_H
 #define PEOPLE_H
 
-#include "interfaces/kcplugin.h"
+#include <interfaces/kcplugin.h>
 #include <QObject>
 
 class People : public QObject, public KCPlugin
@@ -33,6 +33,8 @@ class People : public QObject, public KCPlugin
 public:
     People();
     const QList<KCPanel *> panels(KCAccountFile *account);
+    void init(KCAccountFile *account);
+    void initDone(KCAccountFile *account);
 };
 
 #endif // PEOPLE_H

@@ -31,6 +31,9 @@
 #include <QVariant>
 #include <QCoreApplication>
 #include <QMessageBox>
+#include "kcdatabase.h"
+#include "kcaccountfile.h"
+#include "kcglobals.h"
 
 class KCCorePrivate {
 public:
@@ -160,4 +163,19 @@ void KCCore::warning(const QString &message)
 {
     QMessageBox::critical(0, tr("Something went wrong ..."), message,
                           QMessageBox::Ok, QMessageBox::Ok);
+}
+
+void KCCore::createAccount(const QString &location,
+                           const QString &name,
+                           const QString &description)
+{
+    KCAccountFile f(location);
+    KCDatabase::create(&f);
+    f.setProperty(PROPERTY_ACCOUNT_NAME, name);
+    f.setProperty(PROPERTY_ACCOUNT_DESCR, description);
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+        ((KCPlugin*)*it)->init(&f);
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+        ((KCPlugin*)*it)->initDone(&f);
+    f.save();
 }

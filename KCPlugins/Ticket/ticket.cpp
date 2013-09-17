@@ -33,3 +33,13 @@ const QList<KCPanel*> Ticket::panels(KCAccountFile *account)
     l << new TicketPanel(account);
     return l;
 }
+
+void Ticket::init(KCAccountFile *account)
+{
+
+}
+
+void Ticket::initDone(KCAccountFile *account)
+{
+
+}

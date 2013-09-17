@@ -42,6 +42,19 @@ public:
      * @return all panels provided by the plugin (or an empty list)
      */
     virtual const QList<KCPanel*> panels(KCAccountFile *account) = 0;
+    /**
+     * @brief init initializes the given account in order to be in an usable state by this plugin.
+     *              There are no guarantess regarding the order in which plugins will have this
+     *              function called.
+     * @param account the account to initialize
+     */
+    virtual void init(KCAccountFile *account) = 0;
+    /**
+     * @brief initDone called when the initialization step of an account is over, i.e. when a plugin
+     *              can add foreign keys, populate with initial data, ...
+     * @param account the account that has been initialized
+     */
+    virtual void initDone(KCAccountFile *account) = 0;
 };
 
 #define KCPLUGIN_IID "org.kapcompta.kcplugin"
