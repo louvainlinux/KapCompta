@@ -22,6 +22,7 @@
 #ifndef KCACCOUNTFILE_H
 #define KCACCOUNTFILE_H
 
+#include "kccore_global.h"
 #include <QObject>
 #include <QVariant>
 
@@ -30,7 +31,7 @@ class KCAccountFilePrivate;
  * @brief The KCAccountFile class provides an abstraction for all operation available
  *        on an account file.
  */
-class KCAccountFile : public QObject
+class KCCORESHARED_EXPORT KCAccountFile : public QObject
 {
     Q_OBJECT
 
@@ -45,7 +46,7 @@ public:
      * @brief saves the current state of the account to its filename.
      * @return true on success, false otherwise.
      */
-    bool save() const;
+    bool save();
     /**
      * @brief reads the account, potentially resetting any unsaved change.
      * @return true on success, false otherwise.
@@ -80,6 +81,19 @@ public:
      * @return the message or an empty string if no error happened
      */
     const QString lastError() const;
+
+signals:
+    /**
+     * @brief aboutToSave is emitted when the acount file needs to be accessed in an exclusive way,
+     * thus that all opened file descriptors to its comoponents should be closed.
+     * i.e. save operation
+     */
+    void busy();
+    /**
+     * @brief saved is emitted when the account file is no longer used in an exclusive mode.
+     * (counterpart of busy() )
+     */
+    void available();
 
 private:
     KCAccountFilePrivate *d;

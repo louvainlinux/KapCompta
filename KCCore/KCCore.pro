@@ -14,10 +14,12 @@ DEFINES += KCCORE_LIBRARY
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += kccore.cpp \
-    kcaccountfile.cpp
+    kcaccountfile.cpp \
+    kcdatabase.cpp
 
 HEADERS += kccore_global.h \
        kccore.h \
     interfaces/kcplugin.h \
     kcaccountfile.h \
-    interfaces/kcpanel.h
+    interfaces/kcpanel.h \
+    kcdatabase.h

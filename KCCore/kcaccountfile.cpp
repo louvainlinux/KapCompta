@@ -25,6 +25,7 @@
 #include <QHash>
 #include <QList>
 #include <QSet>
+#include <QDebug>
 
 #define ACCOUNT_MAGIC 0xa1a4a5a8
 #define VERSION_1 0xdeadbeef
@@ -82,7 +83,7 @@ bool KCAccountFile::read() const
         quint32 componentCount;
         in >> componentCount;
         d->components.clear();
-        for (int i = 0; i < componentCount; ++i) {
+        for (unsigned int i = 0; i < componentCount; ++i) {
             QString s;
             QByteArray content;
             in >> s >> content;
@@ -94,9 +95,10 @@ bool KCAccountFile::read() const
             }
             f.write(content);
             f.close();
+            ++i;
         }
         file.close();
-        return d->lasterror != QString();;
+        return d->lasterror != QString();
     default:
         d->lasterror = tr("Unkown version of the account file !");
         file.close();
@@ -104,13 +106,15 @@ bool KCAccountFile::read() const
     }
 }
 
-bool KCAccountFile::save() const
+bool KCAccountFile::save()
 {
+    emit busy();
     d->lasterror = QString();
     QFile file(d->filename);
     if (!file.open(QIODevice::WriteOnly)) {
         d->lasterror = tr("Failed to open the account file !");
         qDebug() << Q_FUNC_INFO << d->lasterror;
+        emit available();
         return false;
     }
     QDataStream out(&file);
@@ -124,7 +128,7 @@ bool KCAccountFile::save() const
     QHash<QString, QVariant>::const_iterator propertiesIterator = d->properties.constBegin();
     while (propertiesIterator != d->properties.constEnd()) {
         prop[propertiesIterator.key()] = propertiesIterator.value();
-        ++i;
+        ++propertiesIterator;
     }
     out << prop;
     // Save the name/data pair for each component.
@@ -139,20 +143,27 @@ bool KCAccountFile::save() const
         }
         out << f.readAll();
         f.close();
+        ++i;
     }
     file.close();
+    emit available();
     return d->lasterror != QString();
 }
 
 void KCAccountFile::addComponent(const QString &componentName)
 {
     d->components.insert(componentName);
+    // Attempt to pre-create the file.
+    QFile file(componentPath(componentName));
+    if (!file.exists())
+        if (file.open(QIODevice::WriteOnly))
+            file.close();
 }
 
 const QString KCAccountFile::componentPath(const QString &componentName) const
 {
     if (!d->components.contains(componentName)) return QString();
-    const QString tDir = d->tempDir.path();
+    QString tDir = d->tempDir.path();
     return QString("%1/%2").arg(tDir.endsWith('/') ? tDir.remove(tDir.length()-1, 1) : tDir,
                                 *(d->components.find(componentName)));
 }
