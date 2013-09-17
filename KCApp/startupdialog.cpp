@@ -25,11 +25,12 @@
 #include <kcaccountfile.h>
 #include <kcdatabase.h>
 #include <kcglobals.h>
+#include <kccore.h>
 
 #include <QSettings>
 #include <QFileDialog>
+#include <QDebug>
 
-static const QString RECENT_ACCOUNT_KEY = QString("default/recently_opened");
 static const QString SELECT_ITEM        = QString("...");
 static const int     HISTORY_SIZE       = 10;
 
@@ -53,9 +54,13 @@ StartupDialog::~StartupDialog()
 
 void StartupDialog::createAccount()
 {
+    QString defPath = QDir::homePath();
+    if (!defPath.endsWith('/')) defPath.append('/');
+    defPath.append(ui->accountName->text());
+    defPath.append(ACCOUNT_EXTENSION);
     QString name = QFileDialog::getSaveFileName(this,
                                                 tr("Where do you want to save the account ?"),
-                                                QDir::homePath());
+                                                defPath);
     if (!name.isEmpty()) {
         KCAccountFile f(name);
         KCDatabase::create(&f);
@@ -89,6 +94,7 @@ void StartupDialog::checkCreationInfo()
 
 void StartupDialog::populateRecentAccounts()
 {
+    ui->recent->clear();
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
     recents.prepend(SELECT_ITEM);
@@ -97,15 +103,27 @@ void StartupDialog::populateRecentAccounts()
 
 void StartupDialog::openAccount(const QString &path)
 {
+    KCAccountFile *file = new KCAccountFile(path);
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
-    if (!recents.removeOne(path) && recents.size() > HISTORY_SIZE)
-        recents.removeLast();
-    recents.prepend(path);
-    s.setValue(RECENT_ACCOUNT_KEY, recents);
-    s.sync();
-    KCMainWindow *mainWindow = new KCMainWindow(path);
-    mainWindow->show();
-    this->hide();
-    this->deleteLater();
+    if (!file->read()) {
+        KCCore::instance()->warning(tr("Failed to open the account file !\nreason: %1")
+                                    .arg(file->lastError()));
+        this->setFocus();
+        delete file;
+        recents.removeOne(path);
+        s.setValue(RECENT_ACCOUNT_KEY, recents);
+        s.sync();
+        populateRecentAccounts();
+    } else {
+        if (!recents.removeOne(path) && recents.size() > HISTORY_SIZE)
+            recents.removeLast();
+        recents.prepend(path);
+        s.setValue(RECENT_ACCOUNT_KEY, recents);
+        s.sync();
+        KCMainWindow *mainWindow = new KCMainWindow(file);
+        mainWindow->show();
+        this->hide();
+        this->deleteLater();
+    }
 }

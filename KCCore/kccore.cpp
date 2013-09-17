@@ -30,6 +30,7 @@
 #include <QList>
 #include <QVariant>
 #include <QCoreApplication>
+#include <QMessageBox>
 
 class KCCorePrivate {
 public:
@@ -152,4 +153,11 @@ const QList<KCPanel*> KCCore::panels()
 void KCCore::setStatus(const QString &s, int timeout)
 {
     emit statusUpdate(s, timeout);
+}
+
+// Change this function to change the way errors are reported to the user
+void KCCore::warning(const QString &message)
+{
+    QMessageBox::critical(0, tr("Something went wrong ..."), message,
+                          QMessageBox::Ok, QMessageBox::Ok);
 }

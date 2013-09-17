@@ -81,6 +81,11 @@ public:
      * @return the message or an empty string if no error happened
      */
     const QString lastError() const;
+    /**
+     * @brief fileName returns the filename of this account
+     * @return the corresponding file for this acount
+     */
+    const QString fileName() const;
 
 signals:
     /**

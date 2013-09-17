@@ -24,5 +24,7 @@
 
 #define PROPERTY_ACCOUNT_NAME  "account_name"
 #define PROPERTY_ACCOUNT_DESCR "account_description"
+#define RECENT_ACCOUNT_KEY     "default/recently_opened"
+#define ACCOUNT_EXTENSION      ".kc"
 
 #endif // KCGLOBALS_H

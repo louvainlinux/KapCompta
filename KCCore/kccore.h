@@ -61,6 +61,11 @@ public slots:
      * @param timeout @see statusUpdate()
      */
     void setStatus(const QString&, int timeout = 0);
+    /**
+     * @brief warning displays a warning message to the user
+     * @param message the information to display
+     */
+    void warning(const QString& message);
 
 private:
     KCCore();

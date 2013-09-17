@@ -30,6 +30,7 @@ class QAction;
 QT_END_NAMESPACE
 
 class KCPanel;
+class KCAccountFile;
 class KCMainWindowPrivate;
 
 namespace Ui {
@@ -41,7 +42,7 @@ class KCMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit KCMainWindow(const QString& account, QWidget *parent = 0);
+    explicit KCMainWindow(KCAccountFile *account, QWidget *parent = 0);
     ~KCMainWindow();
 
 protected:

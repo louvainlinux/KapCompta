@@ -21,8 +21,10 @@
 
 #include "kcmainwindow.h"
 #include "ui_kcmainwindow.h"
-#include "kccore.h"
-#include "interfaces/kcpanel.h"
+#include <kcglobals.h>
+#include <kccore.h>
+#include <interfaces/kcpanel.h>
+#include <kcaccountfile.h>
 #include <QList>
 #include <QDesktopServices>
 #include <QUrl>
@@ -44,6 +46,7 @@ static const QUrl HELP_URL = QUrl("http://github.com/louvainlinux/KapCompta/wiki
 class KCMainWindowPrivate
 {
 public:
+    KCAccountFile *account;
     QList<KCPanel*> panels;
     QHash<QAction*, KCPanel*> actions;
     KCPanel* currentPanel;
@@ -53,7 +56,8 @@ public:
     QPropertyAnimation *a_slideOut;
     QParallelAnimationGroup animation;
 
-    KCMainWindowPrivate() :
+    KCMainWindowPrivate(KCAccountFile *accountPath) :
+        account(accountPath),
         currentPanel(NULL),
         pendingPanel(NULL),
         a_slideIn(new QPropertyAnimation),
@@ -71,15 +75,16 @@ public:
 
     ~KCMainWindowPrivate()
     {
+        delete account;
         qDeleteAll(panels);
         qDeleteAll(actions.keys());
     }
 };
 
-KCMainWindow::KCMainWindow(const QString & account, QWidget *parent) :
+KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::KCMainWindow),
-    d(new KCMainWindowPrivate)
+    d(new KCMainWindowPrivate(account))
 {
     ui->setupUi(this);
     d->panels = QList<KCPanel*>(KCCore::instance()->panels());
@@ -87,11 +92,12 @@ KCMainWindow::KCMainWindow(const QString & account, QWidget *parent) :
         loadPanel(*it);
     d->currentPanel = d->panels.at(0);
     d->currentPanel->panel()->setVisible(true);
-    this->setWindowTitle("KapCompta - " + d->currentPanel->panelName());
+    this->setWindowTitle(d->account->getProperty(PROPERTY_ACCOUNT_NAME).toString()
+                         + " - " + d->currentPanel->panelName());
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
     connect(KCCore::instance(), SIGNAL(statusUpdate(QString,int)), ui->statusBar, SLOT(showMessage(QString,int)));
-    ui->statusBar->showMessage("Loading completed", STATUS_DURATION);
+    ui->statusBar->showMessage(tr("Successfuly opened [%1]").arg(account->fileName()), STATUS_DURATION);
     QSettings s;
     QRect r = s.value(WINDOW_FRAME_KEY).toRect();
     if (r != QRect(0,0,0,0)) this->setGeometry(r);
@@ -163,7 +169,8 @@ void KCMainWindow::transitionCompleted()
     d->currentPanel->selected();
     ui->centralWidget->layout()->setEnabled(true);
     const QString pName = d->currentPanel->panelName();
-    this->setWindowTitle("KapCompta - " + pName);
+    this->setWindowTitle(d->account->getProperty(PROPERTY_ACCOUNT_NAME).toString()
+                         + " - " + pName);
     ui->statusBar->showMessage(tr("Switched to %1").arg(pName), STATUS_DURATION);
 }
 

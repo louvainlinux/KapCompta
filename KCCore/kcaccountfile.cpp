@@ -98,7 +98,7 @@ bool KCAccountFile::read() const
             ++i;
         }
         file.close();
-        return d->lasterror != QString();
+        return d->lasterror.isEmpty();
     default:
         d->lasterror = tr("Unkown version of the account file !");
         file.close();
@@ -147,7 +147,7 @@ bool KCAccountFile::save()
     }
     file.close();
     emit available();
-    return d->lasterror != QString();
+    return d->lasterror.isEmpty();
 }
 
 void KCAccountFile::addComponent(const QString &componentName)
@@ -181,4 +181,9 @@ const QVariant KCAccountFile::getProperty(const QString& key) const
 const QString KCAccountFile::lastError() const
 {
     return d->lasterror;
+}
+
+const QString KCAccountFile::fileName() const
+{
+    return d->filename;
 }
