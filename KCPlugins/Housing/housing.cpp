@@ -27,9 +27,9 @@ Housing::Housing()
     Q_INIT_RESOURCE(rsrc);
 }
 
-const QList<KCPanel*> Housing::panels()
+const QList<KCPanel*> Housing::panels(KCAccountFile *account)
 {
     QList<KCPanel*> l;
-    l << new MealPanel();
+    l << new MealPanel(account);
     return l;
 }

@@ -32,7 +32,7 @@ class Ticket : public QObject, public KCPlugin
     Q_INTERFACES(KCPlugin)
 public:
     Ticket();
-    const QList<KCPanel *> panels();
+    const QList<KCPanel *> panels(KCAccountFile *account);
 };
 
 #endif // TICKET_H

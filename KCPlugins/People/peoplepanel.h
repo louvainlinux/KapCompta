@@ -35,7 +35,7 @@ class PeoplePanel : public KCPanel
 {
     Q_OBJECT
 public:
-    explicit PeoplePanel(QWidget *parent = 0);
+    explicit PeoplePanel(KCAccountFile *account, QWidget *parent = 0);
     ~PeoplePanel();
     const QString panelName();
     QWidget* panel();

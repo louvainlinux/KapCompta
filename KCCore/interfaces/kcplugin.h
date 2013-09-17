@@ -26,6 +26,7 @@
 #include <QtPlugin>
 
 class KCPanel;
+class KCAccountFile;
 
 /**
  * @brief The KCPlugin class is the base interface for the plugins.
@@ -37,9 +38,10 @@ public:
      * @brief panels returns all panels provided by the plugins. Successive calls to this
      *              method should result in multiple instances of the same kind of panel,
      *              which will later allow one to have mutliple account opened at once.
+     * @brief account the account file linked to these panel instances
      * @return all panels provided by the plugin (or an empty list)
      */
-    virtual const QList<KCPanel*> panels() = 0;
+    virtual const QList<KCPanel*> panels(KCAccountFile *account) = 0;
 };
 
 #define KCPLUGIN_IID "org.kapcompta.kcplugin"

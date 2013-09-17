@@ -142,11 +142,11 @@ KCCore* KCCore::instance()
     return s_instance;
 }
 
-const QList<KCPanel*> KCCore::panels()
+const QList<KCPanel*> KCCore::panels(KCAccountFile *account)
 {
     QList<KCPanel*> l;
     for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
-        l << ((KCPlugin*)*it)->panels();
+        l << ((KCPlugin*)*it)->panels(account);
     return l;
 }
 

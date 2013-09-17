@@ -35,7 +35,7 @@ class MealPanel : public KCPanel
 {
     Q_OBJECT
 public:
-    explicit MealPanel(QWidget *parent = 0);
+    explicit MealPanel(KCAccountFile* account, QWidget *parent = 0);
     ~MealPanel();
     const QString panelName();
     QWidget* panel();

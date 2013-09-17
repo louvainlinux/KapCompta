@@ -32,7 +32,7 @@ class People : public QObject, public KCPlugin
     Q_INTERFACES(KCPlugin)
 public:
     People();
-    const QList<KCPanel *> panels();
+    const QList<KCPanel *> panels(KCAccountFile *account);
 };
 
 #endif // PEOPLE_H

@@ -31,8 +31,8 @@ public:
     {}
 };
 
-TicketPanel::TicketPanel(QWidget *parent) :
-    KCPanel(parent),
+TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
+    KCPanel(account, parent),
     ui(new Ui::People),
     d(new TicketPanelPrivate)
 {

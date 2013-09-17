@@ -27,9 +27,9 @@ Ticket::Ticket()
     Q_INIT_RESOURCE(rsrc);
 }
 
-const QList<KCPanel*> Ticket::panels()
+const QList<KCPanel*> Ticket::panels(KCAccountFile *account)
 {
     QList<KCPanel*> l;
-    l << new TicketPanel();
+    l << new TicketPanel(account);
     return l;
 }

@@ -38,6 +38,7 @@
 #include <QSettings>
 
 static const QString WINDOW_FRAME_KEY = QString("default/kcmainwindow_geometry");
+static const QString CURRENT_PANEL_KEY = QString("default/kcmainwindow_panel_index");
 static const QUrl HELP_URL = QUrl("http://github.com/louvainlinux/KapCompta/wiki");
 
 #define TRANSITION_DURATION 175
@@ -90,7 +91,12 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     d->panels = QList<KCPanel*>(KCCore::instance()->panels(account));
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it);
-    d->currentPanel = d->panels.at(0);
+    QSettings s;
+    QRect r = s.value(WINDOW_FRAME_KEY).toRect();
+    if (r != QRect(0,0,0,0)) this->setGeometry(r);
+    int oldPanelIndex = s.value(CURRENT_PANEL_KEY, 0).toInt();
+    d->currentPanel = d->panels.at(oldPanelIndex > 0 && oldPanelIndex < d->panels.size()
+                                   ? oldPanelIndex : 0);
     d->currentPanel->panel()->setVisible(true);
     this->setWindowTitle(d->account->getProperty(PROPERTY_ACCOUNT_NAME).toString()
                          + " - " + d->currentPanel->panelName());
@@ -98,9 +104,6 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     connect(&d->animation, SIGNAL(finished()), this, SLOT(transitionCompleted()));
     connect(KCCore::instance(), SIGNAL(statusUpdate(QString,int)), ui->statusBar, SLOT(showMessage(QString,int)));
     ui->statusBar->showMessage(tr("Successfuly opened [%1]").arg(account->fileName()), STATUS_DURATION);
-    QSettings s;
-    QRect r = s.value(WINDOW_FRAME_KEY).toRect();
-    if (r != QRect(0,0,0,0)) this->setGeometry(r);
 }
 
 KCMainWindow::~KCMainWindow()
@@ -140,6 +143,7 @@ void KCMainWindow::closeEvent(QCloseEvent *event)
 {
     QSettings s;
     s.setValue(WINDOW_FRAME_KEY, this->geometry());
+    s.setValue(CURRENT_PANEL_KEY, d->panels.indexOf(d->currentPanel));
     s.sync();
     event->accept();
 }

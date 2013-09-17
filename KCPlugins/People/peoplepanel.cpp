@@ -34,8 +34,8 @@ public:
     {}
 };
 
-PeoplePanel::PeoplePanel(QWidget *parent) :
-    KCPanel(parent),
+PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
+    KCPanel(account, parent),
     ui(new Ui::People),
     addP(new Ui::AddPerson),
     d(new PeoplePanelPrivate)

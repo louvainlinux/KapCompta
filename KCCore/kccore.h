@@ -28,6 +28,7 @@
 
 class KCCorePrivate;
 class KCPanel;
+class KCAccountFile;
 
 class KCCORESHARED_EXPORT KCCore : public QObject
 {
@@ -43,9 +44,10 @@ public:
      * @brief panels concatenate all available panels and export them to the caller.
      *              those can come from plugins, ... Multiple calls will generate new instances
      *              which must be managed by the caller.
+     * @brief account the account file linked to these panel instances
      * @return  the list of panel.
      */
-    const QList<KCPanel *> panels();
+    const QList<KCPanel *> panels(KCAccountFile *account);
 
 signals:
     /**

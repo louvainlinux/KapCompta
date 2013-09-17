@@ -34,7 +34,7 @@ class TicketPanel : public KCPanel
 {
     Q_OBJECT
 public:
-    explicit TicketPanel(QWidget *parent = 0);
+    explicit TicketPanel(KCAccountFile *account, QWidget *parent = 0);
     ~TicketPanel();
     const QString panelName();
     QWidget* panel();

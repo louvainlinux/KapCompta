@@ -52,6 +52,7 @@ public:
      */
     static void create(KCAccountFile* file,
                        const QString& databaseName = defaultName);
+
 signals:
 
 public slots:

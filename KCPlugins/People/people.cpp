@@ -27,9 +27,9 @@ People::People()
     Q_INIT_RESOURCE(rsrc);
 }
 
-const QList<KCPanel*> People::panels()
+const QList<KCPanel*> People::panels(KCAccountFile *account)
 {
     QList<KCPanel*> l;
-    l << new PeoplePanel();
+    l << new PeoplePanel(account);
     return l;
 }

@@ -32,7 +32,7 @@ class Housing : public QObject, public KCPlugin
     Q_INTERFACES(KCPlugin)
 public:
     Housing();
-    const QList<KCPanel *> panels();
+    const QList<KCPanel *> panels(KCAccountFile *account);
 };
 
 #endif // HOUSING_H

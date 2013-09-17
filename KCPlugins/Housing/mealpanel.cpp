@@ -34,8 +34,8 @@ public:
     {}
 };
 
-MealPanel::MealPanel(QWidget *parent) :
-    KCPanel(parent),
+MealPanel::MealPanel(KCAccountFile *account, QWidget *parent) :
+    KCPanel(account, parent),
     ui(new Ui::Meal),
     dialog(new Ui::MealSubscription),
     d(new MealPanelPrivate)
