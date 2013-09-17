@@ -103,13 +103,14 @@ void StartupDialog::populateRecentAccounts()
 
 void StartupDialog::openAccount(const QString &path)
 {
+    this->hide();
     KCAccountFile *file = new KCAccountFile(path);
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
     if (!file->read()) {
         KCCore::instance()->warning(tr("Failed to open the account file !\nreason: %1")
                                     .arg(file->lastError()));
-        this->setFocus();
+        this->show();
         delete file;
         recents.removeOne(path);
         s.setValue(RECENT_ACCOUNT_KEY, recents);
@@ -123,7 +124,6 @@ void StartupDialog::openAccount(const QString &path)
         s.sync();
         KCMainWindow *mainWindow = new KCMainWindow(file);
         mainWindow->show();
-        this->hide();
         this->deleteLater();
     }
 }

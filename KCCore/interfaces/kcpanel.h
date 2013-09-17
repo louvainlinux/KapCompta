@@ -65,7 +65,7 @@ public slots:
      */
     virtual void selected() {}
     /**
-     * @brief unselected notifies the panel that itappeared on the screen.
+     * @brief unselected notifies the panel that it appeared on the screen.
      */
     virtual void unselected() {}
 };
