@@ -65,13 +65,18 @@ public slots:
 
 KCDatabase::KCDatabase(KCAccountFile* file,
                        const QString &databaseName,
-                       bool create,
                        QObject *parent) :
     QObject(parent),
     d(new KCDatabasePrivate(file, databaseName, this))
 {
-    if (create) file->addComponent(databaseName);
     connect(file, SIGNAL(busy()), d, SLOT(close()));
     connect(file, SIGNAL(available()), d, SLOT(open()));
     d->open();
 }
+
+void KCDatabase::create(KCAccountFile *file, const QString &databaseName)
+{
+    file->addComponent(databaseName);
+}
+
+const QString KCDatabase::defaultName = QString("DEFAULT_DATABASE");

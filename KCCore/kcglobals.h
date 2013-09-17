@@ -19,34 +19,10 @@
  *
  **/
 
-#ifndef STARTUPDIALOG_H
-#define STARTUPDIALOG_H
+#ifndef KCGLOBALS_H
+#define KCGLOBALS_H
 
-#include <QDialog>
+#define PROPERTY_ACCOUNT_NAME  "account_name"
+#define PROPERTY_ACCOUNT_DESCR "account_description"
 
-namespace Ui {
-class StartupDialog;
-}
-
-class StartupDialog : public QDialog
-{
-    Q_OBJECT
-
-public:
-    explicit StartupDialog(QWidget *parent = 0);
-    ~StartupDialog();
-
-private slots:
-    void createAccount();
-    void browseAccount();
-    void recentAccount(int);
-    void checkCreationInfo();
-
-private:
-    Ui::StartupDialog *ui;
-
-    void populateRecentAccounts();
-    void openAccount(const QString& path);
-};
-
-#endif // STARTUPDIALOG_H
+#endif // KCGLOBALS_H

@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>249</height>
+    <width>384</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
@@ -26,7 +26,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" rowspan="2">
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Create a new account</string>
@@ -68,7 +68,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Open an existing account</string>
@@ -93,19 +93,6 @@
       </item>
      </layout>
     </widget>
-   </item>
-   <item row="2" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

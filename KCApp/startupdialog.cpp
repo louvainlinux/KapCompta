@@ -22,11 +22,16 @@
 #include "startupdialog.h"
 #include "kcmainwindow.h"
 #include "ui_startupdialog.h"
+#include <kcaccountfile.h>
+#include <kcdatabase.h>
+#include <kcglobals.h>
 
 #include <QSettings>
+#include <QFileDialog>
 
 static const QString RECENT_ACCOUNT_KEY = QString("default/recently_opened");
 static const QString SELECT_ITEM        = QString("...");
+static const int     HISTORY_SIZE       = 10;
 
 StartupDialog::StartupDialog(QWidget *parent) :
     QDialog(parent),
@@ -38,7 +43,7 @@ StartupDialog::StartupDialog(QWidget *parent) :
     connect(ui->accountName, SIGNAL(textChanged(QString)), this, SLOT(checkCreationInfo()));
     connect(ui->create, SIGNAL(clicked()), this, SLOT(createAccount()));
     connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseAccount()));
-    connect(ui->recent, SIGNAL(activated(QString)), this, SLOT(recentAccount(QString)));
+    connect(ui->recent, SIGNAL(activated(int)), this, SLOT(recentAccount(int)));
 }
 
 StartupDialog::~StartupDialog()
@@ -48,18 +53,32 @@ StartupDialog::~StartupDialog()
 
 void StartupDialog::createAccount()
 {
-    this->openAccount(NULL);
+    QString name = QFileDialog::getSaveFileName(this,
+                                                tr("Where do you want to save the account ?"),
+                                                QDir::homePath());
+    if (!name.isEmpty()) {
+        KCAccountFile f(name);
+        KCDatabase::create(&f);
+        f.setProperty(PROPERTY_ACCOUNT_NAME, ui->accountName->text());
+        f.setProperty(PROPERTY_ACCOUNT_DESCR, ui->description->toPlainText());
+        f.save();
+        this->openAccount(name);
+    }
 }
 
 void StartupDialog::browseAccount()
 {
-    this->openAccount(NULL);
+    QString name = QFileDialog::getOpenFileName(this,
+                                                tr("Where is the account file ?"),
+                                                QDir::homePath());
+    if (!name.isEmpty())
+        this->openAccount(name);
 }
 
-void StartupDialog::recentAccount(const QString& index)
+void StartupDialog::recentAccount(int index)
 {
-    if (index == SELECT_ITEM) return;
-    this->openAccount(NULL);
+    if (!index) return;
+    this->openAccount(ui->recent->itemText(index));
 }
 
 void StartupDialog::checkCreationInfo()
@@ -78,6 +97,13 @@ void StartupDialog::populateRecentAccounts()
 
 void StartupDialog::openAccount(const QString &path)
 {
+    QSettings s;
+    QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
+    if (!recents.removeOne(path) && recents.size() > HISTORY_SIZE)
+        recents.removeLast();
+    recents.prepend(path);
+    s.setValue(RECENT_ACCOUNT_KEY, recents);
+    s.sync();
     KCMainWindow *mainWindow = new KCMainWindow(path);
     mainWindow->show();
     this->hide();

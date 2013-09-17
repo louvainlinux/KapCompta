@@ -33,16 +33,25 @@ class KCCORESHARED_EXPORT KCDatabase : public QObject
     Q_OBJECT
 public:
     /**
+     * @brief defaultName default database name
+     */
+    static const QString defaultName;
+    /**
      * @brief KCDatabase Initialize a database provider
      * @param file the account file containing this database
      * @param databaseName the name of the database to use
-     * @param create whether the database has to be created or already exists
      * @param parent the parent QObject
      */
     explicit KCDatabase(KCAccountFile* file,
-                        const QString& databaseName = QString("DEFAULT_DATABASE"),
-                        bool create = false,
+                        const QString& databaseName = defaultName,
                         QObject *parent = 0);
+    /**
+     * @brief create add a new database to the given account file
+     * @param file the account which will have the new database
+     * @param databaseName the name of the new database
+     */
+    static void create(KCAccountFile* file,
+                       const QString& databaseName = defaultName);
 signals:
 
 public slots:

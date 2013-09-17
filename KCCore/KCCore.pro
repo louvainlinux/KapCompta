@@ -22,4 +22,5 @@ HEADERS += kccore_global.h \
     interfaces/kcplugin.h \
     kcaccountfile.h \
     interfaces/kcpanel.h \
-    kcdatabase.h
+    kcdatabase.h \
+    kcglobals.h
