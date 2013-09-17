@@ -28,11 +28,14 @@ QT_BEGIN_NAMESPACE
 class QWidget;
 QT_END_NAMESPACE
 
+class KCAccountFile;
+
 class KCPanel : public QObject
 {
     Q_OBJECT
 public:
-    KCPanel(QObject *parent = 0) : QObject(parent) {}
+    KCPanel(KCAccountFile *f,
+            QObject *parent = 0) : QObject(parent), account(f) {}
     virtual ~KCPanel() {}
 
     /**
@@ -68,6 +71,12 @@ public slots:
      * @brief unselected notifies the panel that it appeared on the screen.
      */
     virtual void unselected() {}
+
+protected:
+    /**
+     * @brief account the account file linked to this panel
+     */
+    KCAccountFile *account;
 };
 
 #endif // KCPANEL_H

@@ -87,7 +87,7 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     d(new KCMainWindowPrivate(account))
 {
     ui->setupUi(this);
-    d->panels = QList<KCPanel*>(KCCore::instance()->panels());
+    d->panels = QList<KCPanel*>(KCCore::instance()->panels(account));
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it);
     d->currentPanel = d->panels.at(0);
