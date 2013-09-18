@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -20,6 +20,7 @@
  **/
 
 #include "mealcalendar.h"
+
 #include <QPainter>
 #include <QRect>
 

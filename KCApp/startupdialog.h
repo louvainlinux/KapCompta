@@ -19,33 +19,35 @@
  *
  **/
 
-#ifndef MEALCALENDAR_H
-#define MEALCALENDAR_H
+#ifndef STARTUPDIALOG_H
+#define STARTUPDIALOG_H
 
-#include <QCalendarWidget>
-#include <QHash>
+#include <QDialog>
 
-class MealCalendar : public QCalendarWidget
+namespace Ui {
+class StartupDialog;
+}
+
+class StartupDialog : public QDialog
 {
-    /*
-     * Customise the basic calendar widget to color cells containing meals
-     **/
     Q_OBJECT
+
 public:
-    explicit MealCalendar(QWidget *parent = 0);
-    /*
-     * Gives an hashmap where keys are day number in the month (thus 1-31)
-     * and values are the number of highlights on that day
-     **/
-    void setCurrentMonthHighlights(const QHash<int,int>& highlights);
-signals:
+    explicit StartupDialog(QWidget *parent = 0);
+    ~StartupDialog();
 
-public slots:
-
-protected:
-    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
+private slots:
+    void createAccount();
+    void browseAccount();
+    void recentAccount(int);
+    void checkCreationInfo();
 
 private:
-    QHash<int,int> highlights;
+    Ui::StartupDialog *ui;
+    static QSet<QString> openedAccount;
+
+    void populateRecentAccounts();
+    void openAccount(const QString& path);
 };
-#endif // MEALCALENDAR_H
+
+#endif // STARTUPDIALOG_H

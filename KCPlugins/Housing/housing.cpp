@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -20,16 +20,26 @@
  **/
 
 #include "housing.h"
-#include "meal.h"
+#include "mealpanel.h"
 
-const QList<KCPanel *> Housing::panels()
+Housing::Housing()
 {
-    return QList<KCPanel *>() << new Meal();
+    Q_INIT_RESOURCE(rsrc);
 }
 
-const QList<KCSummaryView *> Housing::summaryView()
+const QList<KCPanel*> Housing::panels(KCAccountFile *account)
 {
-    return QList<KCSummaryView *>();
+    QList<KCPanel*> l;
+    l << new MealPanel(account);
+    return l;
 }
 
-Q_EXPORT_PLUGIN2(kc_housing, Housing)
+void Housing::init(KCAccountFile *account)
+{
+
+}
+
+void Housing::initDone(KCAccountFile *account)
+{
+
+}

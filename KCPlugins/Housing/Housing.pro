@@ -1,22 +1,23 @@
-QT           += core gui sql
-TEMPLATE      = lib
-CONFIG       += plugin
-HEADERS       = housing.h \
-                meal.h \
-    mealcalendar.h
-SOURCES       = housing.cpp \
-                meal.cpp \
-    mealcalendar.cpp
-TARGET        = $$qtLibraryTarget(kc_housing)
+include(../kcplugin.prf)
+TARGET  = $$qtLibraryTarget(kc_housing)
 
-DESTDIR       = $$OUT_PWD/../../KCApp/plugins
+OTHER_FILES += \
+    housing.json
+
+HEADERS += \
+    housing.h \
+    mealpanel.h \
+    mealcalendar.h
+
+SOURCES += \
+    housing.cpp \
+    mealpanel.cpp \
+    mealcalendar.cpp
+
+FORMS += \
+    mealsubscription.ui \
+    meal.ui
 
 RESOURCES += \
-    icons.qrc
+    rsrc.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../KCCore/release/ -lKCCore
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../KCCore/debug/ -lKCCore
-else:unix: LIBS += -L$$OUT_PWD/../../KCCore/ -lKCCore
-
-INCLUDEPATH += $$PWD/../../KCCore
-DEPENDPATH += $$PWD/../../KCCore

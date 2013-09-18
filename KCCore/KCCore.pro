@@ -1,29 +1,26 @@
 QT += core sql gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+macx {
+    DESTDIR = $$OUT_PWD/../KCApp/KapCompta.app/Contents/MacOS/
+} else {
+    DESTDIR = $$OUT_PWD/../KCApp/lib
+}
 
 TARGET = $$qtLibraryTarget(KCCore)
 TEMPLATE = lib
 
 DEFINES += KCCORE_LIBRARY
-DEFINES += QT_USE_QSTRINGBUILDER
+DEFINES *= QT_USE_QSTRINGBUILDER
 
-SOURCES +=\
-           kcdatabasehelper.cpp\
-           kcfilemanager.cpp \
-           kcsettings.cpp \
-    kccore.cpp \
-    kcdateedit.cpp \
-    kcspinboxdelegate.cpp
+SOURCES += kccore.cpp \
+    kcaccountfile.cpp \
+    kcdatabase.cpp
 
-HEADERS +=\
-           KCCore_global.h\
-           kcdatabasehelper.h\
-           kcfilemanager.h \
-           kcsettings.h\
-    kccore.h \
-    kcpanel.h \
-    kcsummaryview.h \
-    kcaccountsetting.h \
-    kcfileformat.h \
-    kcplugin.h \
-    kcdateedit.h \
-    kcspinboxdelegate.h
+HEADERS += kccore_global.h \
+       kccore.h \
+    interfaces/kcplugin.h \
+    kcaccountfile.h \
+    interfaces/kcpanel.h \
+    kcdatabase.h \
+    kcglobals.h

@@ -19,33 +19,50 @@
  *
  **/
 
-#ifndef MEALCALENDAR_H
-#define MEALCALENDAR_H
+#ifndef KCMAINWINDOW_H
+#define KCMAINWINDOW_H
 
-#include <QCalendarWidget>
-#include <QHash>
+#include <QMainWindow>
 
-class MealCalendar : public QCalendarWidget
+QT_BEGIN_NAMESPACE
+class QCloseEvent;
+class QAction;
+class QActionGroup;
+QT_END_NAMESPACE
+
+class KCPanel;
+class KCAccountFile;
+class KCMainWindowPrivate;
+
+namespace Ui {
+class KCMainWindow;
+}
+
+class KCMainWindow : public QMainWindow
 {
-    /*
-     * Customise the basic calendar widget to color cells containing meals
-     **/
     Q_OBJECT
-public:
-    explicit MealCalendar(QWidget *parent = 0);
-    /*
-     * Gives an hashmap where keys are day number in the month (thus 1-31)
-     * and values are the number of highlights on that day
-     **/
-    void setCurrentMonthHighlights(const QHash<int,int>& highlights);
-signals:
 
-public slots:
+public:
+    explicit KCMainWindow(KCAccountFile *account, QWidget *parent = 0);
+    ~KCMainWindow();
 
 protected:
-    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
+    void closeEvent(QCloseEvent *event);
 
 private:
-    QHash<int,int> highlights;
+    Ui::KCMainWindow *ui;
+    KCMainWindowPrivate *d;
+
+private slots:
+    void loadPanel(KCPanel*, QActionGroup*);
+    void on_actionSettings_triggered();
+    void on_actionOnline_Documentation_triggered();
+    void on_actionAbout_KapCompta_triggered();
+    void toolbarTriggered(QAction*);
+    void transitionCompleted();
+    void on_actionAbout_Qt_triggered();
+    void on_actionOpen_Create_account_triggered();
+    void on_actionSave_triggered();
 };
-#endif // MEALCALENDAR_H
+
+#endif // KCMAINWINDOW_H

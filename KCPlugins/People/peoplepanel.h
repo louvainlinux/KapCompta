@@ -19,33 +19,43 @@
  *
  **/
 
-#ifndef MEALCALENDAR_H
-#define MEALCALENDAR_H
+#ifndef PEOPLEPANEL_H
+#define PEOPLEPANEL_H
 
-#include <QCalendarWidget>
-#include <QHash>
+#include "interfaces/kcpanel.h"
 
-class MealCalendar : public QCalendarWidget
+namespace Ui {
+class People;
+class AddPerson;
+}
+
+class PeoplePanelPrivate;
+
+class PeoplePanel : public KCPanel
 {
-    /*
-     * Customise the basic calendar widget to color cells containing meals
-     **/
     Q_OBJECT
 public:
-    explicit MealCalendar(QWidget *parent = 0);
-    /*
-     * Gives an hashmap where keys are day number in the month (thus 1-31)
-     * and values are the number of highlights on that day
-     **/
-    void setCurrentMonthHighlights(const QHash<int,int>& highlights);
+    explicit PeoplePanel(KCAccountFile *account, QWidget *parent = 0);
+    ~PeoplePanel();
+    const QString panelName();
+    QWidget* panel();
+    const QString iconName();
+
 signals:
 
 public slots:
+    void selected();
+    void unselected();
 
-protected:
-    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
+private slots:
+    void addPerson();
+    void checkAddPerson();
+    void removePeople();
 
 private:
-    QHash<int,int> highlights;
+    Ui::People *ui;
+    Ui::AddPerson *addP;
+    PeoplePanelPrivate *d;
 };
-#endif // MEALCALENDAR_H
+
+#endif // PEOPLEPANEL_H

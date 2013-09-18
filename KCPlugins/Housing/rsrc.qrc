@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="bar">bar.png</file>
+        <file alias="meal">meal.png</file>
+    </qresource>
+</RCC>

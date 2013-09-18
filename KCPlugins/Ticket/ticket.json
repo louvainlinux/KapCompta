@@ -1,0 +1,5 @@
+{
+      "identifier" : "org.kapcompta.ticket",
+         "version" : "0.0.1",
+    "dependencies" : [{"identifier" : "org.kapcompta.people", "version" : "0.0.1"}]
+}

@@ -19,33 +19,15 @@
  *
  **/
 
-#ifndef MEALCALENDAR_H
-#define MEALCALENDAR_H
+#ifndef KCCORE_GLOBAL_H
+#define KCCORE_GLOBAL_H
 
-#include <QCalendarWidget>
-#include <QHash>
+#include <QtCore/qglobal.h>
 
-class MealCalendar : public QCalendarWidget
-{
-    /*
-     * Customise the basic calendar widget to color cells containing meals
-     **/
-    Q_OBJECT
-public:
-    explicit MealCalendar(QWidget *parent = 0);
-    /*
-     * Gives an hashmap where keys are day number in the month (thus 1-31)
-     * and values are the number of highlights on that day
-     **/
-    void setCurrentMonthHighlights(const QHash<int,int>& highlights);
-signals:
+#if defined(KCCORE_LIBRARY)
+#  define KCCORESHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define KCCORESHARED_EXPORT Q_DECL_IMPORT
+#endif
 
-public slots:
-
-protected:
-    void paintCell(QPainter *painter, const QRect &rect, const QDate &date) const;
-
-private:
-    QHash<int,int> highlights;
-};
-#endif // MEALCALENDAR_H
+#endif // KCCORE_GLOBAL_H

@@ -1,3 +1,4 @@
+cache()
 TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS += KCCore\
@@ -7,6 +8,8 @@ SUBDIRS += KCCore\
 OTHER_FILES += \
     LICENSE.txt \
     BUILDING.txt \
-    osx_shared_lib.sh
+    README.md
 
 KCApp.depends = KCCore
+KCPlugins.depends = KCCore \
+    KCApp

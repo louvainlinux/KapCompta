@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -19,26 +19,17 @@
  *
  **/
 
-#include <QApplication>
-#include "kcmain.h"
-#include <QTranslator>
-#include <QLocale>
+#include "startupdialog.h"
 #include <kccore.h>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(icons);
-
+    Q_INIT_RESOURCE(rsrc);
     QApplication a(argc, argv);
-    // Look for translation files
-    QDir pluginsDir = KCCore::pluginsDir(qApp);
-    QString locale = QLocale::system().name();
-    QTranslator translator;
-    translator.load(QString(pluginsDir.absolutePath() + ("/kapcompta_") + locale));
-    a.installTranslator(&translator);
-    // Init our main component
-    KCMain w;
-    w.start();
+    KCCore::instance();
+    StartupDialog *d = new StartupDialog();
+    d->show();
 
     return a.exec();
 }

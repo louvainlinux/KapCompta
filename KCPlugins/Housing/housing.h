@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -22,23 +22,19 @@
 #ifndef HOUSING_H
 #define HOUSING_H
 
-#include <kcplugin.h>
+#include "interfaces/kcplugin.h"
+#include <QObject>
 
 class Housing : public QObject, public KCPlugin
 {
-    /*
-     * Plugin to manage meals and drinks for a group of people
-     */
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID KCPLUGIN_IID FILE "housing.json")
     Q_INTERFACES(KCPlugin)
-
 public:
-    // KCPlugin interface
-    const QList<KCPanel *> panels();
-    const QList<KCSummaryView *> summaryView();
-    const QList<KCAccountSetting *> accountSettings() { return QList<KCAccountSetting*>();}
-    const QList<KCFileFormat *> fileFormats() { return QList<KCFileFormat*>();}
-private:
+    Housing();
+    const QList<KCPanel *> panels(KCAccountFile *account);
+    void init(KCAccountFile *account);
+    void initDone(KCAccountFile *account);
 };
 
 #endif // HOUSING_H

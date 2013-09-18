@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Olivier Tilmans
+ * Copyright (c) 2012-2013, Olivier Tilmans
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -22,36 +22,73 @@
 #ifndef KCCORE_H
 #define KCCORE_H
 
-#include <QDir>
-#include "KCCore_global.h"
+#include "kccore_global.h"
+#include <QObject>
+#include <QList>
 
-QT_BEGIN_NAMESPACE
-class QApplication;
-class QWidget;
-QT_END_NAMESPACE
+class KCCorePrivate;
+class KCPanel;
+class KCAccountFile;
 
-class KCCORESHARED_EXPORT KCCore
+class KCCORESHARED_EXPORT KCCore : public QObject
 {
-    /*
-     * Provides general-purpose utility functions
-     */
+    Q_OBJECT
+
 public:
-    /*
-     * Returns the QDir containing the plugins for the given application
+    /**
+     * @brief instance gives the global instance of the shared lib
+     * @return the shared object
      */
-    static QDir pluginsDir(QApplication* app);
-    /*
-     * Center the given widget on the screen
+    static KCCore* instance();
+    /**
+     * @brief panels concatenate all available panels and export them to the caller.
+     *              those can come from plugins, ... Multiple calls will generate new instances
+     *              which must be managed by the caller.
+     * @brief account the account file linked to these panel instances
+     * @return  the list of panel.
      */
-    static void center(QWidget* w);
-    /*
-     * Return a QString containing html code to display an horizontal line
+    const QList<KCPanel *> panels(KCAccountFile *account);
+    /**
+     * @brief createAccount initialize a new KCAccountFile at the given location
+     * @param location the place where the account should be saved
+     * @param name the account name
+     * @param description the account description
      */
-    static const QString hr();
-    /*
-     * Returns a two digit or more version of the number given
-     **/
-    static QString twoDigit(int x);
+    void createAccount(const QString &location, const QString& name, const QString &description);
+    /**
+     * @brief openAccount Attempts to open the given account and initialize it if needed. i.e.
+     *              if new plugins have been activated
+     * @param account the account to open
+     * @return true on success, false otherwise
+     */
+    bool openAccount(KCAccountFile *account);
+
+signals:
+    /**
+     * @brief statusUpdate emitted when the shared wants to notify all observers that a new status
+     *                      message is available.
+     * @param timeout the duration in ms after which the message is no longer valid.
+     */
+    void statusUpdate(const QString&, int timeout = 0);
+
+public slots:
+    /**
+     * @brief setStatus post a status update message; triggers statusUpdate()
+     * @param timeout @see statusUpdate()
+     */
+    void setStatus(const QString&, int timeout = 0);
+    /**
+     * @brief warning displays a warning message to the user
+     * @param message the information to display
+     */
+    void warning(const QString& message);
+
+private:
+    KCCore();
+    ~KCCore();
+
+    static KCCore *s_instance;
+    KCCorePrivate *d;
 };
 
 #endif // KCCORE_H
