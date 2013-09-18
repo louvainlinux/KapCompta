@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file alias="events">event.png</file>
+    </qresource>
+</RCC>
