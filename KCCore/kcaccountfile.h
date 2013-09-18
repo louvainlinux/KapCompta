@@ -102,7 +102,12 @@ public:
      * @param key the key to look for
      * @return the model, or NULL if not found
      */
-    QAbstractItemModel* model(const QString& key);
+    QAbstractItemModel* model(const QString& key) const;
+    /**
+     * @brief openedAccount gives the opened accounts
+     * @return the list of path to every opened account
+     */
+    static const QStringList openedAccount();
 
 signals:
     /**

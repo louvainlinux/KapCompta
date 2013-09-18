@@ -44,6 +44,7 @@ private slots:
 
 private:
     Ui::StartupDialog *ui;
+    static QSet<QString> openedAccount;
 
     void populateRecentAccounts();
     void openAccount(const QString& path);

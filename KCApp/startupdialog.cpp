@@ -33,6 +33,8 @@
 static const QString SELECT_ITEM        = QString("...");
 static const int     HISTORY_SIZE       = 10;
 
+QSet<QString> StartupDialog::openedAccount = QSet<QString>();
+
 StartupDialog::StartupDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::StartupDialog)
@@ -94,12 +96,16 @@ void StartupDialog::populateRecentAccounts()
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
     recents.prepend(SELECT_ITEM);
-    ui->recent->insertItems(0, recents);
+    ui->recent->addItems(recents);
 }
 
 void StartupDialog::openAccount(const QString &path)
 {
     this->hide();
+    if (KCAccountFile::openedAccount().contains(path)) {
+        this->deleteLater();
+        return;
+    }
     KCAccountFile *file = new KCAccountFile(path);
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();

@@ -33,6 +33,8 @@
 
 class KCAccountFilePrivate {
 public:
+    static QStringList openedAccounts;
+
     QString lasterror;
     QString filename;
     QTemporaryDir tempDir;
@@ -48,6 +50,7 @@ public:
         qDeleteAll(models);
     }
 };
+QStringList KCAccountFilePrivate::openedAccounts = QStringList();
 
 KCAccountFile::KCAccountFile(const QString &filename, QObject *parent)
     : QObject(parent),
@@ -57,6 +60,7 @@ KCAccountFile::KCAccountFile(const QString &filename, QObject *parent)
 
 KCAccountFile::~KCAccountFile()
 {
+    KCAccountFilePrivate::openedAccounts.removeOne(d->filename);
     delete d;
 }
 
@@ -79,6 +83,7 @@ bool KCAccountFile::read() const
         return false;
     }
     in >> version;
+    bool success = false;
     switch (version) {
     case VERSION_1:
         in.setVersion(QDataStream::Qt_5_1);
@@ -102,12 +107,13 @@ bool KCAccountFile::read() const
             ++i;
         }
         file.close();
-        return d->lasterror.isEmpty();
+        success = d->lasterror.isEmpty();
     default:
         d->lasterror = tr("Unkown version of the account file !");
         file.close();
-        return false;
     }
+    if (success) KCAccountFilePrivate::openedAccounts.append(d->filename);
+    return success;
 }
 
 bool KCAccountFile::save()
@@ -197,9 +203,14 @@ void KCAccountFile::registerModel(QAbstractItemModel* model, const QString& key)
     d->models[key] = model;
 }
 
-QAbstractItemModel* KCAccountFile::model(const QString& key)
+QAbstractItemModel* KCAccountFile::model(const QString& key) const
 {
     if (d->models.contains(key))
         return d->models[key];
     return NULL;
+}
+
+const QStringList KCAccountFile::openedAccount()
+{
+    return KCAccountFilePrivate::openedAccounts;
 }
