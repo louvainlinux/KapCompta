@@ -32,6 +32,7 @@ class TicketPanelPrivate {
 public:
     QWidget widget;
     QSqlTableModel *personModel;
+    QSqlTableModel *eventsModel;
 
     TicketPanelPrivate()
     {}
@@ -44,6 +45,7 @@ TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
 {
     ui->setupUi(&d->widget);
     ui->person->setEditable(true);
+    ui->event->setEditable(true);
 }
 
 TicketPanel::~TicketPanel()
@@ -72,11 +74,15 @@ void TicketPanel::allPanelsCreated()
     d->personModel = (QSqlTableModel*)KCPanel::account->model(MODEL_PERSON);
     ui->person->setModel(d->personModel);
     ui->person->setModelColumn(1);
+    d->eventsModel = (QSqlTableModel*)KCPanel::account->model(MODEL_EVENTS);
+    ui->event->setModel(d->eventsModel);
+    ui->event->setModelColumn(1);
 }
 
 void TicketPanel::selected()
 {
     d->personModel->select();
+    d->eventsModel->select();
 }
 
 void TicketPanel::unselected()
@@ -84,5 +90,9 @@ void TicketPanel::unselected()
     if (!d->personModel->submitAll())
         KCCore::instance()->warning(
                     tr("Failed to submit changes to the people,\nreason: %1")
+                    .arg(d->personModel->lastError().text()));
+    if (!d->eventsModel->submitAll())
+        KCCore::instance()->warning(
+                    tr("Failed to submit changes to the events,\nreason: %1")
                     .arg(d->personModel->lastError().text()));
 }
