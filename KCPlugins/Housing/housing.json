@@ -1,5 +1,5 @@
 {
       "identifier" : "org.kapcompta.housing",
          "version" : "0.0.1",
-    "dependencies" : []
+    "dependencies" : [{"identifier" : "org.kapcompta.people", "version" : "0.0.1"}]
 }

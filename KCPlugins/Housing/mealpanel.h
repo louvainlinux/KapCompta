@@ -40,10 +40,13 @@ public:
     const QString panelName();
     QWidget* panel();
     const QString iconName();
+    void allPanelsCreated();
 
 signals:
 
 public slots:
+    void selected();
+    void unselected();
 
 private:
     Ui::Meal *ui;

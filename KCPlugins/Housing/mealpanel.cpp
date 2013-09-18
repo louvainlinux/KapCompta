@@ -24,11 +24,17 @@
 #include "ui_mealsubscription.h"
 #include <QtWidgets/QWidget>
 #include <QDialog>
+#include <QSqlError>
+#include <QSqlTableModel>
+#include <kcglobals.h>
+#include <kccore.h>
+#include <kcaccountfile.h>
 
 class MealPanelPrivate {
 public:
     QWidget widget;
     QDialog dialog;
+    QSqlTableModel *personModel;
 
     MealPanelPrivate()
     {}
@@ -42,6 +48,7 @@ MealPanel::MealPanel(KCAccountFile *account, QWidget *parent) :
 {
     ui->setupUi(&d->widget);
     dialog->setupUi(&d->dialog);
+    dialog->comboBox->setEditable(true);
     d->dialog.hide();
     d->dialog.setModal(true);
     d->dialog.setWindowTitle(tr("Register a subscription to a meal"));
@@ -69,4 +76,24 @@ QWidget* MealPanel::panel()
 const QString MealPanel::iconName()
 {
     return QString(":/icon/meal");
+}
+
+void MealPanel::allPanelsCreated()
+{
+    d->personModel = (QSqlTableModel*)KCPanel::account->model(MODEL_PERSON);
+    dialog->comboBox->setModel(d->personModel);
+    dialog->comboBox->setModelColumn(1);
+}
+
+void MealPanel::selected()
+{
+    d->personModel->select();
+}
+
+void MealPanel::unselected()
+{
+    if (!d->personModel->submitAll())
+        KCCore::instance()->warning(
+                    tr("Failed to submit changes to the people,\nreason: %1")
+                    .arg(d->personModel->lastError().text()));
 }
