@@ -55,6 +55,10 @@ public:
      * @param account the account that has been initialized
      */
     virtual void initDone(KCAccountFile *account) = 0;
+    /**
+     * @brief id dynamically set by the object loading the plugin.
+     */
+    QString id;
 };
 
 #define KCPLUGIN_IID "org.kapcompta.kcplugin"

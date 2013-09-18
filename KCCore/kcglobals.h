@@ -26,5 +26,6 @@
 #define PROPERTY_ACCOUNT_DESCR "account_description"
 #define RECENT_ACCOUNT_KEY     "default/recently_opened"
 #define ACCOUNT_EXTENSION      ".kc"
+#define INIT_PREFIX            "init/"
 
 #endif // KCGLOBALS_H

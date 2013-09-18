@@ -103,7 +103,7 @@ void StartupDialog::openAccount(const QString &path)
     KCAccountFile *file = new KCAccountFile(path);
     QSettings s;
     QStringList recents = s.value(RECENT_ACCOUNT_KEY).toStringList();
-    if (!file->read()) {
+    if (!KCCore::instance()->openAccount(file)) {
         KCCore::instance()->warning(tr("Failed to open the account file !\nreason: %1")
                                     .arg(file->lastError()));
         this->show();

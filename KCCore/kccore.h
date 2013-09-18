@@ -55,6 +55,13 @@ public:
      * @param description the account description
      */
     void createAccount(const QString &location, const QString& name, const QString &description);
+    /**
+     * @brief openAccount Attempts to open the given account and initialize it if needed. i.e.
+     *              if new plugins have been activated
+     * @param account the account to open
+     * @return true on success, false otherwise
+     */
+    bool openAccount(KCAccountFile *account);
 
 signals:
     /**

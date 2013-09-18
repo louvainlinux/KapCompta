@@ -54,9 +54,9 @@ private:
         QPluginLoader loader(p);
         QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
         p_dependancies.insert(id, loader.metaData().value("MetaData").toObject()
-                                 .value("dependancies").toArray().toVariantList());
+                              .value("dependancies").toArray().toVariantList());
         p_versions.insert(id, loader.metaData().value("MetaData").toObject()
-                             .value("version").toVariant());
+                          .value("version").toVariant());
         p_locations.insert(id, p);
     }
 
@@ -89,11 +89,13 @@ private:
     {
         if (loadable(p)) {
             QPluginLoader loader(p);
+            QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
             QObject *plugin = loader.instance();
             if (!loader.isLoaded()) qDebug() << Q_FUNC_INFO << loader.errorString();
             else {
                 KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
                 if (p) { // is it a real KCPlugin ?
+                    p->id = id;
                     p_core.append(p);
                 }
             }
@@ -105,9 +107,9 @@ public:
     {
         QDir path = QDir(qApp->applicationDirPath());
 
-    #if defined(Q_OS_MAC)
+#if defined(Q_OS_MAC)
         path.cdUp();
-    #endif
+#endif
 
         path.cd("plugins");
         QFileInfoList files = path.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
@@ -175,7 +177,23 @@ void KCCore::createAccount(const QString &location,
     f.setProperty(PROPERTY_ACCOUNT_DESCR, description);
     for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
         ((KCPlugin*)*it)->init(&f);
-    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it) {
         ((KCPlugin*)*it)->initDone(&f);
+        f.setProperty(INIT_PREFIX + ((KCPlugin*)*it)->id, true);
+    }
     f.save();
+}
+
+bool KCCore::openAccount(KCAccountFile *f)
+{
+    if (!f->read()) return false;
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+        if (!f->getProperty(INIT_PREFIX + ((KCPlugin*)*it)->id).toBool())
+            ((KCPlugin*)*it)->init(f);
+    for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
+        if (!f->getProperty(INIT_PREFIX + ((KCPlugin*)*it)->id).toBool()){
+            ((KCPlugin*)*it)->initDone(f);
+            f->setProperty(INIT_PREFIX + ((KCPlugin*)*it)->id, true);
+        }
+    return true;
 }

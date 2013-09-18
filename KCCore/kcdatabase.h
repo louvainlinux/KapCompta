@@ -25,6 +25,7 @@
 #include "kccore_global.h"
 
 #include <QObject>
+#include <QSqlQuery>
 
 class KCAccountFile;
 class KCDatabasePrivate;
@@ -52,7 +53,12 @@ public:
      */
     static void create(KCAccountFile* file,
                        const QString& databaseName = defaultName);
-
+    /**
+     * @brief getQuery instantiates a new sqlquery object linked to this database.
+     * @param queryText the query to execute if not empty.
+     * @return the query executed if the queryText was not empty, otherwise a clean query object
+     */
+    QSqlQuery query(const QString& queryText = QString());
 signals:
 
 public slots:

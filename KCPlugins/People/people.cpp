@@ -37,10 +37,14 @@ const QList<KCPanel*> People::panels(KCAccountFile *account)
 
 void People::init(KCAccountFile *account)
 {
-
+    KCDatabase db(account);
+    db.query("CREATE TABLE person ("
+             "id INTEGER PRIMARY KEY, "
+             "name TEXT, "
+             "misc TEXT"
+             ")");
 }
 
 void People::initDone(KCAccountFile *account)
 {
-
 }

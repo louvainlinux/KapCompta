@@ -79,4 +79,10 @@ void KCDatabase::create(KCAccountFile *file, const QString &databaseName)
     file->addComponent(databaseName);
 }
 
+QSqlQuery KCDatabase::query(const QString& queryText)
+{
+    qDebug() << Q_FUNC_INFO << queryText;
+    return QSqlQuery(queryText, QSqlDatabase::database(d->name));
+}
+
 const QString KCDatabase::defaultName = QString("DEFAULT_DATABASE");
