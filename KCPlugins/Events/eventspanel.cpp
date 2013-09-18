@@ -140,13 +140,14 @@ void EventsPanel::addEvents()
     // fill in our new data
     ins.setValue(ins.indexOf("name"), addE->name->text());
     ins.setValue(ins.indexOf("misc"), addE->misc->toPlainText());
-    ins.setValue(ins.indexOf("date"), addE->date->date());
+    ins.setValue(ins.indexOf("date"), addE->date->selectedDate());
     // insert it at the bottom of the table
     d->model->insertRecord(-1, ins);
     if (!d->model->submit()) {
         KCCore::instance()->warning(tr("Failed to insert a new event !\nreason: %1")
                                     .arg(d->model->lastError().text()));
     }
+    d->model->select();
     d->dialog.hide();
 }
 
@@ -176,6 +177,7 @@ void EventsPanel::removeEvents()
     // update the database/view
     ui->tableView->setUpdatesEnabled(true);
     d->model->submitAll();
+    d->model->select();
 }
 
 void EventsPanel::showDialog()
@@ -184,6 +186,6 @@ void EventsPanel::showDialog()
     addE->ok->setDisabled(true);
     addE->name->clear();
     addE->misc->clear();
-    addE->date->setDate(QDate::currentDate());
+    addE->date->setSelectedDate(QDate::currentDate());
     d->dialog.show();
 }

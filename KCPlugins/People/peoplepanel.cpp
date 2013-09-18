@@ -142,6 +142,7 @@ void PeoplePanel::addPerson()
     addP->ok->setDisabled(true);
     addP->name->clear();
     addP->misc->clear();
+    d->model->select();
 }
 
 void PeoplePanel::selected()
@@ -170,4 +171,5 @@ void PeoplePanel::removePeople()
     // update the database/view
     ui->tableView->setUpdatesEnabled(true);
     d->model->submitAll();
+    d->model->select();
 }
