@@ -27,5 +27,6 @@
 #define RECENT_ACCOUNT_KEY     "default/recently_opened"
 #define ACCOUNT_EXTENSION      ".kc"
 #define INIT_PREFIX            "init/"
+#define MODEL_PERSON           "people.model"
 
 #endif // KCGLOBALS_H

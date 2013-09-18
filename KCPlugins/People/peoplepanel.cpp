@@ -23,15 +23,31 @@
 #include "ui_people.h"
 #include "ui_addperson.h"
 #include <QtWidgets/QWidget>
-#include "QDialog"
+#include <QDialog>
+#include <QSqlTableModel>
+#include <kcdatabase.h>
+#include <QSqlRecord>
+#include <kccore.h>
+#include <QSqlError>
+#include <kcaccountfile.h>
+#include <kcglobals.h>
 
 class PeoplePanelPrivate {
 public:
     QWidget widget;
     QDialog dialog;
+    QSqlTableModel *model;
+    KCDatabase* db;
 
     PeoplePanelPrivate()
     {}
+
+    void setupModel(KCAccountFile *f)
+    {
+        db = new KCDatabase(f);
+        model = new QSqlTableModel(f, db->db());
+        f->registerModel(model, MODEL_PERSON);
+    }
 };
 
 PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
@@ -42,11 +58,29 @@ PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
 {
     ui->setupUi(&d->widget);
     addP->setupUi(&d->dialog);
+    d->setupModel(KCPanel::account);
+    d->model->setTable("person");
+    d->model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    d->model->select();
+    d->model->setHeaderData(d->model->record().indexOf("name"),
+                         Qt::Horizontal,
+                         tr("Name"));
+    d->model->setHeaderData(d->model->record().indexOf("misc"),
+                         Qt::Horizontal,
+                         tr("Description"));
+    ui->tableView->setModel(d->model);
+    ui->tableView->hideColumn(d->model->record().indexOf("id"));
+    ui->tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
     d->dialog.hide();
     d->dialog.setModal(true);
     d->dialog.setWindowTitle(tr("Add a person"));
+    addP->ok->setDisabled(true);
     connect(ui->addPerson, SIGNAL(clicked()), &d->dialog, SLOT(show()));
     connect(addP->cancel, SIGNAL(clicked()), &d->dialog, SLOT(hide()));
+    connect(addP->ok, SIGNAL(clicked()), this, SLOT(addPerson()));
+    connect(addP->name, SIGNAL(textChanged(QString)), this, SLOT(checkAddPerson()));
+    connect(ui->removePerson, SIGNAL(clicked()), SLOT(removePeople()));
 }
 
 PeoplePanel::~PeoplePanel()
@@ -69,4 +103,49 @@ QWidget* PeoplePanel::panel()
 const QString PeoplePanel::iconName()
 {
     return QString(":/icon/people");
+}
+
+void PeoplePanel::checkAddPerson()
+{
+    if (addP->name->text().length() > 0) addP->ok->setDisabled(false);
+    else addP->ok->setDisabled(true);
+}
+
+void PeoplePanel::addPerson()
+{
+    QSqlRecord ins = d->model->record();
+    ins.setValue(ins.indexOf("name"), addP->name->text());
+    ins.setValue(ins.indexOf("misc"), addP->misc->toPlainText());
+    d->model->insertRecord(-1, ins);
+    if (!d->model->submit()) {
+        KCCore::instance()->warning(tr("Failed to insert a new person !\nreason: %1")
+                                    .arg(d->model->lastError().text()));
+    }
+    d->dialog.hide();
+    addP->ok->setDisabled(true);
+}
+
+void PeoplePanel::selected()
+{
+    d->model->select();
+}
+
+void PeoplePanel::unselected()
+{
+    if (!d->model->submitAll())
+        KCCore::instance()->warning(
+                    tr("Failed to submit changes to the people,\nreason: %1")
+                    .arg(d->model->lastError().text()));
+}
+
+void PeoplePanel::removePeople()
+{
+    ui->tableView->setUpdatesEnabled(false);
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
+    qSort(indexes.begin(), indexes.end());
+    for(int i = indexes.count() - 1; i > -1; --i) {
+        d->model->removeRow(indexes.at(i).row());
+    }
+    ui->tableView->setUpdatesEnabled(true);
+    d->model->submitAll();
 }

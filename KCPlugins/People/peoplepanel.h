@@ -44,6 +44,13 @@ public:
 signals:
 
 public slots:
+    void selected();
+    void unselected();
+
+private slots:
+    void addPerson();
+    void checkAddPerson();
+    void removePeople();
 
 private:
     Ui::People *ui;

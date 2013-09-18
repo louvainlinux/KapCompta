@@ -92,7 +92,6 @@ public:
     const QString fileName() const;
     /**
      * @brief registerModel registers the given model to the account with the specified key.
-     *          The account will take ownership of the model !
      * @param model the object modelling some data about this account
      * @param key the associated key
      */
@@ -111,8 +110,8 @@ public:
 
 signals:
     /**
-     * @brief aboutToSave is emitted when the acount file needs to be accessed in an exclusive way,
-     * thus that all opened file descriptors to its comoponents should be closed.
+     * @brief aboutToSave is emitted when the account file needs to be accessed in an exclusive way,
+     * thus that all opened file descriptors to its components should be closed.
      * i.e. save operation
      */
     void busy();

@@ -47,4 +47,5 @@ void People::init(KCAccountFile *account)
 
 void People::initDone(KCAccountFile *account)
 {
+    Q_UNUSED(account)
 }

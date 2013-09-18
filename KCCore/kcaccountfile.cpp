@@ -46,9 +46,7 @@ public:
         : filename(QString(f))
     {}
     ~KCAccountFilePrivate()
-    {
-        qDeleteAll(models);
-    }
+    {}
 };
 QStringList KCAccountFilePrivate::openedAccounts = QStringList();
 
@@ -147,11 +145,11 @@ bool KCAccountFile::save()
     while (i != d->components.constEnd()) {
         out << *i;
         QFile f(componentPath(*i));
-        if (!f.open(QIODevice::ReadOnly)) {
-            d->lasterror = tr("Failed to open the component %1").arg(f.fileName());
-            qDebug() << Q_FUNC_INFO << d->lasterror;
-        }
-        out << f.readAll();
+            if (!f.open(QIODevice::ReadOnly)) {
+                d->lasterror = tr("Failed to open the component %1").arg(f.fileName());
+                qDebug() << Q_FUNC_INFO << d->lasterror;
+            }
+            out << f.readAll();
         f.close();
         ++i;
     }

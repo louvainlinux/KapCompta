@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QSqlQuery>
+#include <QSqlDatabase>
 
 class KCAccountFile;
 class KCDatabasePrivate;
@@ -46,6 +47,7 @@ public:
     explicit KCDatabase(KCAccountFile* file,
                         const QString& databaseName = defaultName,
                         QObject *parent = 0);
+    ~KCDatabase();
     /**
      * @brief create add a new database to the given account file
      * @param file the account which will have the new database
@@ -59,6 +61,12 @@ public:
      * @return the query executed if the queryText was not empty, otherwise a clean query object
      */
     QSqlQuery query(const QString& queryText = QString());
+    /**
+     * @brief db returns a database connection
+     * @return a database connection
+     */
+    QSqlDatabase db();
+
 signals:
 
 public slots:

@@ -34,7 +34,7 @@ public:
     KCDatabasePrivate(KCAccountFile *f, QString n) :
         file(f),
         name(n),
-        id(name + ":" + file->fileName())
+        id(file->componentPath(name))
     {
     }
 
@@ -45,12 +45,11 @@ public:
 
     void open()
     {
-        instances[id]++;
+        instances[id] += 1;
         if (instances[id] == 1) {
-            QSqlDatabase db = QSqlDatabase::database(name);
-            if (db.isValid()) close();
-            db = QSqlDatabase::addDatabase("QSQLITE", file->componentPath(name));
-            db.setDatabaseName(name);
+            if (QSqlDatabase::database(id).isValid()) return;
+            QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", id);
+            db.setDatabaseName(id);
             if (!db.open())
                 qDebug() << Q_FUNC_INFO << "Cannot open database";
         }
@@ -58,8 +57,8 @@ public:
 
     void close()
     {
-        instances[id]--;
-        QSqlDatabase db = QSqlDatabase::database(name);
+        instances[id] -= 1;
+        QSqlDatabase db = QSqlDatabase::database(id);
         if (db.isValid()) {
             db.commit();
             if (instances[id] < 1) {
@@ -67,6 +66,16 @@ public:
                 db.close();
             }
         }
+    }
+
+    QSqlDatabase db()
+    {
+        QSqlDatabase db = QSqlDatabase::database(id);
+        if (!db.isValid()) {
+            open();
+            return QSqlDatabase::database(id);
+        }
+        return db;
     }
 
 private:
@@ -86,15 +95,21 @@ KCDatabase::KCDatabase(KCAccountFile* file,
     d->open();
 }
 
+KCDatabase::~KCDatabase()
+{
+    delete d;
+}
+
 void KCDatabase::create(KCAccountFile *file, const QString &databaseName)
 {
     file->addComponent(databaseName);
+    KCDatabase(file, databaseName);
 }
 
 QSqlQuery KCDatabase::query(const QString& queryText)
 {
     qDebug() << Q_FUNC_INFO << queryText;
-    return QSqlQuery(queryText, QSqlDatabase::database(d->name));
+    return QSqlQuery(queryText, d->db());
 }
 
 void KCDatabase::open()
@@ -105,6 +120,11 @@ void KCDatabase::open()
 void KCDatabase::close()
 {
     d->close();
+}
+
+QSqlDatabase KCDatabase::db()
+{
+    return d->db();
 }
 
 const QString KCDatabase::defaultName = QString("DEFAULT_DATABASE");

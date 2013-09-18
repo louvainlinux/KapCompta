@@ -89,6 +89,7 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     ui(new Ui::KCMainWindow),
     d(new KCMainWindowPrivate(account))
 {
+    this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     d->panels = QList<KCPanel*>(KCCore::instance()->panels(account));
     QActionGroup *aGroup = new QActionGroup(this);
@@ -154,6 +155,8 @@ void KCMainWindow::closeEvent(QCloseEvent *event)
     s.setValue(WINDOW_FRAME_KEY, this->geometry());
     s.setValue(CURRENT_PANEL_KEY, d->panels.indexOf(d->currentPanel));
     s.sync();
+    d->currentPanel->unselected();
+    d->account->save();
     event->accept();
 }
 

@@ -31,7 +31,7 @@
 #include <QDebug>
 
 static const QString SELECT_ITEM        = QString("...");
-static const int     HISTORY_SIZE       = 10;
+static const int     HISTORY_SIZE       = 5;
 
 QSet<QString> StartupDialog::openedAccount = QSet<QString>();
 
