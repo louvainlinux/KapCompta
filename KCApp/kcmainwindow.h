@@ -27,6 +27,7 @@
 QT_BEGIN_NAMESPACE
 class QCloseEvent;
 class QAction;
+class QActionGroup;
 QT_END_NAMESPACE
 
 class KCPanel;
@@ -53,7 +54,7 @@ private:
     KCMainWindowPrivate *d;
 
 private slots:
-    void loadPanel(KCPanel*);
+    void loadPanel(KCPanel*, QActionGroup*);
     void on_actionSettings_triggered();
     void on_actionOnline_Documentation_triggered();
     void on_actionAbout_KapCompta_triggered();

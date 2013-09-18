@@ -37,6 +37,7 @@
 #include <QPoint>
 #include <QtDebug>
 #include <QSettings>
+#include <QActionGroup>
 
 static const QString WINDOW_FRAME_KEY = QString("default/kcmainwindow_geometry");
 static const QString CURRENT_PANEL_KEY = QString("default/kcmainwindow_panel_index");
@@ -90,15 +91,18 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
 {
     ui->setupUi(this);
     d->panels = QList<KCPanel*>(KCCore::instance()->panels(account));
+    QActionGroup *aGroup = new QActionGroup(this);
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
-        loadPanel(*it);
+        loadPanel(*it, aGroup);
     QSettings s;
     QRect r = s.value(WINDOW_FRAME_KEY).toRect();
     if (r != QRect(0,0,0,0)) this->setGeometry(r);
     int oldPanelIndex = s.value(CURRENT_PANEL_KEY, 0).toInt();
-    d->currentPanel = d->panels.at(oldPanelIndex > 0 && oldPanelIndex < d->panels.size()
-                                   ? oldPanelIndex : 0);
+    if (oldPanelIndex < 0 || oldPanelIndex >= d->panels.size())
+        oldPanelIndex = 0;
+    d->currentPanel = d->panels.at(oldPanelIndex);
     d->currentPanel->panel()->setVisible(true);
+    d->actions.key(d->currentPanel)->setChecked(true);
     this->setWindowTitle(d->account->getProperty(PROPERTY_ACCOUNT_NAME).toString()
                          + " - " + d->currentPanel->panelName());
     connect(ui->mainToolBar, SIGNAL(actionTriggered(QAction*)), this, SLOT(toolbarTriggered(QAction*)));
@@ -113,12 +117,15 @@ KCMainWindow::~KCMainWindow()
     delete d;
 }
 
-void KCMainWindow::loadPanel(KCPanel *p)
+void KCMainWindow::loadPanel(KCPanel *p, QActionGroup *aGroup)
 {
     QString iconPath;
     if (p->iconName().isEmpty()) iconPath = QString(":/icon/no.jpeg");
     else iconPath = p->iconName();
-    QAction* action = ui->mainToolBar->addAction(QIcon(iconPath), p->panelName());
+    QAction* action = new QAction(p->panelName(), aGroup);
+    action->setIcon(QIcon(iconPath));
+    action->setCheckable(true);
+    ui->mainToolBar->addAction(action);
     d->actions.insert(action, p);
     p->panel()->adjustSize();
     ui->centralWidget->layout()->addWidget(p->panel());
