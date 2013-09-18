@@ -1,6 +1,9 @@
 #1 Dependencies
 -> Qt 5.1 (core gui widgets sql)
 
+
+--- THE FOLLOWINGS ARE OUTDATED ! ---
+
 #2 General
 The KapCompta.pro is the qmake master file,
 If you want to add extra plugins to your project, add their directories
