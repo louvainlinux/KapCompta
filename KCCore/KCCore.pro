@@ -15,7 +15,8 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 
 SOURCES += kccore.cpp \
     kcaccountfile.cpp \
-    kcdatabase.cpp
+    kcdatabase.cpp \
+    kcdatedelegate.cpp
 
 HEADERS += kccore_global.h \
        kccore.h \
@@ -23,4 +24,5 @@ HEADERS += kccore_global.h \
     kcaccountfile.h \
     interfaces/kcpanel.h \
     kcdatabase.h \
-    kcglobals.h
+    kcglobals.h \
+    kcdatedelegate.h

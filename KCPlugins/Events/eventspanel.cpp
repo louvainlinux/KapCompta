@@ -32,6 +32,7 @@
 #include <kcaccountfile.h>
 #include <kcglobals.h>
 #include <QDate>
+#include <kcdatedelegate.h>
 
 class EventsPanelPrivate {
 public:
@@ -62,7 +63,7 @@ EventsPanel::EventsPanel(KCAccountFile *account, QWidget *parent) :
     d->setupModel(KCPanel::account);
     d->model->setTable("events");
     // We will submit changes when the user exit the application or navigates to another panel
-    d->model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    d->model->setEditStrategy(QSqlTableModel::OnFieldChange);
     d->model->select();
     // Declare better names for our columns
     d->model->setHeaderData(d->model->record().indexOf("name"),
@@ -74,6 +75,8 @@ EventsPanel::EventsPanel(KCAccountFile *account, QWidget *parent) :
     d->model->setHeaderData(d->model->record().indexOf("date"),
                          Qt::Horizontal,
                          tr("Date"));
+    ui->tableView->setItemDelegateForColumn(d->model->record().indexOf("date"),
+                                            new KCDateDelegate(this));
     // bind the model to the table view
     ui->tableView->setModel(d->model);
     // We don't want to display the column id
@@ -85,7 +88,8 @@ EventsPanel::EventsPanel(KCAccountFile *account, QWidget *parent) :
     QHeaderView *header = ui->tableView->horizontalHeader();
     header->setStretchLastSection(true);
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(2, QHeaderView::Fixed);
+    header->setDefaultSectionSize(100);
     header->setSectionsMovable(true);
     // prepare the dialog
     d->dialog.hide();

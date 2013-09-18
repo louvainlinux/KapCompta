@@ -61,7 +61,7 @@ PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
     d->setupModel(KCPanel::account);
     d->model->setTable("person");
     // We will submit changes when the user exit the application or navigates to another panel
-    d->model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    d->model->setEditStrategy(QSqlTableModel::OnFieldChange);
     d->model->select();
     // Declare better names for our columns
     d->model->setHeaderData(d->model->record().indexOf("name"),

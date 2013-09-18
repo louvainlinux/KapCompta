@@ -113,8 +113,6 @@ bool KCAccountFile::read() const
         file.close();
     }
     if (success) KCAccountFilePrivate::openedAccounts.append(d->filename);
-    for (QHash<QString, QVariant>::iterator it = d->properties.begin(); it != d->properties.end(); ++it)
-        qDebug() << it.key() << ":" << it.value();
     return success;
 }
 
