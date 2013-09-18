@@ -24,10 +24,14 @@
 #include <QtWidgets/QWidget>
 #include <kcaccountfile.h>
 #include <kcglobals.h>
+#include <kccore.h>
+#include <QSqlError>
+#include <QSqlTableModel>
 
 class TicketPanelPrivate {
 public:
     QWidget widget;
+    QSqlTableModel *personModel;
 
     TicketPanelPrivate()
     {}
@@ -39,6 +43,7 @@ TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
     d(new TicketPanelPrivate)
 {
     ui->setupUi(&d->widget);
+    ui->person->setEditable(true);
 }
 
 TicketPanel::~TicketPanel()
@@ -64,7 +69,20 @@ const QString TicketPanel::iconName()
 
 void TicketPanel::allPanelsCreated()
 {
-    QAbstractItemModel *model = KCPanel::account->model(MODEL_PERSON);
-    ui->person->setModel(model);
+    d->personModel = (QSqlTableModel*)KCPanel::account->model(MODEL_PERSON);
+    ui->person->setModel(d->personModel);
     ui->person->setModelColumn(1);
+}
+
+void TicketPanel::selected()
+{
+    d->personModel->select();
+}
+
+void TicketPanel::unselected()
+{
+    if (!d->personModel->submitAll())
+        KCCore::instance()->warning(
+                    tr("Failed to submit changes to the people,\nreason: %1")
+                    .arg(d->personModel->lastError().text()));
 }
