@@ -60,21 +60,29 @@ PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
     addP->setupUi(&d->dialog);
     d->setupModel(KCPanel::account);
     d->model->setTable("person");
+    // We will submit changes when the user exit the application or navigates to another panel
     d->model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     d->model->select();
+    // Declare better names for our columns
     d->model->setHeaderData(d->model->record().indexOf("name"),
                          Qt::Horizontal,
                          tr("Name"));
     d->model->setHeaderData(d->model->record().indexOf("misc"),
                          Qt::Horizontal,
                          tr("Description"));
+    // bind the model to the table view
     ui->tableView->setModel(d->model);
+    // We don't want to display the column id
     ui->tableView->hideColumn(d->model->record().indexOf("id"));
+    // And we authorize the user to edit the edit as he wishes
     ui->tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    // We want the columns to take all available space
     ui->tableView->horizontalHeader()->setStretchLastSection(true);
     d->dialog.hide();
     d->dialog.setModal(true);
     d->dialog.setWindowTitle(tr("Add a person"));
+    // By default the ok button in the dialog is disabled, and we'll listen for changes in the
+    // dialog to enable it on the fly
     addP->ok->setDisabled(true);
     connect(ui->addPerson, SIGNAL(clicked()), &d->dialog, SLOT(show()));
     connect(addP->cancel, SIGNAL(clicked()), &d->dialog, SLOT(hide()));
