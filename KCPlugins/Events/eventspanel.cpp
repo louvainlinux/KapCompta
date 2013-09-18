@@ -136,6 +136,7 @@ void EventsPanel::addEvents()
     // fill in our new data
     ins.setValue(ins.indexOf("name"), addE->name->text());
     ins.setValue(ins.indexOf("misc"), addE->misc->toPlainText());
+    ins.setValue(ins.indexOf("date"), addE->date->dateTime());
     // insert it at the bottom of the table
     d->model->insertRecord(-1, ins);
     if (!d->model->submit()) {

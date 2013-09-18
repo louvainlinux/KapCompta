@@ -22,6 +22,8 @@
 #include "events.h"
 #include "eventspanel.h"
 #include <kcdatabase.h>
+#include <QDebug>
+#include <QSqlError>
 
 Events::Events()
 {
@@ -38,12 +40,13 @@ const QList<KCPanel*> Events::panels(KCAccountFile *account)
 void Events::init(KCAccountFile *account)
 {
     KCDatabase db(account);
-    db.query("CREATE TABLE events ("
+    QSqlQuery q = db.query("CREATE TABLE events ("
              "id INTEGER PRIMARY KEY, "
              "name TEXT, "
              "date TEXT, "
              "misc TEXT"
              ")");
+    qDebug() << q.lastError().text();
 }
 
 void Events::initDone(KCAccountFile *account)
