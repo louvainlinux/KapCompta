@@ -31,7 +31,7 @@
 #include <QSqlError>
 #include <kcaccountfile.h>
 #include <kcglobals.h>
-#include <QDateTime>
+#include <QDate>
 
 class EventsPanelPrivate {
 public:
@@ -136,7 +136,7 @@ void EventsPanel::addEvents()
     // fill in our new data
     ins.setValue(ins.indexOf("name"), addE->name->text());
     ins.setValue(ins.indexOf("misc"), addE->misc->toPlainText());
-    ins.setValue(ins.indexOf("date"), addE->date->dateTime());
+    ins.setValue(ins.indexOf("date"), addE->date->date());
     // insert it at the bottom of the table
     d->model->insertRecord(-1, ins);
     if (!d->model->submit()) {
@@ -180,6 +180,6 @@ void EventsPanel::showDialog()
     addE->ok->setDisabled(true);
     addE->name->clear();
     addE->misc->clear();
-    addE->date->setDateTime(QDateTime::currentDateTime());
+    addE->date->setDate(QDate::currentDate());
     d->dialog.show();
 }
