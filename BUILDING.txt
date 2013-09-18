@@ -1,5 +1,5 @@
 #1 Dependencies
--> Qt 4.8 (core gui sql)
+-> Qt 5.1 (core gui widgets sql)
 
 #2 General
 The KapCompta.pro is the qmake master file,
