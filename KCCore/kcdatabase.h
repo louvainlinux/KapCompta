@@ -38,7 +38,7 @@ public:
      */
     static const QString defaultName;
     /**
-     * @brief KCDatabase Initialize a database provider
+     * @brief KCDatabase Initialize and open a database connection
      * @param file the account file containing this database
      * @param databaseName the name of the database to use
      * @param parent the parent QObject
@@ -62,7 +62,14 @@ public:
 signals:
 
 public slots:
-
+    /**
+     * @brief open Opens the connection to the database
+     */
+    void open();
+    /**
+     * @brief close closes the connection to the database
+     */
+    void close();
 private:
     KCDatabasePrivate *d;
 };

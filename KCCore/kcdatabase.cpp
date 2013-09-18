@@ -25,15 +25,16 @@
 #include <QSqlDatabase>
 #include <QDebug>
 
-class KCDatabasePrivate : public QObject {
+class KCDatabasePrivate {
 public:
     KCAccountFile *file;
     QString name;
+    QString id;
 
-    KCDatabasePrivate(KCAccountFile *f, QString n, QObject *parent = 0) :
-        QObject(parent),
+    KCDatabasePrivate(KCAccountFile *f, QString n) :
         file(f),
-        name(n)
+        name(n),
+        id(name + ":" + file->fileName())
     {
     }
 
@@ -42,35 +43,46 @@ public:
         close();
     }
 
-public slots:
     void open()
     {
-        QSqlDatabase db = QSqlDatabase::database(name);
-        if (db.isValid()) close();
-        db = QSqlDatabase::addDatabase("QSQLITE", file->componentPath(name));
-        db.setDatabaseName(name);
-        if (!db.open())
-            qDebug() << Q_FUNC_INFO << "Cannot open database";
+        instances[id]++;
+        if (instances[id] == 1) {
+            QSqlDatabase db = QSqlDatabase::database(name);
+            if (db.isValid()) close();
+            db = QSqlDatabase::addDatabase("QSQLITE", file->componentPath(name));
+            db.setDatabaseName(name);
+            if (!db.open())
+                qDebug() << Q_FUNC_INFO << "Cannot open database";
+        }
     }
 
     void close()
     {
+        instances[id]--;
         QSqlDatabase db = QSqlDatabase::database(name);
         if (db.isValid()) {
             db.commit();
-            db.close();
+            if (instances[id] < 1) {
+                instances.remove(id);
+                db.close();
+            }
         }
     }
+
+private:
+    static QHash<QString, int> instances;
 };
+
+QHash<QString, int> KCDatabasePrivate::instances = QHash<QString, int>();
 
 KCDatabase::KCDatabase(KCAccountFile* file,
                        const QString &databaseName,
                        QObject *parent) :
     QObject(parent),
-    d(new KCDatabasePrivate(file, databaseName, this))
+    d(new KCDatabasePrivate(file, databaseName))
 {
-    connect(file, SIGNAL(busy()), d, SLOT(close()));
-    connect(file, SIGNAL(available()), d, SLOT(open()));
+    connect(file, SIGNAL(busy()), this, SLOT(close()));
+    connect(file, SIGNAL(available()), this, SLOT(open()));
     d->open();
 }
 
@@ -83,6 +95,16 @@ QSqlQuery KCDatabase::query(const QString& queryText)
 {
     qDebug() << Q_FUNC_INFO << queryText;
     return QSqlQuery(queryText, QSqlDatabase::database(d->name));
+}
+
+void KCDatabase::open()
+{
+    d->open();
+}
+
+void KCDatabase::close()
+{
+    d->close();
 }
 
 const QString KCDatabase::defaultName = QString("DEFAULT_DATABASE");
