@@ -95,7 +95,9 @@ private:
             else {
                 KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
                 if (p) { // is it a real KCPlugin ?
-                    p->id = id;
+                    QString id = loader.metaData().value("MetaData").toObject()
+                                                .value("id").toString();
+                    p->id = id + "/" + p_versions.value(id).toString();
                     p_core.append(p);
                 }
             }
@@ -172,21 +174,26 @@ void KCCore::createAccount(const QString &location,
                            const QString &description)
 {
     KCAccountFile f(location);
+    // add a default database
     KCDatabase::create(&f);
+    // set the default properties
     f.setProperty(PROPERTY_ACCOUNT_NAME, name);
     f.setProperty(PROPERTY_ACCOUNT_DESCR, description);
+    // initialize the file for all plugins
     for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
         ((KCPlugin*)*it)->init(&f);
     for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it) {
         ((KCPlugin*)*it)->initDone(&f);
         f.setProperty(INIT_PREFIX + ((KCPlugin*)*it)->id, true);
     }
+    // save our base file
     f.save();
 }
 
 bool KCCore::openAccount(KCAccountFile *f)
 {
     if (!f->read()) return false;
+    // ensures that the file has been initialized by all plugins
     for (QList<KCPlugin*>::iterator it = d->p_core.begin(); it != d->p_core.end(); ++it)
         if (!f->getProperty(INIT_PREFIX + ((KCPlugin*)*it)->id).toBool())
             ((KCPlugin*)*it)->init(f);

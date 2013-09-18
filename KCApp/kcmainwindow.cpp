@@ -89,15 +89,22 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
     ui(new Ui::KCMainWindow),
     d(new KCMainWindowPrivate(account))
 {
+    // ensures that this window is delete when closed
     this->setAttribute(Qt::WA_DeleteOnClose);
     ui->setupUi(this);
     d->panels = QList<KCPanel*>(KCCore::instance()->panels(account));
+    // Prepare the group which will render all navigation actions exclusive from each other
     QActionGroup *aGroup = new QActionGroup(this);
+    // load all panels
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         loadPanel(*it, aGroup);
+    for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
+        ((KCPanel*)*it)->allPanelsCreated();
+    // load the dta from the last session if available regarding the window size
     QSettings s;
     QRect r = s.value(WINDOW_FRAME_KEY).toRect();
     if (r != QRect(0,0,0,0)) this->setGeometry(r);
+    // And the last selected panel
     int oldPanelIndex = s.value(CURRENT_PANEL_KEY, 0).toInt();
     if (oldPanelIndex < 0 || oldPanelIndex >= d->panels.size())
         oldPanelIndex = 0;
@@ -121,17 +128,20 @@ KCMainWindow::~KCMainWindow()
 void KCMainWindow::loadPanel(KCPanel *p, QActionGroup *aGroup)
 {
     QString iconPath;
+    // assign the proper icon to the panel
     if (p->iconName().isEmpty()) iconPath = QString(":/icon/no.jpeg");
     else iconPath = p->iconName();
+    // add a navigation entry for it
     QAction* action = new QAction(p->panelName(), aGroup);
     action->setIcon(QIcon(iconPath));
     action->setCheckable(true);
     ui->mainToolBar->addAction(action);
     d->actions.insert(action, p);
+    ui->menuPanels->addAction(action);
+    // pack and add the panel to the main window
     p->panel()->adjustSize();
     ui->centralWidget->layout()->addWidget(p->panel());
     p->panel()->setVisible(false);
-    ui->menuPanels->addAction(action);
 }
 
 void KCMainWindow::on_actionSettings_triggered()
@@ -152,11 +162,15 @@ void KCMainWindow::on_actionAbout_KapCompta_triggered()
 void KCMainWindow::closeEvent(QCloseEvent *event)
 {
     QSettings s;
+    // Save the settings regarding the window size and the current panel
     s.setValue(WINDOW_FRAME_KEY, this->geometry());
     s.setValue(CURRENT_PANEL_KEY, d->panels.indexOf(d->currentPanel));
     s.sync();
+    // notify the current panel that we're leaving it
     d->currentPanel->unselected();
+    // TODO: options for autosave ?
     d->account->save();
+    // allow the window to close
     event->accept();
 }
 
@@ -165,11 +179,13 @@ void KCMainWindow::toolbarTriggered(QAction *a)
 {
     KCPanel* panel = d->actions.value(a);
     if (panel == d->currentPanel) return;
+    // disable the layout manager to let us organize the widget ourselves
     ui->centralWidget->layout()->setEnabled(false);
     panel->panel()->resize(d->currentPanel->panel()->size());
     d->pendingPanel = panel;
     panel->panel()->setVisible(true);
     d->currentPanel->unselected();
+    // animate the transition between the two panels
     d->a_slideIn->setTargetObject(panel->panel());
     d->a_slideIn->setStartValue(QPoint(-panel->panel()->width(),d->currentPanel->panel()->pos().y()));
     d->a_slideIn->setEndValue(d->currentPanel->panel()->pos());

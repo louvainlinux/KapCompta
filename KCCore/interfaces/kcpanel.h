@@ -71,6 +71,11 @@ public slots:
      * @brief unselected notifies the panel that it appeared on the screen.
      */
     virtual void unselected() {}
+    /**
+     * @brief allPanelsCreated is called when all KCPanel instances have been created, thus that
+     * all shared resources are available ...
+     */
+    virtual void allPanelsCreated() {}
 
 protected:
     /**

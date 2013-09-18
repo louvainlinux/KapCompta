@@ -39,6 +39,7 @@ public:
     const QString panelName();
     QWidget* panel();
     const QString iconName();
+    void allPanelsCreated();
 
 signals:
 

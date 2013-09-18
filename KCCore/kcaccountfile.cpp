@@ -75,6 +75,7 @@ bool KCAccountFile::read() const
     quint32 magic;
     qint32 version;
     in >> magic;
+    // Check that this file is indeed a type known from us
     if (magic != (quint32)ACCOUNT_MAGIC) {
         d->lasterror = tr("Wrong magic number");
         qDebug() << Q_FUNC_INFO << d->lasterror;
@@ -83,6 +84,7 @@ bool KCAccountFile::read() const
     in >> version;
     bool success = false;
     switch (version) {
+    // decode the file based on its version tag
     case VERSION_1:
         in.setVersion(QDataStream::Qt_5_1);
         d->properties.clear();

@@ -22,6 +22,8 @@
 #include "ticketpanel.h"
 #include "ui_ticket.h"
 #include <QtWidgets/QWidget>
+#include <kcaccountfile.h>
+#include <kcglobals.h>
 
 class TicketPanelPrivate {
 public:
@@ -58,4 +60,11 @@ QWidget* TicketPanel::panel()
 const QString TicketPanel::iconName()
 {
     return QString(":/icon/ticket");
+}
+
+void TicketPanel::allPanelsCreated()
+{
+    QAbstractItemModel *model = KCPanel::account->model(MODEL_PERSON);
+    ui->person->setModel(model);
+    ui->person->setModelColumn(1);
 }

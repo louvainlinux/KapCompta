@@ -76,8 +76,13 @@ PeoplePanel::PeoplePanel(KCAccountFile *account, QWidget *parent) :
     ui->tableView->hideColumn(d->model->record().indexOf("id"));
     // And we authorize the user to edit the edit as he wishes
     ui->tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
-    // We want the columns to take all available space
-    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+    ui->tableView->setSortingEnabled(true);
+    // We want the columns to take all available space, but want to favor the name column
+    QHeaderView *header = ui->tableView->horizontalHeader();
+    header->setStretchLastSection(true);
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    header->setSectionsMovable(true);
+    // prepare the dialog
     d->dialog.hide();
     d->dialog.setModal(true);
     d->dialog.setWindowTitle(tr("Add a person"));
@@ -121,16 +126,22 @@ void PeoplePanel::checkAddPerson()
 
 void PeoplePanel::addPerson()
 {
+    // Generate a new row record
     QSqlRecord ins = d->model->record();
+    // fill in our new data
     ins.setValue(ins.indexOf("name"), addP->name->text());
     ins.setValue(ins.indexOf("misc"), addP->misc->toPlainText());
+    // insert it at the bottom of the table
     d->model->insertRecord(-1, ins);
     if (!d->model->submit()) {
         KCCore::instance()->warning(tr("Failed to insert a new person !\nreason: %1")
                                     .arg(d->model->lastError().text()));
     }
     d->dialog.hide();
+    // disable the ok button of the dialog for later uses
     addP->ok->setDisabled(true);
+    addP->name->clear();
+    addP->misc->clear();
 }
 
 void PeoplePanel::selected()
@@ -148,12 +159,15 @@ void PeoplePanel::unselected()
 
 void PeoplePanel::removePeople()
 {
+    // Freeze view update when the data change
     ui->tableView->setUpdatesEnabled(false);
     QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
     qSort(indexes.begin(), indexes.end());
+    // remove all rows one by one
     for(int i = indexes.count() - 1; i > -1; --i) {
         d->model->removeRow(indexes.at(i).row());
     }
+    // update the database/view
     ui->tableView->setUpdatesEnabled(true);
     d->model->submitAll();
 }
