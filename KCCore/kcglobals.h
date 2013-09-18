@@ -28,5 +28,6 @@
 #define ACCOUNT_EXTENSION      ".kc"
 #define INIT_PREFIX            "init/"
 #define MODEL_PERSON           "people.model"
+#define MODEL_EVENTS           "events.model"
 
 #endif // KCGLOBALS_H

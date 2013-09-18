@@ -2,5 +2,6 @@ TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS += People \
     Ticket \
-    Housing
+    Housing \
+    Events
 OTHER_FILES += kcplugin.prf

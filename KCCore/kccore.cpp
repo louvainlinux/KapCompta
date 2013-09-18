@@ -41,7 +41,7 @@ public:
      * Stores the metadata about plugins
      **/
     QHash<QString, QVariant> p_versions;
-    QHash<QString, QVariantList> p_dependancies;
+    QHash<QString, QVariantList> p_dependencies;
     QHash<QString, QString> p_locations;
     /*
      * The plugins themselves
@@ -52,23 +52,24 @@ private:
     void extractPluginInfo(const QString &p)
     {
         QPluginLoader loader(p);
-        QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
-        p_dependancies.insert(id, loader.metaData().value("MetaData").toObject()
-                              .value("dependancies").toArray().toVariantList());
+        QString id = loader.metaData().value("MetaData").toObject().value("identifier").toString();
+        p_dependencies.insert(id, loader.metaData().value("MetaData").toObject()
+                              .value("dependencies").toArray().toVariantList());
         p_versions.insert(id, loader.metaData().value("MetaData").toObject()
                           .value("version").toVariant());
         p_locations.insert(id, p);
+
     }
 
     bool loadable(const QString &p)
     {
-        QVariantList dep = p_dependancies.value(p);
+        QVariantList dep = p_dependencies.value(p_locations.key(p));
         for (QVariantList::iterator it = dep.begin(); it != dep.end(); ++it) {
             QVariantMap map = (*it).toMap();
             QString id = map.value("identifier").toString();
             QVariant version = map.value("version");
             if (!p_versions.contains(id)) {
-                qDebug() << Q_FUNC_INFO << "Missing dependancy" << id << "for" << p;
+                qDebug() << Q_FUNC_INFO << "Missing dependency" << id << "for" << p;
                 return false;
             }
             if (p_versions.value(id) != version) {
@@ -78,7 +79,7 @@ private:
                 return false;
             }
             if (!loadable(p_locations.value(id))) {
-                qDebug() << Q_FUNC_INFO << "Cannot load dependancy" << id << "for" << p;
+                qDebug() << Q_FUNC_INFO << "Cannot load dependency" << id << "for" << p;
                 return false;
             }
         }
@@ -89,16 +90,14 @@ private:
     {
         if (loadable(p)) {
             QPluginLoader loader(p);
-            QString id = loader.metaData().value("MetaData").toObject().value("id").toString();
+            QString id = loader.metaData().value("MetaData").toObject().value("identifier").toString();
             QObject *plugin = loader.instance();
             if (!loader.isLoaded()) qDebug() << Q_FUNC_INFO << loader.errorString();
             else {
-                KCPlugin* p = qobject_cast<KCPlugin *>(plugin);
-                if (p) { // is it a real KCPlugin ?
-                    QString id = loader.metaData().value("MetaData").toObject()
-                                                .value("id").toString();
-                    p->id = id + "/" + p_versions.value(id).toString();
-                    p_core.append(p);
+                KCPlugin* kcplugin = qobject_cast<KCPlugin *>(plugin);
+                if (kcplugin) { // is it a real KCPlugin ?
+                    kcplugin->id = p_locations.key(p) + "/" + p_versions.value(id).toString();
+                    p_core.append(kcplugin);
                 }
             }
         }
