@@ -46,6 +46,7 @@
     </property>
     <addaction name="actionOpen_Create_account"/>
     <addaction name="actionSave"/>
+    <addaction name="actionClose"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPanels"/>
@@ -71,6 +72,9 @@
    <property name="text">
     <string>Browse Online Documentation</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+?</string>
+   </property>
   </action>
   <action name="actionSettings">
    <property name="text">
@@ -89,17 +93,29 @@
   </action>
   <action name="actionOpen_Create_account">
    <property name="text">
-    <string>Open/Create accou&amp;nt</string>
+    <string>Open/Create account</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
-  <action name="actionExit">
+  <action name="actionClose">
    <property name="text">
-    <string>&amp;Quit</string>
+    <string>Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>

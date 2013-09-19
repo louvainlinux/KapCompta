@@ -223,3 +223,8 @@ void KCMainWindow::on_actionSave_triggered()
     ui->statusBar->showMessage(tr("Changes to [%1] have been saved").arg(d->account->fileName()),
                                STATUS_DURATION);
 }
+
+void KCMainWindow::on_actionClose_triggered()
+{
+    this->close();
+}

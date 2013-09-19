@@ -63,6 +63,7 @@ private slots:
     void on_actionAbout_Qt_triggered();
     void on_actionOpen_Create_account_triggered();
     void on_actionSave_triggered();
+    void on_actionClose_triggered();
 };
 
 #endif // KCMAINWINDOW_H
