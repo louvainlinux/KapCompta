@@ -37,6 +37,7 @@
 #include <QDebug>
 #include <kcbooleandelegate.h>
 #include <kccomboboxdelegate.h>
+#include <kcplaintextdelegate.h>
 
 class TicketPanelPrivate {
 public:
@@ -77,6 +78,8 @@ TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
                                             new KCSpinnerDelegate("", tr("€"), ui->tableView));
     ui->tableView->setItemDelegateForColumn(r.indexOf("isExpense"),
                                             new KCBooleanDelegate(tr("Expense"), tr("Income"), ui->tableView));
+    ui->tableView->setItemDelegateForColumn(r.indexOf("misc"),
+                                            new KCPlainTextDelegate(ui->tableView));
     // bind the model to the table view
     ui->tableView->setModel(d->model);
     // We don't want to display the column id
