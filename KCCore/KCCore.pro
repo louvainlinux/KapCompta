@@ -18,7 +18,8 @@ SOURCES += kccore.cpp \
     kcdatabase.cpp \
     kcdatedelegate.cpp \
     kcspinnerdelegate.cpp \
-    kcbooleandelegate.cpp
+    kcbooleandelegate.cpp \
+    kccomboboxdelegate.cpp
 
 HEADERS += kccore_global.h \
        kccore.h \
@@ -29,4 +30,5 @@ HEADERS += kccore_global.h \
     kcglobals.h \
     kcdatedelegate.h \
     kcspinnerdelegate.h \
-    kcbooleandelegate.h
+    kcbooleandelegate.h \
+    kccomboboxdelegate.h
