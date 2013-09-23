@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>People</class>
- <widget class="QWidget" name="People">
+ <class>Ticket</class>
+ <widget class="QWidget" name="Ticket">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>853</width>
+    <width>675</width>
     <height>390</height>
    </rect>
   </property>
@@ -16,92 +16,38 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,2">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTreeView" name="treeView"/>
+    <widget class="QTableView" name="tableView"/>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QCalendarWidget" name="calendarWidget">
-       <property name="gridVisible">
-        <bool>false</bool>
-       </property>
-       <property name="horizontalHeaderFormat">
-        <enum>QCalendarWidget::NoHorizontalHeader</enum>
-       </property>
-       <property name="navigationBarVisible">
-        <bool>true</bool>
-       </property>
-       <property name="dateEditEnabled">
-        <bool>true</bool>
+      <widget class="QPushButton" name="add">
+       <property name="text">
+        <string>Add ticket</string>
        </property>
       </widget>
      </item>
      <item>
-      <layout class="QFormLayout" name="formLayout">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+      <widget class="QPushButton" name="remove">
+       <property name="text">
+        <string>Remove selected</string>
        </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Amount:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="amount"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Person:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Description:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QTextEdit" name="description"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="person"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QComboBox" name="event"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Event:</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QPushButton" name="remove">
-         <property name="text">
-          <string>Remove selected</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="add">
-         <property name="text">
-          <string>Add ticket</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

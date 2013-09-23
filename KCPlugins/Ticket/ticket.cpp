@@ -21,6 +21,7 @@
 
 #include "ticket.h"
 #include "ticketpanel.h"
+#include <kcdatabase.h>
 
 Ticket::Ticket()
 {
@@ -36,7 +37,16 @@ const QList<KCPanel*> Ticket::panels(KCAccountFile *account)
 
 void Ticket::init(KCAccountFile *account)
 {
-
+    KCDatabase db(account);
+    db.query("CREATE TABLE ticket ("
+             "id INTEGER PRIMARY KEY, "
+             "person_id INTEGER, "
+             "event_id INTEGER, "
+             "date TEXT, "
+             "amount REAL, "
+             "isExpense INTEGER, "
+             "misc TEXT"
+             ")");
 }
 
 void Ticket::initDone(KCAccountFile *account)

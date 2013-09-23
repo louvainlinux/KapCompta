@@ -25,7 +25,8 @@
 #include "interfaces/kcpanel.h"
 
 namespace Ui {
-class People;
+class Ticket;
+class AddTicket;
 }
 
 class TicketPanelPrivate;
@@ -47,8 +48,15 @@ public slots:
     void selected();
     void unselected();
 
+private slots:
+    void addTicket();
+    void checkAddTicket();
+    void removeTicket();
+    void showDialog();
+
 private:
-    Ui::People *ui;
+    Ui::Ticket *ui;
+    Ui::AddTicket *addT;
     TicketPanelPrivate *d;
 };
 

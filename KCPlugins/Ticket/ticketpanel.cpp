@@ -21,18 +21,22 @@
 
 #include "ticketpanel.h"
 #include "ui_ticket.h"
+#include "ui_addticket.h"
 #include <QtWidgets/QWidget>
 #include <kcaccountfile.h>
 #include <kcglobals.h>
 #include <kccore.h>
 #include <QSqlError>
-#include <QSqlTableModel>
+#include <QSqlRelationalTableModel>
+#include <QSqlRecord>
 
 class TicketPanelPrivate {
 public:
     QWidget widget;
+    QDialog dialog;
     QSqlTableModel *personModel;
     QSqlTableModel *eventsModel;
+    QSqlRelationalTableModel *model;
 
     TicketPanelPrivate()
     {}
@@ -40,17 +44,30 @@ public:
 
 TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
     KCPanel(account, parent),
-    ui(new Ui::People),
+    ui(new Ui::Ticket),
+    addT(new Ui::AddTicket),
     d(new TicketPanelPrivate)
 {
     ui->setupUi(&d->widget);
-    ui->person->setEditable(true);
-    ui->event->setEditable(true);
+    addT->setupUi(&d->dialog);
+    addT->person->setEditable(true);
+    addT->event->setEditable(true);
+    // prepare the dialog
+    d->dialog.hide();
+    d->dialog.setModal(true);
+    d->dialog.setWindowTitle(tr("Add a ticket"));
+    connect(ui->add, SIGNAL(clicked()), this, SLOT(showDialog()));
+    connect(addT->cancel, SIGNAL(clicked()), &d->dialog, SLOT(hide()));
+    connect(addT->ok, SIGNAL(clicked()), this, SLOT(addTicket()));
+    connect(addT->person, SIGNAL(currentIndexChanged(int)), this, SLOT(checkAddTicket()));
+    connect(addT->event, SIGNAL(currentIndexChanged(int)), this, SLOT(checkAddTicket()));
+    connect(ui->remove, SIGNAL(clicked()), SLOT(removeTicket()));
 }
 
 TicketPanel::~TicketPanel()
 {
     delete ui;
+    delete addT;
     delete d;
 }
 
@@ -72,11 +89,11 @@ const QString TicketPanel::iconName()
 void TicketPanel::allPanelsCreated()
 {
     d->personModel = (QSqlTableModel*)KCPanel::account->model(MODEL_PERSON);
-    ui->person->setModel(d->personModel);
-    ui->person->setModelColumn(1);
+    addT->person->setModel(d->personModel);
+    addT->person->setModelColumn(1);
     d->eventsModel = (QSqlTableModel*)KCPanel::account->model(MODEL_EVENTS);
-    ui->event->setModel(d->eventsModel);
-    ui->event->setModelColumn(1);
+    addT->event->setModel(d->eventsModel);
+    addT->event->setModelColumn(1);
 }
 
 void TicketPanel::selected()
@@ -95,4 +112,63 @@ void TicketPanel::unselected()
         KCCore::instance()->warning(
                     tr("Failed to submit changes to the events,\nreason: %1")
                     .arg(d->personModel->lastError().text()));
+}
+
+void TicketPanel::removeTicket()
+{
+    // Freeze view update when the data change
+    ui->tableView->setUpdatesEnabled(false);
+    QModelIndexList indexes = ui->tableView->selectionModel()->selectedIndexes();
+    qSort(indexes.begin(), indexes.end());
+    // remove all rows one by one
+    for(int i = indexes.count() - 1; i > -1; --i) {
+        d->model->removeRow(indexes.at(i).row());
+    }
+    // update the database/view
+    ui->tableView->setUpdatesEnabled(true);
+    d->model->submitAll();
+    d->model->select();
+}
+
+void TicketPanel::showDialog()
+{
+    // disable the ok button of the dialog for later uses
+    addT->ok->setDisabled(true);
+    addT->amount->setValue(0);
+    addT->event->setCurrentIndex(-1);
+    addT->person->setCurrentIndex(-1);
+    addT->isIncome->setEnabled(false);
+    addT->misc->clear();
+    addT->date->setSelectedDate(QDate::currentDate());
+    d->dialog.show();
+}
+
+void TicketPanel::checkAddTicket()
+{
+    if (addT->person->currentIndex() != -1 && addT->event->currentIndex() != -1)
+        addT->ok->setDisabled(false);
+    else addT->ok->setDisabled(true);
+}
+
+void TicketPanel::addTicket()
+{
+    // Generate a new row record
+    QSqlRecord ins = d->model->record();
+    // fill in our new data
+    ins.setValue(ins.indexOf("amount"), addT->amount->value());
+    ins.setValue(ins.indexOf("misc"), addT->misc->toPlainText());
+    ins.setValue(ins.indexOf("date"), addT->date->selectedDate());
+    ins.setValue(ins.indexOf("isExpense"), !addT->isIncome->isEnabled());
+    ins.setValue(ins.indexOf("person_id"),
+                 d->personModel->record(addT->person->currentIndex()).value("id"));
+    ins.setValue(ins.indexOf("event_id"),
+                 d->eventsModel->record(addT->person->currentIndex()).value("id"));
+    // insert it at the bottom of the table
+    d->model->insertRecord(-1, ins);
+    if (!d->model->submit()) {
+        KCCore::instance()->warning(tr("Failed to insert a new ticket !\nreason: %1")
+                                    .arg(d->model->lastError().text()));
+    }
+    d->model->select();
+    d->dialog.hide();
 }

@@ -13,7 +13,8 @@ SOURCES += \
     ticketpanel.cpp
 
 FORMS += \
-    ticket.ui
+    ticket.ui \
+    addticket.ui
 
 RESOURCES += \
     rsrc.qrc
