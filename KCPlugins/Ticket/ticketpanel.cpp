@@ -27,7 +27,7 @@
 #include <kcglobals.h>
 #include <kccore.h>
 #include <QSqlError>
-#include <QSqlRelationalTableModel>
+#include <QSqlTableModel>
 #include <QSqlRecord>
 #include <kcdatabase.h>
 #include <QSqlRelation>
@@ -44,7 +44,7 @@ public:
     QDialog dialog;
     QSqlTableModel *personModel;
     QSqlTableModel *eventsModel;
-    QSqlRelationalTableModel *model;
+    QSqlTableModel *model;
     KCDatabase *db;
     QSqlRecord record;
 
@@ -64,20 +64,14 @@ TicketPanel::TicketPanel(KCAccountFile *account, QWidget *parent) :
     addT->event->setEditable(true);
     // Configure our main data model
     d->db = new KCDatabase(KCPanel::account);
-    d->model = new QSqlRelationalTableModel(this, d->db->db());
+    d->model = new QSqlTableModel(this, d->db->db());
     KCPanel::account->registerModel(d->model, MODEL_TICKET);
     d->model->setTable("ticket");
-    // Expose our foreign keys
-    QSqlRecord r = d->model->record();
-    d->record = r;
-    d->model->setRelation(r.indexOf("person_id"), QSqlRelation("person", "id", "name"));
-    d->model->setRelation(r.indexOf("event_id"), QSqlRelation("events", "id", "name"));
     d->model->setEditStrategy(QSqlTableModel::OnFieldChange);
     d->model->select();
+    QSqlRecord r = d->model->record();
+    d->record = r;
     // Setup view delegates
-    QSqlRelationalDelegate *relDelegate = new KCComboBoxDelegate(ui->tableView);
-    ui->tableView->setItemDelegateForColumn(r.indexOf("person_id"), relDelegate);
-    ui->tableView->setItemDelegateForColumn(r.indexOf("event_id"), relDelegate);
     ui->tableView->setItemDelegateForColumn(r.indexOf("date"), new KCDateDelegate(ui->tableView));
     ui->tableView->setItemDelegateForColumn(r.indexOf("amount"),
                                             new KCSpinnerDelegate("", tr("€"), ui->tableView));
@@ -144,11 +138,23 @@ const QString TicketPanel::iconName()
 void TicketPanel::allPanelsCreated()
 {
     d->personModel = (QSqlTableModel*)KCPanel::account->model(MODEL_PERSON);
+    QSqlRecord p = d->personModel->record();
     addT->person->setModel(d->personModel);
-    addT->person->setModelColumn(1);
+    addT->person->setModelColumn(p.indexOf("name"));
     d->eventsModel = (QSqlTableModel*)KCPanel::account->model(MODEL_EVENTS);
+    QSqlRecord e = d->eventsModel->record();
     addT->event->setModel(d->eventsModel);
-    addT->event->setModelColumn(1);
+    addT->event->setModelColumn(e.indexOf("name"));
+    ui->tableView->setItemDelegateForColumn(d->record.indexOf("person_id"),
+                                            new KCComboBoxDelegate(d->personModel,
+                                                                   p.indexOf("name"),
+                                                                   p.indexOf("id"),
+                                                                   ui->tableView));
+    ui->tableView->setItemDelegateForColumn(d->record.indexOf("event_id"),
+                                            new KCComboBoxDelegate(d->eventsModel,
+                                                                   e.indexOf("name"),
+                                                                   e.indexOf("id"),
+                                                                   ui->tableView));
 }
 
 void TicketPanel::selected()
@@ -207,6 +213,8 @@ void TicketPanel::checkAddTicket()
 
 void TicketPanel::addTicket()
 {
+    d->personModel->submit();
+    d->eventsModel->submit();
     // Generate a new row record
     QSqlRecord ins = QSqlRecord(d->record);
     // fill in our new data

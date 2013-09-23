@@ -20,19 +20,72 @@
  **/
 
 #include "kccomboboxdelegate.h"
+#include <QComboBox>
 #include <QEvent>
+#include <QAbstractItemModel>
+#include <QDebug>
 
-KCComboBoxDelegate::KCComboBoxDelegate(QObject *parent)
-    : QSqlRelationalDelegate(parent)
+class KCComboBoxDelegatePrivate {
+public:
+    QAbstractItemModel *model;
+    int displayColumn;
+    int indexColumn;
+
+    KCComboBoxDelegatePrivate(QAbstractItemModel* m, int d, int i)
+        : model(m), displayColumn(d), indexColumn(i)
+    {}
+};
+
+KCComboBoxDelegate::KCComboBoxDelegate(QAbstractItemModel* model, int displayColumn,
+                                       int indexColumn, QObject *parent)
+    : QStyledItemDelegate(parent),
+      d(new KCComboBoxDelegatePrivate(model, displayColumn, indexColumn))
 {}
 
-QWidget *KCComboBoxDelegate::createEditor(QWidget *parent,
-                      const QStyleOptionViewItem &option,
-                      const QModelIndex &index) const
+KCComboBoxDelegate::~KCComboBoxDelegate()
 {
-    QWidget *editor = QSqlRelationalDelegate::createEditor(parent, option, index);
+    delete d;
+}
+
+QWidget *KCComboBoxDelegate::createEditor(QWidget *parent,
+    const QStyleOptionViewItem& option,
+    const QModelIndex& index) const
+{
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+
+    QComboBox *editor = new QComboBox(parent);
+    editor->setModel(d->model);
+    editor->setEditable(false);
+    editor->setModelColumn(d->displayColumn);
     editor->installEventFilter(const_cast<KCComboBoxDelegate *>(this));
     return editor;
+}
+
+void KCComboBoxDelegate::setEditorData(QWidget *editor,
+                                    const QModelIndex &index) const
+{
+    int value = index.model()->data(index, Qt::EditRole).toInt();
+    QComboBox *box = static_cast<QComboBox*>(editor);
+    box->setCurrentIndex(d->model->match(d->model->index(0, d->indexColumn),
+                                         Qt::DisplayRole, value, 1, Qt::MatchExactly).at(0).row());
+}
+
+void KCComboBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                                   const QModelIndex &index) const
+{
+    QComboBox *box = static_cast<QComboBox*>(editor);
+    int value = box->currentIndex();
+
+    model->setData(index, d->model->data(
+                       d->model->index(value, d->indexColumn)), Qt::EditRole);
+}
+
+void KCComboBoxDelegate::updateEditorGeometry(QWidget *editor,
+    const QStyleOptionViewItem &option, const QModelIndex& index) const
+{
+    Q_UNUSED(index)
+    editor->setGeometry(option.rect);
 }
 
 bool KCComboBoxDelegate::eventFilter(QObject *object, QEvent *event)
@@ -44,6 +97,17 @@ bool KCComboBoxDelegate::eventFilter(QObject *object, QEvent *event)
             return true;
         }
     } else
-        return QSqlRelationalDelegate::eventFilter(object, event);
+        return QStyledItemDelegate::eventFilter(object, event);
     return false;
+}
+
+QString KCComboBoxDelegate::displayText(const QVariant & value, const QLocale & locale) const
+{
+    Q_UNUSED(locale)
+    int v = value.toInt();
+    return d->model->data(d->model->index(
+                              d->model->match(d->model->index(0, d->indexColumn),
+                                          Qt::DisplayRole, v, 1, Qt::MatchExactly).at(0).row(),
+                              d->displayColumn),
+                          Qt::EditRole).toString();
 }

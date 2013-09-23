@@ -23,17 +23,32 @@
 #define KCCOMBOBOXDELEGATE_H
 
 #include "kccore_global.h"
-#include <QSqlRelationalDelegate>
+#include <QStyledItemDelegate>
 
-class KCCORESHARED_EXPORT KCComboBoxDelegate : public QSqlRelationalDelegate
+QT_BEGIN_NAMESPACE
+class QAbstractItemModel;
+QT_END_NAMESPACE
+
+class KCComboBoxDelegatePrivate;
+class KCCORESHARED_EXPORT KCComboBoxDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    KCComboBoxDelegate(QObject *parent = 0);
-    QWidget* createEditor(QWidget *parent,
-                          const QStyleOptionViewItem &option,
+    KCComboBoxDelegate(QAbstractItemModel* model, int displayColumn,
+                       int indexColumn, QObject *parent = 0);
+    ~KCComboBoxDelegate();
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
+
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,
+                      const QModelIndex &index) const;
+    void updateEditorGeometry(QWidget *editor,
+        const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool eventFilter(QObject *object, QEvent *event);
+    QString displayText(const QVariant & value, const QLocale & locale) const;
+private:
+    KCComboBoxDelegatePrivate *d;
 };
 
 #endif // KCCOMBOBOXDELEGATE_H
