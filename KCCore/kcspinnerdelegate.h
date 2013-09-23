@@ -19,37 +19,34 @@
  *
  **/
 
-#include "ticket.h"
-#include "ticketpanel.h"
-#include <kcdatabase.h>
+#ifndef KCSPINNERDELEGATE_H
+#define KCSPINNERDELEGATE_H
 
-Ticket::Ticket()
+#include "kccore_global.h"
+#include <QStyledItemDelegate>
+
+class KCSpinnerDelegatePrivate;
+class KCCORESHARED_EXPORT KCSpinnerDelegate : public QStyledItemDelegate
 {
-    Q_INIT_RESOURCE(rsrc);
-}
+    Q_OBJECT
 
-const QList<KCPanel*> Ticket::panels(KCAccountFile *account)
-{
-    QList<KCPanel*> l;
-    l << new TicketPanel(account);
-    return l;
-}
+public:
+    KCSpinnerDelegate(const QString& prefix = QString(),
+                      const QString& suffix = QString(),
+                      QObject *parent = 0);
+    ~KCSpinnerDelegate();
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const;
 
-void Ticket::init(KCAccountFile *account)
-{
-    KCDatabase db(account);
-    db.query("CREATE TABLE ticket ("
-             "id INTEGER PRIMARY KEY, "
-             "amount REAL, "
-             "isExpense INTEGER, "
-             "person_id INTEGER, "
-             "event_id INTEGER, "
-             "date TEXT, "
-             "misc TEXT"
-             ")");
-}
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,
+                      const QModelIndex &index) const;
+    void updateEditorGeometry(QWidget *editor,
+        const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QString displayText(const QVariant & value, const QLocale & locale) const;
 
-void Ticket::initDone(KCAccountFile *account)
-{
+private:
+    KCSpinnerDelegatePrivate* d;
+};
 
-}
+#endif // KCSPINNERDELEGATE_H

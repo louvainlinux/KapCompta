@@ -19,37 +19,32 @@
  *
  **/
 
-#include "ticket.h"
-#include "ticketpanel.h"
-#include <kcdatabase.h>
+#ifndef KCBOOLEANDELEGATE_H
+#define KCBOOLEANDELEGATE_H
 
-Ticket::Ticket()
+#include "kccore_global.h"
+#include <QStyledItemDelegate>
+
+class KCBooleanDelegatePrivate;
+class KCCORESHARED_EXPORT KCBooleanDelegate : public QStyledItemDelegate
 {
-    Q_INIT_RESOURCE(rsrc);
-}
+    Q_OBJECT
+public:
+    KCBooleanDelegate(const QString& onText = QString("true"),
+                      const QString& offText = QString("false"), QObject *parent = 0);
+    ~KCBooleanDelegate();
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const;
 
-const QList<KCPanel*> Ticket::panels(KCAccountFile *account)
-{
-    QList<KCPanel*> l;
-    l << new TicketPanel(account);
-    return l;
-}
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model,
+                      const QModelIndex &index) const;
+    QString displayText(const QVariant & value, const QLocale & locale) const;
+    void updateEditorGeometry(QWidget *editor,
+        const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    bool eventFilter(QObject *object, QEvent *event);
+private:
+    KCBooleanDelegatePrivate *d;
+};
 
-void Ticket::init(KCAccountFile *account)
-{
-    KCDatabase db(account);
-    db.query("CREATE TABLE ticket ("
-             "id INTEGER PRIMARY KEY, "
-             "amount REAL, "
-             "isExpense INTEGER, "
-             "person_id INTEGER, "
-             "event_id INTEGER, "
-             "date TEXT, "
-             "misc TEXT"
-             ")");
-}
-
-void Ticket::initDone(KCAccountFile *account)
-{
-
-}
+#endif // KCBOOLEANDELEGATE_H

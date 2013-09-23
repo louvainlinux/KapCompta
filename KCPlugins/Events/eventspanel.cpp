@@ -44,6 +44,11 @@ public:
     EventsPanelPrivate()
     {}
 
+    ~EventsPanelPrivate()
+    {
+        delete db;
+    }
+
     void setupModel(KCAccountFile *f)
     {
         db = new KCDatabase(f);
@@ -66,21 +71,22 @@ EventsPanel::EventsPanel(KCAccountFile *account, QWidget *parent) :
     d->model->setEditStrategy(QSqlTableModel::OnFieldChange);
     d->model->select();
     // Declare better names for our columns
-    d->model->setHeaderData(d->model->record().indexOf("name"),
+    QSqlRecord r = d->model->record();
+    d->model->setHeaderData(r.indexOf("name"),
                          Qt::Horizontal,
                          tr("Name"));
-    d->model->setHeaderData(d->model->record().indexOf("misc"),
+    d->model->setHeaderData(r.indexOf("misc"),
                          Qt::Horizontal,
                          tr("Description"));
-    d->model->setHeaderData(d->model->record().indexOf("date"),
+    d->model->setHeaderData(r.indexOf("date"),
                          Qt::Horizontal,
                          tr("Date"));
-    ui->tableView->setItemDelegateForColumn(d->model->record().indexOf("date"),
-                                            new KCDateDelegate(this));
+    ui->tableView->setItemDelegateForColumn(r.indexOf("date"),
+                                            new KCDateDelegate(ui->tableView));
     // bind the model to the table view
     ui->tableView->setModel(d->model);
     // We don't want to display the column id
-    ui->tableView->hideColumn(d->model->record().indexOf("id"));
+    ui->tableView->hideColumn(r.indexOf("id"));
     // And we authorize the user to edit the edit as he wishes
     ui->tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
     ui->tableView->setSortingEnabled(true);

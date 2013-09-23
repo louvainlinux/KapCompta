@@ -29,5 +29,6 @@
 #define INIT_PREFIX            "init/"
 #define MODEL_PERSON           "people.model"
 #define MODEL_EVENTS           "events.model"
+#define MODEL_TICKET           "ticket.model"
 
 #endif // KCGLOBALS_H
