@@ -91,8 +91,8 @@ MealPanel::MealPanel(KCAccountFile *account, QWidget *parent) :
     connect(ui->calendarWidget, SIGNAL(selectionChanged()), this, SLOT(updateFilter()));
     connect(ui->calendarWidget, SIGNAL(currentPageChanged(int,int)), this, SLOT(pageChanged(int,int)));
     connect(d->model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(updateHighlightsOfTheDay()));
-    ui->calendarWidget->setSelectedDate(QDate::currentDate());
     pageChanged(QDate::currentDate().year(), QDate::currentDate().month());
+    updateFilter();
 }
 
 MealPanel::~MealPanel()
