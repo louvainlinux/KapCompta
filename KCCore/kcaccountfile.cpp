@@ -64,6 +64,7 @@ KCAccountFile::~KCAccountFile()
 
 bool KCAccountFile::read() const
 {
+    qDebug() << "File temp dir" << d->tempDir.path();
     d->lasterror = QString();
     QFile file(d->filename);
     if (!file.open(QIODevice::ReadOnly)) {

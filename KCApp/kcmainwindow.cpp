@@ -110,6 +110,7 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
         oldPanelIndex = 0;
     d->currentPanel = d->panels.at(oldPanelIndex);
     d->currentPanel->panel()->setVisible(true);
+    d->currentPanel->selected();
     d->actions.key(d->currentPanel)->setChecked(true);
     this->setWindowTitle(d->account->getProperty(PROPERTY_ACCOUNT_NAME).toString()
                          + " - " + d->currentPanel->panelName());

@@ -72,6 +72,7 @@ public:
     {
         QSqlDatabase db = QSqlDatabase::database(id);
         if (!db.isValid()) {
+            qDebug() << Q_FUNC_INFO << "Reopening the database connection";
             open();
             return QSqlDatabase::database(id);
         }
