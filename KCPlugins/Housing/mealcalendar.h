@@ -38,6 +38,12 @@ public:
      * and values are the number of highlights on that day
      **/
     void setCurrentMonthHighlights(const QHash<int,int>& highlights);
+    /**
+     * @brief setHighlightsForDay set the number of highlights for the given day
+     * @param day the day of the month (1-31)
+     * @param highlights the number of highlights for that day
+     */
+    void setHighlightsForDay(int day, int highlights);
 signals:
 
 public slots:

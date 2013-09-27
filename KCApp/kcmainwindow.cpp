@@ -100,7 +100,7 @@ KCMainWindow::KCMainWindow(KCAccountFile* account, QWidget *parent) :
         loadPanel(*it, aGroup);
     for (QList<KCPanel*>::iterator it = d->panels.begin(); it != d->panels.end(); ++it)
         ((KCPanel*)*it)->allPanelsCreated();
-    // load the dta from the last session if available regarding the window size
+    // load the data from the last session if available regarding the window size
     QSettings s;
     QRect r = s.value(WINDOW_FRAME_KEY).toRect();
     if (r != QRect(0,0,0,0)) this->setGeometry(r);

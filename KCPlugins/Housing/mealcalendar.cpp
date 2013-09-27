@@ -35,6 +35,12 @@ void MealCalendar::setCurrentMonthHighlights(const QHash<int,int>& highlights)
     update();
 }
 
+void MealCalendar::setHighlightsForDay(int day, int highlights)
+{
+    this->highlights[day] = highlights;
+    updateCell(QDate(QCalendarWidget::yearShown(), QCalendarWidget::monthShown(), day));
+}
+
 void MealCalendar::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
 {
     if (highlights.value(date.day()) > 0) {
