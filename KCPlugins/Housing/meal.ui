@@ -16,7 +16,7 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,0">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
    <item>
     <widget class="MealCalendar" name="calendarWidget"/>
    </item>

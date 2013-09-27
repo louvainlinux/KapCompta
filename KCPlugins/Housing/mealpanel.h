@@ -48,6 +48,14 @@ public slots:
     void selected();
     void unselected();
 
+private slots:
+    void updateHighlightsOfTheDay();
+    void pageChanged(int year, int month);
+    void removeSubscriptions();
+    void addSubcription();
+    void setHighlights(const QDate& date);
+    void updateFilter();
+
 private:
     Ui::Meal *ui;
     Ui::MealSubscription *dialog;

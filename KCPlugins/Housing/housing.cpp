@@ -21,6 +21,7 @@
 
 #include "housing.h"
 #include "mealpanel.h"
+#include <kcdatabase.h>
 
 Housing::Housing()
 {
@@ -36,7 +37,13 @@ const QList<KCPanel*> Housing::panels(KCAccountFile *account)
 
 void Housing::init(KCAccountFile *account)
 {
-
+    KCDatabase db(account);
+    db.query("CREATE TABLE meals("
+             "id INTEGER PRIMARY KEY, "
+             "date TEXT, "
+             "person_id INTEGER, "
+             "subscription_count INTEGER"
+             ")");
 }
 
 void Housing::initDone(KCAccountFile *account)

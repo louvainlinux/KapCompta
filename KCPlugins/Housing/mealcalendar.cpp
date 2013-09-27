@@ -43,24 +43,25 @@ void MealCalendar::setHighlightsForDay(int day, int highlights)
 
 void MealCalendar::paintCell(QPainter *painter, const QRect &rect, const QDate &date) const
 {
-    if (highlights.value(date.day()) > 0) {
+    QCalendarWidget::paintCell(painter, rect, date);
+    if (highlights.value(date.day()) > 0
+            && date.month() == QCalendarWidget::selectedDate().month()) {
         painter->save();
         // Set background color to green because there are meal(s) that day
-        painter->drawEllipse(rect);
-        painter->fillRect(rect, QBrush(QColor(60,150,75)));
-        // Draw the day number & meal count
-        painter->drawText(rect, QString::number(date.day()));
-        QString mealText = QString::number(highlights.value(date.day()))
-                + (highlights.value(date.day())> 1 ? tr(" Meals") : tr(" Meal"));
-        painter->drawText(QRect(
-                              rect.x(),
-                              rect.y() + rect.height()/2 - painter->fontMetrics().height()/2,
-                              rect.width(),
-                              painter->fontMetrics().height()),
-                          mealText, QTextOption(Qt::AlignCenter));
+        QFontMetrics fm = painter->fontMetrics();
+        int w = fm.width(QString::number(highlights.value(date.day())));
+        int h = fm.height();
+        int max = qMax(w, h) + 3;
+        QRect r = QRect(rect.x(), rect.y(), max, max);
+        painter->setBrush(QBrush(Qt::darkCyan, Qt::SolidPattern));
+        painter->setPen(Qt::NoPen);
+        painter->drawEllipse(r);
+        painter->setBrush(Qt::NoBrush);
+        painter->setPen(Qt::lightGray);
+        painter->drawRect(QRect(rect.x(), rect.y(), rect.width()-1, rect.height()-1));
         painter->restore();
-    } else {
-        // Call for default behaviour otherwise
-        QCalendarWidget::paintCell(painter, rect, date);
+        painter->drawText(QRect(r.x(), r.y() + max/2 - h/2, max, max),
+                          QString::number(highlights.value(date.day())),
+                          QTextOption(Qt::AlignCenter));
     }
 }
