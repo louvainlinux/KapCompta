@@ -1,6 +1,39 @@
 #1 Dependencies
 -> Qt 5.1 (core gui widgets sql)
 
+--- UPDATED INSTRUCTIONS AS OF 11/2018 ---
+Build instructions on Linux (tested on Ubuntu 18.04)
+
+1) Install qt5 and the required dependencies :
+$sudo apt install qt5-default
+
+2) Once you cloned the repo (https://github.com/louvainlinux/KapCompta), you can build it as follows :
+Once in the KapCompta directory :
+$qmake KapCompta.pro
+$make
+(This might take a while)
+
+3) Then navigate to KapCompta/KCApp/ : 
+$cd KCApp
+
+And execute the program with :
+$./KapCompta
+
+4) Note that at some point during this process, you might get an error about a shared library file not being accessible. You need to add a directory to the LD_LIBRARY_PATH variable like this :
+$sudo gedit ~/.bashrc
+
+Add the following line at the very end of the file :
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/yourusername/path/to/the/program/folder/KapCompta/KCApp/lib
+
+Then reboot your machine.
+
+5) To run the program in the future, simply type
+$./KapCompta
+when in the KapCompta/KCApp/ folder.
+
+
+
 
 --- THE FOLLOWINGS ARE OUTDATED ! ---
 
